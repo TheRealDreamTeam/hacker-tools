@@ -139,6 +139,37 @@ You are deeply familiar with and apply best practices for:
 - **Orientation**: Test both portrait and landscape orientations
 - **Mobile navigation**: Implement mobile-friendly navigation patterns (hamburger menus, bottom navigation, etc.)
 
+### Styling Guidelines
+**CRITICAL**: Always use Bootstrap classes when applicable before writing custom CSS.
+
+**Bootstrap-First Approach:**
+- **Use Bootstrap utility classes** for spacing (`m-*`, `p-*`, `mt-*`, `mb-*`, etc.), display (`d-*`, `d-none`, `d-block`), flexbox (`d-flex`, `justify-content-*`, `align-items-*`), and other common styling needs
+- **Use Bootstrap components** (buttons, cards, alerts, modals, dropdowns, etc.) before creating custom components
+- **Use Bootstrap grid system** (`container`, `row`, `col-*`) for layouts instead of custom flexbox/grid CSS
+- **Override Bootstrap variables** in `config/_bootstrap_variables.scss` for global theme changes (colors, border radius, spacing, etc.)
+- **Extend Bootstrap with SCSS** only when Bootstrap doesn't provide the needed functionality
+- **Write custom CSS** only when Bootstrap classes cannot achieve the desired result
+
+**When to Write Custom CSS:**
+- Custom animations or transitions not available in Bootstrap
+- Project-specific design system requirements (e.g., 12px border radius, consistent heights)
+- Complex layouts that Bootstrap grid cannot handle
+- Custom component styling that extends Bootstrap components
+- Brand-specific styling that doesn't fit Bootstrap's defaults
+
+**Styling File Organization:**
+- **Bootstrap variables**: `app/assets/stylesheets/config/_bootstrap_variables.scss`
+- **Base/global styles**: `app/assets/stylesheets/components/_base.scss` (for design system overrides)
+- **Component-specific**: `app/assets/stylesheets/components/_[component].scss` (for custom components)
+- **Page-specific**: `app/assets/stylesheets/pages/_[page].scss` (for page-specific styling)
+
+**Best Practices:**
+- Prefer Bootstrap utility classes in views over custom CSS classes
+- Use Bootstrap's responsive utilities (`d-md-none`, `d-lg-block`, etc.) for responsive behavior
+- Leverage Bootstrap's color system and spacing scale
+- Document why custom CSS was needed when Bootstrap couldn't be used
+- Keep custom CSS minimal and focused on design system requirements
+
 ## Code Quality Standards
 
 ### Readability & Maintainability

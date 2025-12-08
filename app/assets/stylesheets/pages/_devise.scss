@@ -8,12 +8,12 @@
   padding: 2.5rem;
   background: white;
   border-radius: 0.75rem; // 12px
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba($primary, 0.1);
   
-  // Responsive padding for mobile
+  // Responsive padding for mobile - more compact
   @media (max-width: 576px) {
-    margin: 1.5rem;
-    padding: 2rem 1.5rem;
+    margin: 1rem;
+    padding: 1.5rem 1rem;
   }
 }
 
@@ -23,6 +23,12 @@
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: $primary;
+  
+  // Smaller on mobile for compactness
+  @media (max-width: 576px) {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+  }
 }
 
 .devise-container h3 {
@@ -39,12 +45,27 @@
 .devise-container .simple_form {
   margin-top: 2rem;
   
+  // More compact on mobile
+  @media (max-width: 576px) {
+    margin-top: 1rem;
+  }
+  
   .form-inputs {
     margin-bottom: 2rem;
+    
+    // More compact on mobile
+    @media (max-width: 576px) {
+      margin-bottom: 1rem;
+    }
   }
   
   .form-group {
     margin-bottom: 1.5rem;
+    
+    // More compact on mobile
+    @media (max-width: 576px) {
+      margin-bottom: 1rem;
+    }
   }
   
   // Input fields
@@ -55,6 +76,13 @@
     padding: 0.625rem 1rem;
     font-size: 1rem;
     transition: all 0.2s ease-in-out;
+    
+    // Slightly smaller on mobile for compactness
+    @media (max-width: 576px) {
+      height: 2.5rem; // 40px
+      padding: 0.5rem 0.875rem;
+      font-size: 0.9375rem;
+    }
     
     &:focus {
       border-color: $primary;
@@ -69,6 +97,12 @@
     margin-bottom: 0.5rem;
     color: $gray;
     font-size: 0.9375rem;
+    
+    // Smaller on mobile
+    @media (max-width: 576px) {
+      font-size: 0.875rem;
+      margin-bottom: 0.375rem;
+    }
   }
   
   // Hints
@@ -84,6 +118,12 @@
   .form-check {
     margin-top: 1rem;
     margin-bottom: 1rem;
+    
+    // More compact on mobile
+    @media (max-width: 576px) {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
     
     .form-check-input {
       width: 1.25rem;
@@ -102,6 +142,11 @@
   .form-actions {
     margin-top: 2rem;
     
+    // More compact on mobile
+    @media (max-width: 576px) {
+      margin-top: 1rem;
+    }
+    
     .btn {
       width: 100%;
       border-radius: 0.75rem; // 12px
@@ -110,10 +155,19 @@
       font-size: 1rem;
       padding: 0.625rem 1.5rem;
       transition: all 0.2s ease-in-out;
+      white-space: normal; // Allow text wrapping
+      word-wrap: break-word; // Break long words if needed
+      
+      // Smaller font on mobile for long text
+      @media (max-width: 576px) {
+        font-size: 0.9375rem;
+        padding: 0.625rem 1rem;
+        line-height: 1.4;
+      }
       
       &:hover {
         transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 8px rgba($primary, 0.15);
       }
       
       &:active {
@@ -170,6 +224,12 @@
   border-top: 1px solid #e9ecef;
   text-align: center;
   
+  // More compact on mobile
+  @media (max-width: 576px) {
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+  
   a {
     display: inline-block;
     color: $primary;
@@ -189,7 +249,8 @@
   @media (max-width: 576px) {
     a {
       display: block;
-      margin: 0.5rem 0;
+      margin: 0.25rem 0;
+      padding: 0.25rem 0;
     }
   }
 }

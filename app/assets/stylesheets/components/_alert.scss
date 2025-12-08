@@ -1,6 +1,97 @@
+// Flash messages styling - white background, primary text, bolder borders
 .alert {
   position: fixed;
   bottom: 16px;
   right: 16px;
   z-index: 1000;
+  border-radius: 0.75rem; // 12px - consistent with design system
+  padding: 1rem 1.25rem;
+  min-width: 300px;
+  max-width: 500px;
+  
+  // White background, primary text color
+  background-color: white;
+  color: $primary;
+  
+  // Bolder borders to distinguish alert types (default 2px, increased from 1px)
+  border-width: 2px;
+  border-style: solid;
+  
+  // Shadow with primary color and alpha
+  box-shadow: 0 4px 12px rgba($primary, 0.15);
+  
+  // Animation: slide in from right and fade in
+  animation: slideInRight 0.3s ease-out;
+  
+  @media (max-width: 576px) {
+    left: 1rem;
+    right: 1rem;
+    min-width: auto;
+    max-width: none;
+  }
+  
+  // Remove Bootstrap's default background colors
+  &.alert-info {
+    border-color: $info;
+    background-color: white;
+    color: $primary;
+  }
+  
+  &.alert-success {
+    border-color: $success;
+    background-color: white;
+    color: $primary;
+  }
+  
+  &.alert-warning {
+    border-color: $warning;
+    background-color: white;
+    color: $primary;
+  }
+  
+  &.alert-danger {
+    border-color: $danger;
+    background-color: white;
+    color: $primary;
+  }
+  
+  // Close button styling
+  .btn-close {
+    border-radius: 0.5rem;
+    opacity: 0.7;
+    transition: opacity 0.2s ease-in-out;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+  
+  // Fade out animation before removal
+  &.fade-out {
+    animation: fadeOut 0.3s ease-out forwards;
+  }
+}
+
+// Slide in animation from right
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Fade out animation
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 }
