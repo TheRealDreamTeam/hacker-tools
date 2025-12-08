@@ -28,14 +28,31 @@
 #       enabled: "ON"
 
 en:
-  # Common UI elements
-  hello: "Hello world"
+  # Application title
+  app:
+    name: "HackerTools"
+    title: "HackerTools"
+  
+  # Pages
+  pages:
+    home:
+      title: "Home"
+      heading: "Welcome"
+      description: "Find me in app/views/pages/home.html.erb"
   
   # Navigation and common actions
   navigation:
     home: "Home"
     about: "About"
     contact: "Contact"
+    messages: "Messages"
+    login: "Login"
+    logout: "Log out"
+    toggle_navigation: "Toggle navigation"
+    dropdown_menu: "dropdown menu"
+    action: "Action"
+    another_action: "Another action"
+    close: "Close"
   
   # Common buttons and actions
   actions:
