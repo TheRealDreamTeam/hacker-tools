@@ -333,7 +333,8 @@ Before implementing any RubyLLM feature, you MUST:
 
 ### Deployment Configuration
 - Prefer 12-factor style configs (env vars, secrets via credentials)
-- Include app identifier when providing Heroku commands if the app name is known
+- **Heroku App Name**: `hacker-tools`
+- Include the app identifier in all Heroku CLI commands (e.g., `-a hacker-tools`)
 
 ### Dependency Management
 - Keep dependencies up to date for security patches
