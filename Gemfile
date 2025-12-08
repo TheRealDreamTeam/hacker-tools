@@ -27,7 +27,7 @@ gem "stimulus-rails"
 gem "jbuilder"
 
 # Use Redis adapter to run Action Cable in production
-# gem "redis", ">= 4.0.1"
+gem "redis", ">= 4.0.1"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
@@ -41,20 +41,24 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem "image_processing", "~> 1.2"
-
 gem "bootstrap", "~> 5.3"
 gem "devise"
 gem "autoprefixer-rails"
 gem "font-awesome-sass", "~> 6.1"
 gem "simple_form", github: "heartcombo/simple_form"
 gem "sassc-rails"
+gem "async", "~> 2.0"
+gem "ruby_llm", "~> 1.9"
+gem "ruby_llm-schema", "~> 0.2.5"
+gem "cloudinary", "~> 1.25"
+gem "activestorage-cloudinary-service", "~> 0.2"
 
 group :development, :test do
   gem "dotenv-rails"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
+  gem "standard", "~> 1.52"
+  gem "factory_bot_rails"
 end
 
 group :development do
@@ -71,5 +75,10 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
-  gem "selenium-webdriver"
+  gem "capybara-playwright-driver"
+  gem "selenium-webdriver" # optional fallback driver
+  gem "webmock"
+  gem "vcr"
+  gem "faker"
+  gem "simplecov", require: false
 end
