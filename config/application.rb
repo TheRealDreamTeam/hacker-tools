@@ -29,5 +29,18 @@ module HackerTools
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Internationalization (i18n) configuration
+    # Set default locale for the application
+    config.i18n.default_locale = :en
+
+    # Available locales - add more as needed (e.g., :es, :fr, :de)
+    config.i18n.available_locales = [:en]
+
+    # Load locale files from config/locales directory and subdirectories
+    config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{rb,yml}")]
+
+    # Enable locale fallbacks - if translation missing in current locale, fall back to default
+    config.i18n.fallbacks = true
   end
 end

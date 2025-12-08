@@ -28,4 +28,54 @@
 #       enabled: "ON"
 
 en:
+  # Common UI elements
   hello: "Hello world"
+  
+  # Navigation and common actions
+  navigation:
+    home: "Home"
+    about: "About"
+    contact: "Contact"
+  
+  # Common buttons and actions
+  actions:
+    save: "Save"
+    cancel: "Cancel"
+    delete: "Delete"
+    edit: "Edit"
+    create: "Create"
+    update: "Update"
+    back: "Back"
+    next: "Next"
+    previous: "Previous"
+    submit: "Submit"
+    search: "Search"
+  
+  # Common messages
+  messages:
+    success: "Success"
+    error: "Error"
+    notice: "Notice"
+    alert: "Alert"
+    confirm: "Are you sure?"
+    saved: "Saved successfully"
+    deleted: "Deleted successfully"
+    updated: "Updated successfully"
+    created: "Created successfully"
+  
+  # Form labels and placeholders
+  forms:
+    email: "Email"
+    password: "Password"
+    password_confirmation: "Password Confirmation"
+    name: "Name"
+    title: "Title"
+    description: "Description"
+  
+  # Error messages
+  errors:
+    required: "is required"
+    invalid: "is invalid"
+    too_short: "is too short"
+    too_long: "is too long"
+    taken: "has already been taken"
