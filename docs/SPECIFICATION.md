@@ -62,6 +62,22 @@ This document serves as the human-readable specification for the Hacker Tools ap
 - **File Storage**: Active Storage with Cloudinary
 - **Real-time**: Turbo Streams / Action Cable
 
+### Design System
+- **Border Radius**: 12px (0.75rem) for all interactive elements and content boxes
+- **Input/Button Height**: 44px (2.75rem) for consistent touch targets
+- **Color Scheme**: Professional palette with primary color #272727
+- **Background**: White (#ffffff) for page and content backgrounds
+- **Hover Animations**: Subtle transform and shadow effects on interactive elements
+- **Focus States**: Clear visual indicators with primary color border and shadow
+- **Implementation**:
+  - Global base styles in `app/assets/stylesheets/components/_base.scss`
+  - Bootstrap variables configured in `app/assets/stylesheets/config/_bootstrap_variables.scss`
+  - Page-specific styles in `app/assets/stylesheets/pages/`
+  - All buttons, inputs, and content boxes have consistent 12px rounded corners
+  - Navbar explicitly excluded from rounded corners
+  - Hover animations on all inputs, textareas, checkboxes, and radio buttons
+  - Professional, modern appearance with smooth transitions
+
 ### Key Patterns
 - Server-first architecture
 - Fat models, skinny controllers
@@ -94,34 +110,34 @@ This document serves as the human-readable specification for the Hacker Tools ap
 - **App Name**: hacker-tools
 - **Environment Variables**: [List required env vars]
 
+## Authentication (Devise)
+
+- **Status**: Complete
+- **Description**: User authentication system using Devise gem
+- **Features**:
+  - User registration and login
+  - Password reset functionality
+  - Email confirmation
+  - Account unlock
+  - Remember me functionality
+- **Views**: All Devise views styled with consistent design system
+  - Sign in (`devise/sessions/new.html.erb`)
+  - Sign up (`devise/registrations/new.html.erb`)
+  - Edit account (`devise/registrations/edit.html.erb`)
+  - Password reset (`devise/passwords/new.html.erb`, `devise/passwords/edit.html.erb`)
+  - Email confirmation (`devise/confirmations/new.html.erb`)
+  - Account unlock (`devise/unlocks/new.html.erb`)
+- **Styling**: All authentication pages use `.devise-container` class with:
+  - Centered layout (max-width: 480px)
+  - White background with subtle shadow
+  - 12px rounded corners
+  - Consistent form styling with hover animations
+  - Responsive design for mobile devices
+- **Internationalization**: All Devise views fully internationalized using Rails i18n
+
 ## Future Considerations
 
 - [Planned features or improvements]
 - [Technical debt to address]
 - [Scalability considerations]
-
----
-
-## Change Log
-
-### 2024-12-08
-- Added: Complete internationalization (i18n) implementation
-  - All user-facing text converted to use Rails i18n
-  - Translation keys added for navigation, pages, actions, messages, forms, and errors
-  - Views updated to use `t()` helper instead of hardcoded strings
-  - Application title, navigation menu, buttons, and ARIA labels are now localized
-  - **Devise views fully internationalized**: All Devise authentication views (login, signup, password reset, email confirmation, account unlock) now use i18n
-  - Devise shared links and form labels are localized
-- Added: Comprehensive SEO and social media meta tags
-  - SEO meta tags (description, keywords, author, robots, language)
-  - Open Graph tags for Facebook, LinkedIn, and other platforms
-  - Twitter Card tags for Twitter sharing
-  - Canonical URL for SEO
-  - Favicon configured using `hacker-tools-logo.png`
-  - OG images using PNG format (with SVG available for other use cases)
-  - All meta tags use i18n for translatable content
-- Updated: `config/locales/en.yml` with comprehensive translation keys including Devise-specific translations and SEO meta content
-- Updated: Views (`layouts/application.html.erb`, `pages/home.html.erb`, `shared/_navbar.html.erb`, `shared/_flashes.html.erb`) to use i18n
-- Updated: All Devise views (`devise/sessions/new.html.erb`, `devise/registrations/new.html.erb`, `devise/registrations/edit.html.erb`, `devise/passwords/new.html.erb`, `devise/passwords/edit.html.erb`, `devise/confirmations/new.html.erb`, `devise/unlocks/new.html.erb`, `devise/shared/_links.html.erb`) to use i18n
-- Updated: All Devise mailer views (`devise/mailer/confirmation_instructions.html.erb`, `devise/mailer/email_changed.html.erb`, `devise/mailer/password_change.html.erb`, `devise/mailer/reset_password_instructions.html.erb`, `devise/mailer/unlock_instructions.html.erb`) to use i18n with proper interpolation for dynamic content
 
