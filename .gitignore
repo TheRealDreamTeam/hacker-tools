@@ -40,4 +40,15 @@
 *.swp
 .DS_Store
 
+# Local development artifacts
+.byebug_history
+/tmp/capybara*
+/tmp/screenshots/
+/vendor/bundle
+/pkg
+/db/*.sqlite3
+/db/*.sqlite3-journal
+/public/packs
+/public/packs-test
+
 coverage/
