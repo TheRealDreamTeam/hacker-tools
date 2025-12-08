@@ -1,38 +1,35 @@
-<nav class="navbar navbar-expand-sm navbar-light navbar-lewagon">
-  <div class="container-fluid">
-    <%= link_to "#", class: "navbar-brand" do %>
-      <%= image_tag "https://raw.githubusercontent.com/lewagon/fullstack-images/master/uikit/logo.png" %>
-    <% end %>
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="<%= t("navigation.toggle_navigation") %>">
+<nav id="navbar" class="navbar navbar-expand-lg bg-white position-relative overflow-hidden px-4">
+  <div class="container-fluid d-flex align-items-center justify-content-end">
+    <!-- Just to push nav items and hamburger button to the right -->
+    <div class="navbar-brand"></div>
+    <!-- Hamburger (mobile only) - hidden during wizard, landing page, and Devise auth pages -->
+    <%# CSS class on body handles hiding to prevent flash %>
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav">
       <span class="navbar-toggler-icon"></span>
     </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto">
-        <% if user_signed_in? %>
-          <li class="nav-item active">
-            <%= link_to t("navigation.home"), "#", class: "nav-link" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to t("navigation.messages"), "#", class: "nav-link" %>
-          </li>
-          <li class="nav-item dropdown">
-          <a href="#" class="avatar" id="navbarDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <%= image_tag "https://kitt.lewagon.com/placeholder/users/ssaunier", class: "avatar", alt: t("navigation.dropdown_menu") %>
-          </a>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <%= link_to t("navigation.action"), "#", class: "dropdown-item" %>
-              <%= link_to t("navigation.another_action"), "#", class: "dropdown-item" %>
-              <%= link_to t("navigation.logout"), destroy_user_session_path, data: {turbo_method: :delete}, class: "dropdown-item" %>
-            </div>
-          </li>
-        <% else %>
-          <li class="nav-item">
-            <%= link_to t("navigation.login"), new_user_session_path, class: "nav-link" %>
-          </li>
-        <% end %>
+    <!-- Desktop links – visible only ≥lg -->
+    <!-- Hide navigation during wizard -->
+    <div class="d-none d-lg-block">
+      <ul class="navbar-nav d-flex align-items-center">
+        <%= render "shared/navbar_items" %>
       </ul>
     </div>
   </div>
+  <%= link_to root_path,
+          class: "position-absolute top-50 start-50 translate-middle",
+          style: "pointer-events: auto; z-index: 0; text-decoration: none;",
+          data: { turbo_prefetch: false } do %>
+    HackerTools
+  <% end %>
 </nav>
+<!-- Offcanvas drawer (mobile only) -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNav">
+  <div class="offcanvas-header">
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="navbar-nav text-end">
+      <%= render "shared/navbar_items" %>
+    </ul>
+  </div>
+</div>
