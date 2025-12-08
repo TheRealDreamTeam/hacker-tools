@@ -38,9 +38,8 @@
     <meta name="twitter:image:alt" content="<%= t("app.name") %>">
     
     <!-- Favicon - Multiple formats for better browser support -->
-    <% favicon_url = "#{request.base_url}/favicon.ico" %>
+    <%= favicon_link_tag %>
     <% logo_url = "#{request.base_url}/hacker-tools-logo.png" %>
-    <link rel="icon" type="image/x-icon" href="<%= favicon_url %>">
     <link rel="icon" type="image/png" sizes="32x32" href="<%= logo_url %>">
     <link rel="icon" type="image/png" sizes="16x16" href="<%= logo_url %>">
     <link rel="apple-touch-icon" href="<%= logo_url %>">
