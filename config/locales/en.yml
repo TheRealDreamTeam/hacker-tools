@@ -96,3 +96,70 @@ en:
     too_short: "is too short"
     too_long: "is too long"
     taken: "has already been taken"
+  
+  # Devise views
+  devise:
+    sessions:
+      new:
+        sign_in: "Log in"
+        title: "Log in"
+    registrations:
+      new:
+        sign_up: "Sign up"
+        title: "Sign up"
+        password_hint: "%{count} characters minimum"
+      edit:
+        title: "Edit %{resource}"
+        password_hint: "leave it blank if you don't want to change it"
+        current_password_hint: "we need your current password to confirm your changes"
+        pending_confirmation: "Currently waiting confirmation for: %{email}"
+        cancel_account: "Cancel my account"
+        cancel_account_question: "Unhappy?"
+        cancel_account_confirm: "Are you sure?"
+        back: "Back"
+    passwords:
+      new:
+        title: "Forgot your password?"
+        send_instructions: "Send me reset password instructions"
+      edit:
+        title: "Change your password"
+        change_password: "Change my password"
+    confirmations:
+      new:
+        title: "Resend confirmation instructions"
+        resend_instructions: "Resend confirmation instructions"
+    unlocks:
+      new:
+        title: "Resend unlock instructions"
+        resend_instructions: "Resend unlock instructions"
+    mailer:
+      confirmation_instructions:
+        welcome: "Welcome %{email}!"
+        confirm_message: "You can confirm your account email through the link below:"
+        confirm_link: "Confirm my account"
+      email_changed:
+        greeting: "Hello %{email}!"
+        being_changed: "We're contacting you to notify you that your email is being changed to %{email}."
+        has_been_changed: "We're contacting you to notify you that your email has been changed to %{email}."
+      password_change:
+        greeting: "Hello %{email}!"
+        notification: "We're contacting you to notify you that your password has been changed."
+      reset_password_instructions:
+        greeting: "Hello %{email}!"
+        request_message: "Someone has requested a link to change your password. You can do this through the link below."
+        change_password_link: "Change my password"
+        ignore_message: "If you didn't request this, please ignore this email."
+        no_change_message: "Your password won't change until you access the link above and create a new one."
+      unlock_instructions:
+        greeting: "Hello %{email}!"
+        locked_message: "Your account has been locked due to an excessive number of unsuccessful sign in attempts."
+        unlock_message: "Click the link below to unlock your account:"
+        unlock_link: "Unlock my account"
+    shared:
+      links:
+        sign_in: "Log in"
+        sign_up: "Sign up"
+        forgot_password: "Forgot your password?"
+        confirmation_instructions: "Didn't receive confirmation instructions?"
+        unlock_instructions: "Didn't receive unlock instructions?"
+        sign_in_with: "Sign in with %{provider}"

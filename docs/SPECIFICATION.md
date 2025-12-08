@@ -110,6 +110,10 @@ This document serves as the human-readable specification for the Hacker Tools ap
   - Translation keys added for navigation, pages, actions, messages, forms, and errors
   - Views updated to use `t()` helper instead of hardcoded strings
   - Application title, navigation menu, buttons, and ARIA labels are now localized
-- Updated: `config/locales/en.yml` with comprehensive translation keys
+  - **Devise views fully internationalized**: All Devise authentication views (login, signup, password reset, email confirmation, account unlock) now use i18n
+  - Devise shared links and form labels are localized
+- Updated: `config/locales/en.yml` with comprehensive translation keys including Devise-specific translations
 - Updated: Views (`layouts/application.html.erb`, `pages/home.html.erb`, `shared/_navbar.html.erb`, `shared/_flashes.html.erb`) to use i18n
+- Updated: All Devise views (`devise/sessions/new.html.erb`, `devise/registrations/new.html.erb`, `devise/registrations/edit.html.erb`, `devise/passwords/new.html.erb`, `devise/passwords/edit.html.erb`, `devise/confirmations/new.html.erb`, `devise/unlocks/new.html.erb`, `devise/shared/_links.html.erb`) to use i18n
+- Updated: All Devise mailer views (`devise/mailer/confirmation_instructions.html.erb`, `devise/mailer/email_changed.html.erb`, `devise/mailer/password_change.html.erb`, `devise/mailer/reset_password_instructions.html.erb`, `devise/mailer/unlock_instructions.html.erb`) to use i18n with proper interpolation for dynamic content
 
