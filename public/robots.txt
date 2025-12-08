@@ -1,1 +1,112 @@
 # See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+#
+# Allow all crawlers to access all content by default
+User-agent: *
+Allow: /
+
+# =============================================================================
+# Social Media Crawlers (for link previews and sharing)
+# =============================================================================
+
+# Facebook - for Open Graph previews
+User-agent: facebookexternalhit
+Allow: /
+
+# Twitter/X - for Twitter Card previews
+User-agent: Twitterbot
+Allow: /
+
+# LinkedIn - for LinkedIn link previews
+User-agent: LinkedInBot
+Allow: /
+
+# WhatsApp - for WhatsApp link previews
+User-agent: WhatsApp
+Allow: /
+
+# Telegram - for Telegram link previews
+User-agent: TelegramBot
+Allow: /
+
+# Instagram - for Instagram link previews (uses Facebook's crawler, but explicit is good)
+User-agent: Instagram
+Allow: /
+
+# Pinterest - for Pinterest link previews
+User-agent: Pinterestbot
+Allow: /
+
+# Discord - for Discord link previews
+User-agent: Discordbot
+Allow: /
+
+# Slack - for Slack link previews
+User-agent: Slackbot
+Allow: /
+User-agent: Slackbot-LinkExpanding
+Allow: /
+
+# Microsoft Teams - for Teams link previews
+User-agent: MicrosoftPreview
+Allow: /
+
+# Skype - for Skype link previews
+User-agent: SkypeUriPreview
+Allow: /
+
+# Reddit - for Reddit link previews
+User-agent: redditbot
+Allow: /
+
+# =============================================================================
+# Search Engine Crawlers (for SEO)
+# =============================================================================
+
+# Google - primary search engine
+User-agent: Googlebot
+Allow: /
+User-agent: Googlebot-Image
+Allow: /
+User-agent: Googlebot-News
+Allow: /
+User-agent: Googlebot-Video
+Allow: /
+
+# Bing - Microsoft's search engine
+User-agent: Bingbot
+Allow: /
+
+# DuckDuckGo - privacy-focused search engine
+User-agent: DuckDuckBot
+Allow: /
+
+# Yandex - Russian search engine
+User-agent: Yandex
+Allow: /
+User-agent: YandexBot
+Allow: /
+
+# Baidu - Chinese search engine
+User-agent: Baiduspider
+Allow: /
+
+# =============================================================================
+# Other Important Crawlers
+# =============================================================================
+
+# Apple - for Apple services (Siri, Spotlight, etc.)
+User-agent: Applebot
+Allow: /
+
+# Internet Archive - for web archiving
+User-agent: ia_archiver
+Allow: /
+
+# Amazon - for Amazon services
+User-agent: Amazonbot
+Allow: /
+
+# =============================================================================
+# Note: This robots.txt allows all crawlers by default.
+# If you need to block specific crawlers or paths in the future,
+# you can add Disallow rules below.
