@@ -1,8 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="<%= I18n.locale %>">
   <head>
-    <title><%= t("app.title") %></title>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <title><%= t("app.title") %></title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="<%= t("app.description") %>">
+    <meta name="keywords" content="<%= t("app.keywords") %>">
+    <meta name="author" content="<%= t("app.author") %>">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="<%= I18n.locale %>">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= request.original_url %>">
+    <meta property="og:title" content="<%= t("app.title") %>">
+    <meta property="og:description" content="<%= t("app.description") %>">
+    <meta property="og:site_name" content="<%= t("app.name") %>">
+    <meta property="og:locale" content="<%= I18n.locale %>">
+    <!-- OG Image - PNG format (required by most social platforms, SVG not supported) -->
+    <meta property="og:image" content="<%= root_url %>hacker-tools-og-image.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="<%= t("app.name") %>">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="<%= request.original_url %>">
+    <meta name="twitter:title" content="<%= t("app.title") %>">
+    <meta name="twitter:description" content="<%= t("app.description") %>">
+    <meta name="twitter:image" content="<%= root_url %>hacker-tools-og-image.png">
+    <meta name="twitter:image:alt" content="<%= t("app.name") %>">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="<%= root_url %>hacker-tools-logo.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="<%= request.original_url %>">
+    
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -10,9 +48,9 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body><%= render "shared/navbar" %>
-<%= render "shared/flashes" %>
-
+  <body>
+    <%= render "shared/navbar" %>
+    <%= render "shared/flashes" %>
     <%= yield %>
   </body>
 </html>
