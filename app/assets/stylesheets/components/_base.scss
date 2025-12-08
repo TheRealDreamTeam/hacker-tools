@@ -4,6 +4,23 @@
 // Ensure body background is white (overriding Bootstrap default)
 body {
   background-color: white;
+  color: $primary; // Use primary color for body text
+}
+
+// All links should use primary color by default
+a {
+  color: $primary;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+  
+  &:hover {
+    color: darken($primary, 10%);
+  }
+  
+  &:focus {
+    outline: 2px solid rgba($primary, 0.5);
+    outline-offset: 2px;
+  }
 }
 
 // Remove margins from all heading elements
@@ -35,7 +52,7 @@ h1, h2, h3, h4, h5, h6,
   // Hover and focus states for better UX
   &:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba($primary, 0.15);
   }
   
   &:active {
@@ -63,7 +80,7 @@ select {
   // Hover animation for better UX
   &:hover:not(:disabled):not(:read-only) {
     border-color: #adb5bd;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgba($primary, 0.1);
     transform: translateY(-1px);
   }
   
@@ -87,7 +104,7 @@ textarea {
   // Hover animation for better UX
   &:hover:not(:disabled):not(:read-only) {
     border-color: #adb5bd;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgba($primary, 0.1);
     transform: translateY(-1px);
   }
   
@@ -111,7 +128,7 @@ textarea {
   // Hover animation for better UX
   &:hover:not(:disabled) {
     transform: scale(1.1);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba($primary, 0.15);
   }
   
   // Active/checked state
@@ -141,11 +158,11 @@ textarea {
 .devise-container {
   border-radius: 0.75rem; // 12px
   border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba($primary, 0.1);
   transition: box-shadow 0.2s ease-in-out;
   
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 12px rgba($primary, 0.15);
   }
 }
 
@@ -166,7 +183,7 @@ textarea {
 .dropdown-menu {
   border-radius: 0.75rem; // 12px
   border: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba($primary, 0.15);
   padding: 0.5rem;
   
   .dropdown-item {

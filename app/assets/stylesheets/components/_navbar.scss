@@ -41,7 +41,7 @@
     
     &:hover {
       border-color: $primary;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 4px rgba($primary, 0.1);
     }
     
     &:focus {
@@ -50,9 +50,9 @@
     }
   }
   
-  // Navbar links
+  // Navbar links - use primary color by default
   .nav-link {
-    color: $gray;
+    color: $primary; // Primary color by default
     font-weight: 500;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem; // Slightly less rounded for nav items
@@ -60,7 +60,7 @@
     margin: 0 0.25rem;
     
     &:hover {
-      color: $primary;
+      color: darken($primary, 10%);
       background-color: #f8f9fa;
       transform: translateY(-1px);
     }
@@ -100,6 +100,7 @@
         margin-bottom: 0.5rem;
         
         .nav-link {
+          color: $primary; // Primary color by default
           padding: 0.75rem 1rem;
           border-radius: 0.75rem; // 12px
           display: block;
@@ -107,6 +108,7 @@
           text-align: right;
           
           &:hover {
+            color: darken($primary, 10%);
             background-color: #f8f9fa;
             transform: translateX(-4px);
           }

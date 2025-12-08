@@ -67,6 +67,12 @@ This document serves as the human-readable specification for the Hacker Tools ap
 - **Input/Button Height**: 44px (2.75rem) for consistent touch targets
 - **Color Scheme**: Professional palette with primary color #272727
 - **Background**: White (#ffffff) for page and content backgrounds
+- **Primary Color Usage**: Primary color (#272727) is used as default for:
+  - All links (with hover state darkening by 10%)
+  - Body text color
+  - Shadows (with alpha/opacity for depth - typically 0.1 to 0.15)
+  - Navigation links
+  - Text elements
 - **Hover Animations**: Subtle transform and shadow effects on interactive elements
 - **Focus States**: Clear visual indicators with primary color border and shadow
 - **Typography**: All heading elements (h1-h6) have zero margins for consistent spacing control
@@ -161,14 +167,24 @@ This document serves as the human-readable specification for the Hacker Tools ap
 
 ### Flash Messages
 - **Status**: Complete
-- **Description**: Alert notifications for user feedback
-- **Components**: Flash messages partial (`shared/_flashes.html.erb`)
+- **Description**: Alert notifications for user feedback with auto-dismiss functionality
+- **Components**: 
+  - Flash messages partial (`shared/_flashes.html.erb`)
+  - Stimulus controller (`flash_controller.js`) for auto-dismiss
 - **Styling**:
+  - White background with primary color text (#272727)
+  - Bolder borders (2px) to distinguish alert types (info, success, warning, danger)
+  - Border colors use Bootstrap color variables (info, success, warning, danger)
+  - Shadow uses primary color with alpha (rgba($primary, 0.15))
   - Fixed position (bottom-right on desktop, full-width on mobile)
   - 12px rounded corners
-  - Subtle shadow for depth
-  - Dismissible with styled close button
+  - Slide-in animation from right on appear
+  - Fade-out animation on dismiss
   - Responsive positioning for mobile devices
+- **Functionality**:
+  - Auto-dismisses after 2 seconds (2000ms)
+  - Manual dismiss via close button
+  - Smooth animations for both appear and dismiss
 
 ### Home Page
 - **Status**: Complete

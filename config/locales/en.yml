@@ -123,7 +123,7 @@ en:
     passwords:
       new:
         title: "Forgot your password?"
-        send_instructions: "Send me reset password instructions"
+        send_instructions: "Send reset instructions"
       edit:
         title: "Change your password"
         change_password: "Change my password"

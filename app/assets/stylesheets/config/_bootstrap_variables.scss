@@ -11,12 +11,17 @@ $body-bg:                white; // White background for the whole page
 $font-size-base:         1rem;
 
 // Colors
-$body-color: $gray;
+// Define primary color first, then use it for other variables
 $primary:    #272727;
 $success:    $green;
 $info:       $yellow;
 $danger:     $red;
 $warning:    $orange;
+
+// Body and link colors - use primary color by default
+$body-color: $primary; // Use primary color for body text by default
+$link-color: $primary;
+$link-hover-color: darken($primary, 10%);
 
 // Buttons & inputs' radius - 12px rounded corners (0.75rem)
 $border-radius-sm:            0.75rem; // 12px
