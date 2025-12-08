@@ -32,6 +32,9 @@ en:
   app:
     name: "HackerTools"
     title: "HackerTools"
+    description: "TODO: Add description here"
+    keywords: "TODO: Add keywords here"
+    author: "TODO: Add author here"
   
   # Pages
   pages:
