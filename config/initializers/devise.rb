@@ -28,7 +28,7 @@ Devise.setup do |config|
   # IMPORTANT: Update this to use a verified sender email address from your MailerToGo domain
   # The domain should match MAILERTOGO_DOMAIN or your verified domain in MailerToGo dashboard
   # Using hackertools.site domain - ensure this domain/email is verified in MailerToGo dashboard
-  config.mailer_sender = ENV.fetch('DEVISE_MAILER_SENDER', 'noreply@www.hackertools.site')
+  config.mailer_sender = ENV.fetch('DEVISE_MAILER_SENDER', 'noreply@hackertools.site')
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
