@@ -5,11 +5,6 @@
       data: { turbo_prefetch: false } %>
 </li>
 <li class="nav-item">
-  <%= link_to "Profile TODO", "#",
-      class: "nav-link",
-      data: { turbo_prefetch: false } %>
-</li>
-<li class="nav-item">
   <%= link_to "Sign out", destroy_user_session_path,
       class: "nav-link",
       data: { turbo_method: :delete } %>

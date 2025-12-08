@@ -1,6 +1,10 @@
+// Navbar styling - consistent with design system
 .navbar-lewagon {
   justify-content: space-between;
   background: white;
+  border-radius: 0 !important; // Explicitly no rounded corners
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 1rem 0;
 }
 
 .navbar-lewagon .navbar-collapse {
@@ -9,4 +13,105 @@
 
 .navbar-lewagon .navbar-brand img {
   width: 40px;
+}
+
+.navbar {
+  border-radius: 0 !important; // Explicitly no rounded corners
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  padding: 1rem 0;
+  
+  .navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $primary;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+    
+    &:hover {
+      color: darken($primary, 10%);
+    }
+  }
+  
+  // Navbar toggler button
+  .navbar-toggler {
+    border: 1px solid #dee2e6;
+    border-radius: 0.75rem; // 12px
+    padding: 0.5rem 0.75rem;
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      border-color: $primary;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba($primary, 0.15);
+      outline: none;
+    }
+  }
+  
+  // Navbar links
+  .nav-link {
+    color: $gray;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem; // Slightly less rounded for nav items
+    transition: all 0.2s ease-in-out;
+    margin: 0 0.25rem;
+    
+    &:hover {
+      color: $primary;
+      background-color: #f8f9fa;
+      transform: translateY(-1px);
+    }
+    
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 0.2rem rgba($primary, 0.15);
+    }
+  }
+}
+
+// Offcanvas menu styling
+.offcanvas {
+  border-radius: 0.75rem 0 0 0.75rem; // Rounded on left side only
+  
+  .offcanvas-header {
+    border-bottom: 1px solid #e9ecef;
+    padding: 1.5rem;
+    
+    .btn-close {
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      transition: all 0.2s ease-in-out;
+      
+      &:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.1);
+      }
+    }
+  }
+  
+  .offcanvas-body {
+    padding: 1.5rem;
+    
+    .navbar-nav {
+      .nav-item {
+        margin-bottom: 0.5rem;
+        
+        .nav-link {
+          padding: 0.75rem 1rem;
+          border-radius: 0.75rem; // 12px
+          display: block;
+          width: 100%;
+          text-align: right;
+          
+          &:hover {
+            background-color: #f8f9fa;
+            transform: translateX(-4px);
+          }
+        }
+      }
+    }
+  }
 }

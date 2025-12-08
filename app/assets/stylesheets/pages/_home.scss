@@ -1,1 +1,29 @@
-// Specific CSS for your home-page
+// Home page styling
+.home-container {
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 2rem;
+  
+  @media (max-width: 576px) {
+    margin: 1.5rem;
+    padding: 1.5rem;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: $primary;
+    margin-bottom: 1rem;
+    
+    @media (max-width: 576px) {
+      font-size: 2rem;
+    }
+  }
+  
+  p {
+    font-size: 1.125rem;
+    color: $gray;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+}

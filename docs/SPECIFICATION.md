@@ -69,13 +69,21 @@ This document serves as the human-readable specification for the Hacker Tools ap
 - **Background**: White (#ffffff) for page and content backgrounds
 - **Hover Animations**: Subtle transform and shadow effects on interactive elements
 - **Focus States**: Clear visual indicators with primary color border and shadow
+- **Typography**: All heading elements (h1-h6) have zero margins for consistent spacing control
+- **Styling Approach**: Bootstrap-first - use Bootstrap classes when applicable before writing custom CSS
 - **Implementation**:
-  - Global base styles in `app/assets/stylesheets/components/_base.scss`
-  - Bootstrap variables configured in `app/assets/stylesheets/config/_bootstrap_variables.scss`
-  - Page-specific styles in `app/assets/stylesheets/pages/`
+  - Bootstrap variables configured in `app/assets/stylesheets/config/_bootstrap_variables.scss` for global theme
+  - Global base styles in `app/assets/stylesheets/components/_base.scss` for design system overrides
+  - Page-specific styles in `app/assets/stylesheets/pages/` for page-specific needs
+  - Component-specific styles in `app/assets/stylesheets/components/` for custom components
+  - Bootstrap utility classes used extensively in views for spacing, layout, and responsive behavior
+  - Custom CSS only when Bootstrap cannot achieve the desired result
   - All buttons, inputs, and content boxes have consistent 12px rounded corners
   - Navbar explicitly excluded from rounded corners
-  - Hover animations on all inputs, textareas, checkboxes, and radio buttons
+  - Hover animations on all inputs, textareas, checkboxes, radio buttons, and navigation links
+  - Flash messages (alerts) styled with rounded corners and fixed positioning
+  - Home page styled with centered container and proper spacing
+  - Navbar and offcanvas menu with hover effects and rounded corners
   - Professional, modern appearance with smooth transitions
 
 ### Key Patterns
@@ -134,6 +142,43 @@ This document serves as the human-readable specification for the Hacker Tools ap
   - Consistent form styling with hover animations
   - Responsive design for mobile devices
 - **Internationalization**: All Devise views fully internationalized using Rails i18n
+
+## UI Components
+
+### Navigation
+- **Status**: Complete
+- **Description**: Responsive navigation bar with mobile offcanvas menu
+- **Components**:
+  - Main navbar (`shared/_navbar.html.erb`)
+  - Navbar items partial (`shared/_navbar_items.html.erb`)
+  - Offcanvas menu for mobile devices
+- **Styling**:
+  - Navbar has no rounded corners (as per design system)
+  - Navbar links have hover animations (translateY and background color change)
+  - Offcanvas menu with rounded corners on left side
+  - Mobile hamburger button with hover effects
+  - Responsive design for all screen sizes
+
+### Flash Messages
+- **Status**: Complete
+- **Description**: Alert notifications for user feedback
+- **Components**: Flash messages partial (`shared/_flashes.html.erb`)
+- **Styling**:
+  - Fixed position (bottom-right on desktop, full-width on mobile)
+  - 12px rounded corners
+  - Subtle shadow for depth
+  - Dismissible with styled close button
+  - Responsive positioning for mobile devices
+
+### Home Page
+- **Status**: Complete
+- **Description**: Landing page with welcome content
+- **Components**: Home page view (`pages/home.html.erb`)
+- **Styling**:
+  - Centered container (max-width: 1200px)
+  - Proper spacing and typography
+  - Responsive padding for mobile devices
+  - Heading with zero margins (controlled by container)
 
 ## Future Considerations
 

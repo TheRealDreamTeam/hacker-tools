@@ -3,4 +3,28 @@
   bottom: 16px;
   right: 16px;
   z-index: 1000;
+  border-radius: 0.75rem; // 12px - consistent with design system
+  border: none;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 300px;
+  max-width: 500px;
+  
+  @media (max-width: 576px) {
+    left: 1rem;
+    right: 1rem;
+    min-width: auto;
+    max-width: none;
+  }
+  
+  // Close button styling
+  .btn-close {
+    border-radius: 0.5rem;
+    opacity: 0.7;
+    transition: opacity 0.2s ease-in-out;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
