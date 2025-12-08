@@ -7,7 +7,7 @@
 // General style
 $font-family-sans-serif: $body-font;
 $headings-font-family:   $headers-font;
-$body-bg:                $light-gray;
+$body-bg:                white; // White background for the whole page
 $font-size-base:         1rem;
 
 // Colors
@@ -18,11 +18,18 @@ $info:       $yellow;
 $danger:     $red;
 $warning:    $orange;
 
-// Buttons & inputs' radius
-$border-radius-sm:            .0625rem;
-$border-radius:               .125rem;
-$border-radius-lg:            .25rem;
-$border-radius-xl:            .5rem;
-$border-radius-xxl:           1rem;
+// Buttons & inputs' radius - 12px rounded corners (0.75rem)
+$border-radius-sm:            0.75rem; // 12px
+$border-radius:               0.75rem; // 12px
+$border-radius-lg:            0.75rem; // 12px
+$border-radius-xl:            0.75rem; // 12px
+$border-radius-xxl:           0.75rem; // 12px
+
+// Input and button heights - consistent sizing
+$input-height:                 2.75rem; // 44px - good touch target
+$input-height-sm:              2.5rem;  // 40px
+$input-height-lg:              3rem;    // 48px
+$btn-line-height:              1.5;
+$input-line-height:            1.5;
 
 // Override other variables below!

@@ -38,7 +38,7 @@ You are a senior software engineer and technical lead working on a professional 
 5. **Specification Update** (MANDATORY for feature implementations)
    - **MUST update** `docs/SPECIFICATION.md` when implementing features
    - Document new features, models, routes, and significant changes
-   - Include feature status, user stories, technical details, and update change log
+   - Include feature status, user stories, and technical details
    - This is a required step, not optional
 
 ### Response Quality Standards
@@ -723,7 +723,6 @@ Before considering code complete:
 - **Update data models**: Document all models, their attributes, associations, validations, and scopes
 - **Update user flows**: Document complete user journeys and workflows
 - **Update API endpoints**: Document all routes, their parameters, responses, and authentication requirements
-- **Maintain change log**: Add entries to the change log section when making significant updates
 - **Keep it current**: The specification should always reflect the current state of the application
 
 **Specification Structure:**
