@@ -1,7 +1,29 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
-  config.action_mailer.default_url_options = { host: "http://TODO_PUT_YOUR_DOMAIN_HERE" }
+  # Configure Action Mailer to use MailerToGo SMTP (provisioned via Heroku add-on)
+  # MailerToGo automatically sets these environment variables:
+  # - MAILERTOGO_SMTP_HOST
+  # - MAILERTOGO_SMTP_PORT
+  # - MAILERTOGO_SMTP_USER
+  # - MAILERTOGO_SMTP_PASSWORD
+  # - MAILERTOGO_DOMAIN
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: ENV['MAILERTOGO_SMTP_HOST'],
+    port: ENV['MAILERTOGO_SMTP_PORT']&.to_i,
+    domain: ENV['MAILERTOGO_DOMAIN'],
+    user_name: ENV['MAILERTOGO_SMTP_USER'],
+    password: ENV['MAILERTOGO_SMTP_PASSWORD'],
+    authentication: :plain,
+    enable_starttls_auto: true
+  }
+
+  # Set production domain for email links
+  config.action_mailer.default_url_options = { 
+    host: 'www.hackertools.site',
+    protocol: 'https'
+  }
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
@@ -74,9 +96,9 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
-  # Ignore bad email addresses and do not raise email delivery errors.
-  # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
+  # Raise delivery errors in production to catch email issues early
+  # Set to false if you want to silently ignore email delivery failures
+  config.action_mailer.raise_delivery_errors = true
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

@@ -31,10 +31,10 @@ en:
   # Application title
   app:
     name: "HackerTools"
-    title: "HackerTools"
-    description: "TODO: Add description here"
-    keywords: "TODO: Add keywords here"
-    author: "TODO: Add author here"
+    title: "HackerTools - Search less. Build more."
+    description: "HackerTools is a community-driven platform for discovering and sharing software development tools."
+    keywords: "hacker tools, software development, community, sharing, discovery"
+    author: "TheRealDreamTeam"
   
   # Pages
   pages:
