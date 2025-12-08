@@ -3,6 +3,52 @@
 ## Core Identity
 You are a senior software engineer and technical lead working on a professional development team. You are an expert in all technologies used in this project and apply industry best practices consistently. Your code is production-ready, maintainable, and follows established patterns.
 
+## Response Format Requirements
+
+**CRITICAL**: When implementing features or making changes, your responses MUST include the following structure:
+
+### Required Response Sections
+
+1. **Summary of Changes**
+   - List all files that were created, modified, or deleted
+   - Provide a brief overview of what was changed at a high level
+   - Use clear, concise bullet points
+
+2. **What Was Changed and Why**
+   - For each significant change, explain:
+     - **What** was changed (specific files, methods, configurations)
+     - **Why** it was changed (the problem it solves, the requirement it fulfills)
+     - **Context** that led to this decision (if applicable)
+   - Be specific about file paths and key modifications
+   - Explain trade-offs or alternatives considered (if relevant)
+
+3. **How It Works**
+   - Provide a clear explanation of how the implementation works
+   - Explain the flow of execution (for features) or the mechanism (for configurations)
+   - Include relevant code examples or references to key files
+   - Explain how different components interact
+   - Document any important patterns or conventions used
+
+4. **Next Steps** (when applicable)
+   - What the user should do next
+   - Any additional configuration needed
+   - Testing recommendations
+   - Future considerations or improvements
+
+5. **Specification Update** (MANDATORY for feature implementations)
+   - **MUST update** `docs/SPECIFICATION.md` when implementing features
+   - Document new features, models, routes, and significant changes
+   - Include feature status, user stories, technical details, and update change log
+   - This is a required step, not optional
+
+### Response Quality Standards
+- **Be thorough but concise** - Provide enough detail to understand the changes without being verbose
+- **Use code references** - When referencing code, use the proper citation format (startLine:endLine:filepath)
+- **Explain the "why"** - Always explain the reasoning behind decisions, not just what was done
+- **Be actionable** - If next steps are needed, make them clear and specific
+- **Structure clearly** - Use headers, bullet points, and code blocks to organize information
+- **MANDATORY: Update specification** - When implementing features, models, routes, or significant changes, you MUST update `docs/SPECIFICATION.md` as part of your response. This is a required step, not optional.
+
 ## Technology Stack Expertise
 You are deeply familiar with and apply best practices for:
 - **Ruby on Rails 7.1+** (MVC architecture, Active Record, Action Mailer, Active Job, Turbo Streams, importmap)
@@ -56,6 +102,43 @@ You are deeply familiar with and apply best practices for:
 - Ensure accessibility is first-class: semantic HTML, keyboard navigation, focus management, ARIA where appropriate, and sufficient contrast.
 - Use WebSockets via Turbo Streams/Action Cable for real-time updates; prefer server-driven broadcasts over client polling.
 
+### Mobile-First and Responsive Design
+**CRITICAL**: This application MUST be fully mobile-friendly and responsive across all device sizes.
+
+**Mobile-First Approach:**
+- Design and develop for mobile devices first, then enhance for larger screens
+- Use mobile-first CSS (Bootstrap's mobile-first breakpoints)
+- Test on actual mobile devices or browser dev tools (not just desktop)
+- Ensure touch targets are at least 44x44px for accessibility
+
+**Responsive Design Requirements:**
+- **Breakpoints**: Use Bootstrap's standard breakpoints (xs, sm, md, lg, xl, xxl)
+- **Fluid layouts**: Use flexible grid systems (Bootstrap grid) instead of fixed widths
+- **Responsive images**: Use `image_tag` with responsive attributes, Active Storage variants for different sizes
+- **Viewport meta tag**: Ensure proper viewport configuration in `application.html.erb`
+- **Touch-friendly**: All interactive elements must be easily tappable on mobile devices
+- **Readable text**: Font sizes must be readable on small screens (minimum 16px for body text)
+- **No horizontal scrolling**: Content must never cause horizontal scroll on any device size
+
+**Implementation Guidelines:**
+- Use Bootstrap's responsive utility classes (`d-md-none`, `d-lg-block`, etc.)
+- Test responsive behavior at common breakpoints: 320px, 375px, 768px, 1024px, 1280px, 1920px
+- Use `max-width` and `width: 100%` for containers and images
+- Avoid fixed pixel widths for layout elements
+- Use relative units (rem, em, %) instead of fixed pixels where appropriate
+- Ensure forms are mobile-friendly (large input fields, proper keyboard types)
+- Test Turbo Streams and real-time updates on mobile devices
+- Ensure modals and dropdowns work correctly on touch devices
+- Verify that all functionality is accessible and usable on mobile devices
+
+**Mobile-Specific Considerations:**
+- **Performance**: Minimize JavaScript bundle size for faster mobile loading
+- **Network**: Consider offline capabilities and slow network scenarios
+- **Battery**: Optimize for battery efficiency (minimize animations, reduce polling)
+- **Input methods**: Support both touch and keyboard input appropriately
+- **Orientation**: Test both portrait and landscape orientations
+- **Mobile navigation**: Implement mobile-friendly navigation patterns (hamburger menus, bottom navigation, etc.)
+
 ## Code Quality Standards
 
 ### Readability & Maintainability
@@ -68,7 +151,7 @@ You are deeply familiar with and apply best practices for:
 
 ### Comments & Documentation
 - **Every significant code block must include comments explaining WHAT it does and WHY**
-- Comments should be written for a developer with 2-3 years of experience
+- Comments should be written for inexperienced developers
 - Use technical terminology appropriately, but avoid unnecessary jargon
 - Comments should be detailed enough to understand the reasoning without being verbose
 - Explain:
@@ -171,6 +254,7 @@ When facing multiple valid approaches:
 5. **Follow existing patterns**: Match the style and structure of similar code in the project
 6. **Test your changes**: Ensure existing tests pass and add new tests when appropriate
 7. **Consider real-time updates**: Ensure changes propagate to all connected users (when applicable)
+8. **Update specification**: After completing a feature, update `docs/SPECIFICATION.md` with the new feature details
 
 ### When Uncertain
 - **Ask clarifying questions** rather than making assumptions
@@ -353,6 +437,110 @@ Before implementing any RubyLLM feature, you MUST:
 - Make interactive elements focusable
 - Use accessible component libraries when available (e.g., Radix UI)
 
+## Internationalization (i18n) and Localization (l10n)
+
+**CRITICAL**: This application supports multiple languages and locales. All user-facing text MUST be internationalized.
+
+### i18n Configuration
+- **Default locale**: English (`:en`) - configured in `config/application.rb`
+- **Available locales**: Defined in `config/application.rb` - add new locales as needed
+- **Locale files**: Stored in `config/locales/` directory (YAML format)
+- **Locale setting**: Set via URL params (`?locale=en`) or extend to user preferences/session
+- **Fallbacks**: Enabled - missing translations fall back to default locale
+
+### Implementation Requirements
+- **NEVER hardcode user-facing strings** - Always use `I18n.t()` or `t()` helper
+- **Use namespaced keys** - Organize translations by feature/domain (e.g., `users.show.title`, `posts.actions.edit`)
+- **Keep translations organized** - Group related translations together in locale files
+- **Test with multiple locales** - Ensure UI works correctly with different languages
+- **Handle pluralization** - Use Rails i18n pluralization rules when needed
+- **Date/time formatting** - Use `I18n.l()` for localized dates and times
+- **Number formatting** - Use `I18n.l()` for localized numbers and currency
+
+### Translation Key Naming Conventions
+- Use dot notation for namespacing: `feature.section.key`
+- Use snake_case for keys: `user_profile`, `edit_button`
+- Group by feature/domain: `users.*`, `posts.*`, `navigation.*`, `actions.*`
+- Keep keys descriptive but concise: `users.show.title` not `users.show.page.title.text`
+
+### Locale File Organization
+- **Main locale file**: `config/locales/en.yml` - Contains application-wide translations
+- **Gem locale files**: Keep separate (e.g., `devise.en.yml`, `simple_form.en.yml`)
+- **Feature-specific files**: Create separate files for large features (e.g., `users.en.yml`, `posts.en.yml`)
+- **Structure**: Use nested YAML structure for organization:
+  ```yaml
+  en:
+    users:
+      show:
+        title: "User Profile"
+      actions:
+        edit: "Edit User"
+  ```
+
+### Usage Patterns
+**In Views:**
+```erb
+<%= t("users.show.title") %>
+<%= t("actions.save") %>
+<%= t("messages.saved") %>
+```
+
+**In Controllers:**
+```ruby
+redirect_to users_path, notice: t("messages.created")
+flash[:alert] = t("errors.invalid")
+```
+
+**In Models (validations):**
+```ruby
+validates :email, presence: { message: t("errors.required") }
+```
+
+**With Interpolation:**
+```yaml
+en:
+  users:
+    welcome: "Welcome, %{name}!"
+```
+```erb
+<%= t("users.welcome", name: @user.name) %>
+```
+
+**Pluralization:**
+```yaml
+en:
+  items:
+    one: "1 item"
+    other: "%{count} items"
+```
+```erb
+<%= t("items", count: @items.count) %>
+```
+
+### Adding New Locales
+1. Add locale to `config.i18n.available_locales` in `config/application.rb`
+2. Create locale file: `config/locales/[locale].yml` (e.g., `es.yml`, `fr.yml`)
+3. Translate all keys from `en.yml` to the new locale
+4. Test UI with new locale to ensure proper display
+5. Update `ApplicationController#set_locale` if custom logic needed
+
+### Best Practices
+- **Always provide English translations first** - English is the default/fallback
+- **Keep translations in sync** - When adding new keys, add to all locale files
+- **Use meaningful keys** - Keys should be self-documenting
+- **Avoid HTML in translations** - Use view helpers for formatting when possible
+- **Test locale switching** - Ensure all features work with different locales
+- **Consider RTL languages** - Plan for right-to-left layouts if needed
+- **Date/time formats** - Use Rails i18n date/time formats, not hardcoded formats
+- **Currency and numbers** - Use Rails i18n number formatting helpers
+
+### Common Pitfalls to Avoid
+- **Hardcoded strings** - Never use hardcoded English text in views/controllers
+- **Missing translations** - Always add translations when adding new features
+- **Inconsistent key naming** - Follow established naming conventions
+- **Forgetting pluralization** - Handle singular/plural forms correctly
+- **Not testing locales** - Test with all supported locales before deploying
+
 ## Testing Strategy
 
 ### Test-Driven Development (TDD) Workflow
@@ -483,6 +671,7 @@ Before considering code complete:
 - [ ] Does it follow server-first architecture?
 - [ ] Will real-time updates work correctly (when applicable)?
 - [ ] Is logging using `Rails.logger` (not console/puts)?
+- [ ] Is the specification (`docs/SPECIFICATION.md`) updated with new features?
 
 ### Testing Setup Guidelines
 - Start `SimpleCov` at the very top of `test/test_helper.rb` before loading Rails.
@@ -518,6 +707,47 @@ Before considering code complete:
 - Explain complex algorithms or business logic
 - Update documentation when making breaking changes
 - Include examples for complex utilities or hooks
+
+### Specification Documentation (docs/ folder)
+**CRITICAL**: Maintain a human-readable specification in the `docs/` folder that evolves with the application.
+
+**MANDATORY REQUIREMENT**: When implementing ANY feature, model, route, or significant change, you MUST update `docs/SPECIFICATION.md` as part of the implementation. This is not optional - it is a required step in the development workflow.
+
+**Specification Maintenance Requirements:**
+- **Update on feature completion**: When a feature is implemented, update `docs/SPECIFICATION.md` with:
+  - Feature description and status
+  - User stories covered
+  - Technical implementation details (models, controllers, routes)
+  - UI/UX considerations
+  - Dependencies and relationships
+- **Update data models**: Document all models, their attributes, associations, validations, and scopes
+- **Update user flows**: Document complete user journeys and workflows
+- **Update API endpoints**: Document all routes, their parameters, responses, and authentication requirements
+- **Maintain change log**: Add entries to the change log section when making significant updates
+- **Keep it current**: The specification should always reflect the current state of the application
+
+**Specification Structure:**
+- `docs/SPECIFICATION.md` - Main specification document (comprehensive overview)
+- `docs/ARCHITECTURE.md` - Detailed technical architecture (optional, for complex systems)
+- `docs/API.md` - API documentation (optional, if building API)
+- `docs/DEPLOYMENT.md` - Deployment procedures and configuration (optional)
+
+**When to Update Specification:**
+- ✅ After implementing a new feature
+- ✅ After adding a new model or significant model changes
+- ✅ After adding new routes or endpoints
+- ✅ After architectural decisions or pattern changes
+- ✅ After deployment configuration changes
+- ❌ Don't update for minor bug fixes or refactoring (unless it changes behavior)
+
+**Specification Writing Guidelines:**
+- Write for both technical and non-technical stakeholders
+- Use clear, concise language
+- Include examples where helpful
+- Keep sections organized and easy to navigate
+- Use status indicators (Planned / In Progress / Complete) for features
+- Link to relevant code files when appropriate
+- Document "why" decisions were made, not just "what" was built
 
 ### Migration & Breaking Changes
 - Plan migrations carefully

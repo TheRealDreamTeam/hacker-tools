@@ -52,6 +52,7 @@ gem "ruby_llm", "~> 1.9"
 gem "ruby_llm-schema", "~> 0.2.5"
 gem "cloudinary", "~> 1.25"
 gem "activestorage-cloudinary-service", "~> 0.2"
+gem "rails-i18n" # Locale data for Rails (dates, times, numbers, etc.)
 
 group :development, :test do
   gem "dotenv-rails"
