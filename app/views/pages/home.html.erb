@@ -1,4 +1,184 @@
-<div class="home-container">
-  <h1><%= t("pages.home.heading") %></h1>
-  <p><%= t("pages.home.description") %></p>
+<!-- Divider beneath navbar to visually separate navigation from content -->
+<div class="border-bottom"></div>
+
+<div class="container py-4">
+  <!-- Hero search bar centered within 8-grid width on large screens -->
+  <div class="row justify-content-center mb-4">
+    <div class="col-12 col-lg-8">
+      <%= form_with url: root_path,
+                    method: :get,
+                    local: true,
+                    role: "search",
+                    class: "row g-2 align-items-center" do |form| %>
+        <div class="col-12 col-md-9">
+          <%= form.search_field :query,
+                                class: "form-control form-control-lg",
+                                placeholder: t("pages.home.search_placeholder"),
+                                aria: { label: t("pages.home.search_placeholder") } %>
+        </div>
+        <div class="col-12 col-md-3 d-grid">
+          <%= form.submit t("actions.search"), class: "btn btn-primary btn-lg" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="border-bottom mb-4"></div>
+
+  <!-- Category toggles to swap tool lists without full reload (JS-ready) -->
+  <div class="row justify-content-center mb-4">
+    <div class="col-12 col-lg-8">
+      <div class="btn-group w-100" role="group" aria-label="<%= t('pages.home.category_aria_label') %>">
+        <button type="button" class="btn btn-outline-primary active category-toggle" data-category="trending" aria-pressed="true">
+          <%= t("pages.home.categories.trending") %>
+        </button>
+        <button type="button" class="btn btn-outline-primary category-toggle" data-category="new" aria-pressed="false">
+          <%= t("pages.home.categories.new_hot") %>
+        </button>
+        <button type="button" class="btn btn-outline-primary category-toggle" data-category="upvoted" aria-pressed="false">
+          <%= t("pages.home.categories.most_upvoted") %>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Three-column layout: side rails for promos and center column for tool cards -->
+  <div class="row g-3 justify-content-center">
+    <div class="col-12 col-lg-10">
+      <% panels = { "trending" => @trending_tools, "new" => @new_hot_tools, "upvoted" => @most_upvoted_tools } %>
+
+      <% panels.each_with_index do |(panel, tools), panel_idx| %>
+        <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless panel_idx.zero? %>" data-category-panel="<%= panel %>">
+          <div class="card-body">
+            <% if tools.blank? %>
+              <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
+            <% else %>
+              <% tools.each_with_index do |tool, i| %>
+                <% tool_id = tool.id %>
+                <% upvotes = (tool.respond_to?(:upvotes_count) && tool.upvotes_count.present?) ? tool.upvotes_count.to_i : 0 %>
+                <div class="card mb-3 position-relative card-hover">
+                  <div class="card-body">
+                    <div class="row align-items-center">
+                      <!-- Left content: star, title, description, tags -->
+                      <div class="col-12 col-md-5">
+                        <h5 class="card-title mb-1">
+                          <span class="text-warning me-2" aria-hidden="true">★</span>
+                          <%= t("pages.home.card.title", index: i + 1, ordinal: "#{i + 1}.") %>
+                        </h5>
+                        <p class="card-text text-muted mb-2"><%= tool.tool_description.presence || t("pages.home.card.description", index: i + 1) %></p>
+                        <div class="d-flex flex-wrap gap-2">
+                          <% displayed_tags = tool.tags.limit(3) %>
+                          <% if displayed_tags.any? %>
+                            <% displayed_tags.each do |tag| %>
+                              <span class="badge bg-light text-primary border"><%= tag.tag_name %></span>
+                            <% end %>
+                          <% else %>
+                            <% [
+                              t("pages.home.card.sample_tag_one"),
+                              t("pages.home.card.sample_tag_two"),
+                              t("pages.home.card.sample_tag_three")
+                            ].each do |tag| %>
+                              <span class="badge bg-light text-primary border"><%= tag %></span>
+                            <% end %>
+                          <% end %>
+                        </div>
+                        <%= link_to "/tools/#{tool_id}",
+                                    class: "stretched-link",
+                                    aria: { label: t("pages.home.card.view_placeholder") },
+                                    data: { placeholder: "tool-link" } do %>
+                          <span class="visually-hidden"><%= t("pages.home.card.view_placeholder") %></span>
+                        <% end %>
+                      </div>
+
+                      <!-- Right content: logo + upvotes aligned on the same row -->
+                      <div class="col-12 col-md-7 d-flex justify-content-md-end justify-content-start align-items-center gap-3 mt-3 mt-md-0">
+                        <div class="border rounded-circle bg-light d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
+                          <span class="text-muted small"><%= t("pages.home.card.logo_placeholder") %></span>
+                        </div>
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2 upvote-button"
+                                data-count="<%= upvotes %>">
+                          <span aria-hidden="true">▲</span>
+                          <span data-upvote-count><%= t("pages.home.card.upvotes", count: upvotes) %></span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
 </div>
+
+<%= javascript_tag do %>
+  // Simple client-side toggle to switch between category panels without reload.
+  const attachCategoryToggle = () => {
+    const buttons = Array.from(document.querySelectorAll(".category-toggle"));
+    const panels = Array.from(document.querySelectorAll("[data-category-panel]"));
+
+    if (!buttons.length || !panels.length) return;
+
+    const showCategory = (category) => {
+      buttons.forEach((btn) => {
+        const isActive = btn.dataset.category === category;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-pressed", isActive);
+      });
+
+      panels.forEach((panel) => {
+        const isTarget = panel.dataset.categoryPanel === category;
+        panel.classList.toggle("d-none", !isTarget);
+      });
+    };
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => showCategory(btn.dataset.category));
+    });
+  };
+
+  document.addEventListener("turbo:load", attachCategoryToggle);
+  document.addEventListener("DOMContentLoaded", attachCategoryToggle);
+
+  const attachUpvoteHandlers = () => {
+    const signedIn = <%= user_signed_in? ? 'true' : 'false' %>;
+    const guestMessage = "<%= j t('pages.home.card.upvote_guest_alert') %>";
+
+    document.querySelectorAll(".upvote-button").forEach((button) => {
+      const countSpan = button.querySelector("[data-upvote-count]");
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!signedIn) {
+          alert(guestMessage);
+          return;
+        }
+
+        const current = parseInt(button.dataset.count || "0", 10);
+        const next = current + 1;
+        button.dataset.count = next;
+        if (countSpan) {
+          countSpan.textContent = `<%= t("pages.home.card.upvotes", count: "%{count}") %>`.replace("%{count}", next);
+        }
+      });
+    });
+  };
+
+  document.addEventListener("turbo:load", attachUpvoteHandlers);
+  document.addEventListener("DOMContentLoaded", attachUpvoteHandlers);
+<% end %>
+
+<style>
+  /* Modest but noticeable hover for cards */
+  .card-hover {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.65rem 1.5rem rgba(0,0,0,0.08);
+  }
+</style>
