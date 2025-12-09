@@ -3,4 +3,9 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+
+  # Active Storage avatar to avoid storing URLs directly and allow variants.
+  has_one_attached :avatar
+
+  validates :username, presence: true, uniqueness: true
 end

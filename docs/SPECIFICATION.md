@@ -6,34 +6,111 @@ This document serves as the human-readable specification for the Hacker Tools ap
 
 ## Overview
 
-[Brief description of the application's purpose and main functionality]
+Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineering tools. Users can publish tools, tag them, group them into lists, discuss via threaded comments, and interact via upvotes/favorites/subscriptions.
 
 ## Core Features
 
-### Feature 1: [Feature Name]
-- **Status**: [Planned / In Progress / Complete]
-- **Description**: [What this feature does]
-- **User Stories**: 
-  - As a [user type], I want to [action] so that [benefit]
+### Tool Catalog
+- **Status**: Planned
+- **Description**: Users publish tools with descriptions, links, and media. Visibility controls allow private/unlisted/public sharing.
+- **User Stories**:
+  - As a user, I want to create a tool entry with description, icon, and link so others can discover it.
+  - As a visitor, I want to browse and filter tools by tags and lists so I can find relevant items quickly.
 - **Technical Implementation**:
-  - [Key technical details, models, controllers, routes]
+  - Models: `Tool`, `Tag`, `ToolTag`, `List`, `ListTool`
+  - Ownership: `Tool` belongs to `User`
+  - Visibility/list types modeled as enums on `Tool` and `List`
+  - Tagging and list inclusion via join tables
 - **UI/UX Considerations**:
-  - [Mobile responsiveness, accessibility, user flows]
+  - Use Bootstrap grid/cards; responsive at mobile breakpoints
+  - Turbo Streams for live updates when tools are added/edited
 - **Dependencies**:
-  - [Related features or external services]
+  - Devise-authenticated users to create/edit tools
+  - Active Storage optional for icons/pictures
+
+### Engagement & Feedback
+- **Status**: Planned
+- **Description**: Users discuss tools and react with upvotes, favorites, subscriptions, and read tracking.
+- **User Stories**:
+  - As a user, I want to comment on a tool and reply to threads so I can ask questions or provide feedback.
+  - As a user, I want to upvote/favorite/subscribe to tools so I can track what matters.
+  - As a user, I want to upvote comments so helpful answers are surfaced.
+- **Technical Implementation**:
+  - Models: `Comment`, `CommentUpvote`, `UserTool`
+  - Threaded comments via `parent_id` on `Comment`
+  - User-tool interaction flags stored on `UserTool`
+- **UI/UX Considerations**:
+  - Turbo Streams for live comment threads
+  - Accessible forms and focus management for replies
+- **Dependencies**:
+  - Devise-authenticated users for interactions
 
 ## Data Models
 
-### Model Name
-- **Purpose**: [What this model represents]
+### User (Devise)
+- **Purpose**: Authenticated account that owns tools/lists and participates in discussions.
 - **Attributes**:
-  - `attribute_name` (type): [Description]
+  - `email` (string, required, unique)
+  - `encrypted_password` (string, required)
+  - `username` (string, required, unique)
+  - `user_type` (integer, enum)
+  - `user_status` (integer, enum)
+  - `user_bio` (text)
+- **Active Storage**: `avatar` attachment
 - **Associations**:
-  - [Relationships to other models]
-- **Validations**:
-  - [Key validation rules]
-- **Scopes**:
-  - [Common queries]
+  - `has_many :tools`, `has_many :lists`, `has_many :comments`
+  - `has_many :user_tools`, `has_many :tool_interactions, through: :user_tools`
+  - `has_many :comment_upvotes`
+- **Validations**: Presence/uniqueness on email/username; Devise password rules.
+
+### Tool
+- **Purpose**: A published tool with metadata, owned by a user.
+- **Attributes**: `tool_name` (string, required), `tool_description` (text), `tool_url` (string), `author_note` (text), `visibility` (integer enum)
+- **Active Storage**: `icon`, `picture` attachments
+- **Associations**: `belongs_to :user`; `has_many :comments`; `has_many :tags, through: :tool_tags`; `has_many :lists, through: :list_tools`; `has_many :user_tools`
+- **Validations**: Presence on name; visibility enum.
+
+### List
+- **Purpose**: Curated collection of tools for a user.
+- **Attributes**: `list_name` (string, required), `list_type` (integer enum), `visibility` (integer enum)
+- **Associations**: `belongs_to :user`; `has_many :tools, through: :list_tools`
+- **Validations**: Presence on name; enums on type/visibility.
+
+### Comment
+- **Purpose**: Threaded discussion on a tool.
+- **Attributes**: `comment` (text, required), `comment_type` (integer enum), `visibility` (integer enum), `parent_id` (self-referential), `solved` (boolean)
+- **Associations**: `belongs_to :tool`; `belongs_to :user`; `belongs_to :parent, class_name: "Comment", optional: true`; `has_many :replies, class_name: "Comment"`
+- **Validations**: Presence on body; enums for type/visibility.
+
+### Tag
+- **Purpose**: Classification for tools.
+- **Attributes**: `tag_name` (string, required), `tag_description` (text), `tag_type` (integer enum), `parent_id` (self-referential)
+- **Associations**: `has_many :tools, through: :tool_tags`; `belongs_to :parent, class_name: "Tag", optional: true`; `has_many :children, class_name: "Tag"`
+- **Validations**: Presence on name; enum on type.
+
+### ToolTag (join)
+- **Purpose**: Many-to-many between tools and tags.
+- **Attributes**: `tool_id`, `tag_id`
+- **Associations**: `belongs_to :tool`; `belongs_to :tag`
+- **Validations**: Uniqueness on `[tool_id, tag_id]`.
+
+### ListTool (join)
+- **Purpose**: Tools included in a list.
+- **Attributes**: `list_id`, `tool_id`
+- **Associations**: `belongs_to :list`; `belongs_to :tool`
+- **Validations**: Uniqueness on `[list_id, tool_id]`.
+
+### UserTool (join/state)
+- **Purpose**: Per-user interaction state for a tool.
+- **Attributes**: `read_at` (datetime), `upvote` (boolean), `favorite` (boolean), `subscribe` (boolean), foreign keys to user/tool
+- **Associations**: `belongs_to :user`; `belongs_to :tool`
+- **Validations**: Uniqueness on `[user_id, tool_id]`.
+
+### CommentUpvote (join)
+- **Purpose**: User upvotes on comments.
+- **Attributes**: `comment_id`, `user_id`
+- **Associations**: `belongs_to :comment`; `belongs_to :user`
+- **Validations**: Uniqueness on `[comment_id, user_id]`.
 
 ## User Flows
 
