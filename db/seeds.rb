@@ -3,12 +3,17 @@
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
 # Clear existing data (optional - comment out if you want to preserve data)
+# Destroy in order to respect foreign key constraints
 puts "Clearing existing data..."
-User.destroy_all
-Tool.destroy_all
-Tag.destroy_all
-List.destroy_all
+CommentUpvote.destroy_all
+UserTool.destroy_all
+ListTool.destroy_all
+ToolTag.destroy_all
 Comment.destroy_all
+Tool.destroy_all
+List.destroy_all
+Tag.destroy_all
+User.destroy_all
 
 # Create Users
 puts "Creating users..."
@@ -541,16 +546,22 @@ CommentUpvote.create!(comment: comments[6], user: users[0]) # Alice upvotes Dian
 CommentUpvote.create!(comment: comments[6], user: users[2]) # Charlie upvotes Diana's comment
 
 puts "Seed data created successfully!"
-puts "Created:"
+puts ""
+puts "Summary:"
 puts "  - #{User.count} users"
 puts "  - #{Tool.count} tools"
-puts "  - #{Tag.count} tags"
+puts "  - #{Tag.count} tags (#{Tag.where(parent_id: nil).count} top-level, #{Tag.where.not(parent_id: nil).count} child tags)"
 puts "  - #{List.count} lists"
-puts "  - #{Comment.count} comments"
+puts "  - #{Comment.count} comments (#{Comment.top_level.count} top-level, #{Comment.replies.count} replies, #{Comment.solved.count} solved)"
+puts "  - #{ToolTag.count} tool-tag associations"
+puts "  - #{ListTool.count} list-tool associations"
 puts "  - #{UserTool.count} user-tool interactions"
+puts "    * #{UserTool.where(upvote: true).count} upvotes"
+puts "    * #{UserTool.where(favorite: true).count} favorites"
+puts "    * #{UserTool.where(subscribe: true).count} subscriptions"
 puts "  - #{CommentUpvote.count} comment upvotes"
 puts ""
 puts "You can log in with any of these accounts:"
 users.each do |user|
-  puts "  - #{user.email} / password123"
+  puts "  - #{user.email} / password123 (username: #{user.username})"
 end
