@@ -1,24 +1,13 @@
-// Navbar styling - consistent with design system
-.navbar-lewagon {
-  justify-content: space-between;
-  background: white;
-  border-radius: 0 !important; // Explicitly no rounded corners
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  padding: 1rem 0;
-}
-
-.navbar-lewagon .navbar-collapse {
-  flex-grow: 0;
-}
-
-.navbar-lewagon .navbar-brand img {
-  width: 40px;
-}
-
 .navbar {
   border-radius: 0 !important; // Explicitly no rounded corners
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   padding: 1rem 0;
+  
+  // Remove Bootstrap's default horizontal padding from container-fluid (12px / 0.75rem)
+  .container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+  }
   
   .navbar-brand {
     font-size: 1.5rem;
@@ -45,7 +34,7 @@
     }
     
     &:focus {
-      box-shadow: 0 0 0 0.2rem rgba($primary, 0.15);
+      box-shadow: none;
       outline: none;
     }
   }
@@ -59,37 +48,19 @@
     transition: all 0.2s ease-in-out;
     margin: 0 0.25rem;
     
-    &:hover {
-      color: darken($primary, 10%);
-      background-color: #f8f9fa;
-      transform: translateY(-1px);
-    }
-    
     &:focus {
       outline: none;
-      box-shadow: 0 0 0 0.2rem rgba($primary, 0.15);
+      box-shadow: none;
     }
   }
 }
 
 // Offcanvas menu styling
 .offcanvas {
-  border-radius: 0.75rem 0 0 0.75rem; // Rounded on left side only
   
   .offcanvas-header {
     border-bottom: 1px solid #e9ecef;
     padding: 1.5rem;
-    
-    .btn-close {
-      border-radius: 0.5rem;
-      padding: 0.5rem;
-      transition: all 0.2s ease-in-out;
-      
-      &:hover {
-        background-color: #f8f9fa;
-        transform: scale(1.1);
-      }
-    }
   }
   
   .offcanvas-body {
@@ -105,12 +76,11 @@
           border-radius: 0.75rem; // 12px
           display: block;
           width: 100%;
-          text-align: right;
-          
-          &:hover {
-            color: darken($primary, 10%);
-            background-color: #f8f9fa;
-            transform: translateX(-4px);
+          text-align: left;
+
+          &:focus {
+            outline: none;
+            box-shadow: none;
           }
         }
       }

@@ -1,12 +1,12 @@
-<nav id="navbar" class="navbar navbar-expand-lg bg-white position-relative overflow-hidden px-4">
-  <div class="container-fluid d-flex align-items-center justify-content-end">
+<nav id="navbar" class="navbar navbar-expand-lg bg-white position-relative overflow-hidden px-3">
+  <div class="container-fluid d-flex align-items-center">
     <!-- Just to push nav items and hamburger button to the right -->
-    <div class="navbar-brand"></div>
     <!-- Hamburger (mobile only) - hidden during wizard, landing page, and Devise auth pages -->
     <%# CSS class on body handles hiding to prevent flash %>
     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav">
       <span class="navbar-toggler-icon"></span>
     </button>
+    <div class="navbar-brand"></div>
     <!-- Desktop links – visible only ≥lg -->
     <!-- Hide navigation during wizard -->
     <div class="d-none d-lg-block">
@@ -23,7 +23,7 @@
   <% end %>
 </nav>
 <!-- Offcanvas drawer (mobile only) -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNav">
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNav">
   <div class="offcanvas-header">
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
   </div>
