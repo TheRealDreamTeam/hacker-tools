@@ -10,6 +10,21 @@
   border-radius: 0.75rem; // 12px
   box-shadow: 0 2px 12px rgba($primary, 0.1);
   
+  // Wider container for account settings (2-column layout)
+  &.account-settings-container {
+    max-width: 900px; // Wider to accommodate 2 columns
+    
+    @media (min-width: 992px) {
+      max-width: 1000px;
+    }
+    
+    // Increase row gap globally and ensure equal height columns
+    .row {
+      --bs-gutter-y: 1.5rem; // Increased gap between rows
+      align-items: stretch; // Ensure columns stretch to equal height
+    }
+  }
+  
   // Responsive padding for mobile - more compact
   @media (max-width: 576px) {
     margin: 1rem;
@@ -39,6 +54,13 @@
   color: $primary;
   padding-top: 2rem;
   border-top: 1px solid #e9ecef;
+}
+
+// Remove divider lines for account sections
+.devise-container .account-section h3 {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
 }
 
 // Form styling within Devise pages
@@ -278,38 +300,29 @@
 
 // Account sections - separate cards for each section
 .devise-container .account-section {
-  margin-bottom: 2rem;
+  margin-bottom: 0.75rem; // Significantly reduced from 2rem
   
-  // More compact on mobile
-  @media (max-width: 576px) {
-    margin-bottom: 1.5rem;
+  // Override Bootstrap margin utilities
+  &.mb-4 {
+    margin-bottom: 0.75rem !important;
   }
   
   .card {
     border-radius: 0.75rem; // 12px
-    border: 1px solid #dee2e6;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid #dee2e6; // Restored border
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); // Restored shadow
     
     .card-body {
-      padding: 1.5rem;
-      
-      // More compact on mobile
-      @media (max-width: 576px) {
-        padding: 1rem;
-      }
+      padding: 1rem; // Reduced from 1.5rem
     }
   }
   
   h3 {
     font-weight: 600;
     color: $primary;
-    margin-bottom: 1rem;
-    
-    // More compact on mobile
-    @media (max-width: 576px) {
-      font-size: 1.125rem;
-      margin-bottom: 0.75rem;
-    }
+    margin-bottom: 0.5rem; // Reduced from 1rem
+    border-top: none; // Remove divider line before section
+    padding-top: 0; // Remove padding that was for border
   }
   
   // Form inputs in account sections
@@ -342,20 +355,12 @@
   
   // Form groups
   .mb-3 {
-    // More compact on mobile
-    @media (max-width: 576px) {
-      margin-bottom: 0.75rem !important;
-    }
+    margin-bottom: 0.5rem !important; // Reduced globally
   }
   
   // Form actions
   .form-actions {
-    margin-top: 1rem;
-    
-    // More compact on mobile
-    @media (max-width: 576px) {
-      margin-top: 0.75rem;
-    }
+    margin-top: 0.5rem; // Reduced from 1rem
   }
   
   // Danger zone styling

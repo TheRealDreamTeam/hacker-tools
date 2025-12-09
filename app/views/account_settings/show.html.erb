@@ -1,32 +1,45 @@
-<div class="devise-container">
-  <h2><%= t("account_settings.title") %></h2>
+<div class="devise-container account-settings-container">
+  <h2 class="border-bottom pb-3"><%= t("account_settings.title") %></h2>
 
   <!-- Flash messages container for Turbo Stream updates -->
   <div id="flash-messages"></div>
 
-  <!-- Section 1: Avatar Update -->
-  <%= render partial: "account_settings/avatar_section", locals: { user: @user } %>
-
-  <!-- Section 2: Bio Update -->
-  <%= render partial: "account_settings/bio_section", locals: { user: @user } %>
-
-  <!-- Section 3: Username and Email Update -->
-  <%= render partial: "account_settings/username_email_section", locals: { user: @user } %>
-
-  <!-- Section 4: Password Update -->
-  <%= render partial: "account_settings/password_section", locals: { user: @user } %>
-
-  <!-- Section 5: Account Deletion -->
-  <div class="account-section" id="delete-section">
-    <h3 class="h5 mb-3 text-danger"><%= t("account_settings.destroy.title") %></h3>
-    <div class="card border-danger">
-      <div class="card-body">
-        <p class="text-danger mb-3"><%= t("account_settings.destroy.warning") %></p>
-        <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#delete-account-modal">
-          <%= t("account_settings.destroy.button") %>
-        </button>
+  <!-- Two column layout on desktop, single column on mobile -->
+  <div class="row g-3 pt-3">
+    <!-- Left Column: Profile Information -->
+      <!-- Section 1: Avatar Update -->
+      <div class="col-12 col-md-6 ">
+        <%= render partial: "account_settings/avatar_section", locals: { user: @user }%>
       </div>
-    </div>
+
+      <!-- Section 2: Bio Update -->
+      <div class="col-12 col-md-6">
+        <%= render partial: "account_settings/bio_section", locals: { user: @user }%>
+      </div>
+
+    <!-- Right Column: Account Security -->
+      <!-- Section 3: Username and Email Update -->
+      <div class="col-12 col-md-6">
+        <%= render partial: "account_settings/username_email_section", locals: { user: @user }%>
+      </div>
+
+      <!-- Section 4: Password Update -->
+      <div class="col-12 col-md-6">
+        <%= render partial: "account_settings/password_section", locals: { user: @user }%>
+      </div>
+
+      <!-- Section 5: Account Deletion -->
+      <div class="account-section col-12 col-md-6" id="delete-section">
+        <h3 class="h5 mb-3 text-danger"><%= t("account_settings.destroy.title") %></h3>
+        <div class="card border-danger">
+          <div class="card-body">
+            <p class="text-danger mb-3"><%= t("account_settings.destroy.warning") %></p>
+            <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#delete-account-modal">
+              <%= t("account_settings.destroy.button") %>
+            </button>
+          </div>
+        </div>
+      </div>
   </div>
 
   <%= link_to t("account_settings.back"), profile_path, class: "back-link mt-4 d-inline-block" %>
