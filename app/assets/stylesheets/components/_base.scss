@@ -60,6 +60,13 @@ h1, h2, h3, h4, h5, h6,
   }
 }
 
+// Override btn-outline-danger hover text color to white
+.btn-outline-danger {
+  &:hover {
+    color: white;
+  }
+}
+
 // All form inputs should have consistent height and rounded corners
 .form-control:not(textarea),
 .form-select,

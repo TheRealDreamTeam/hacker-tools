@@ -1,32 +1,33 @@
-<div class="account-section h-100" id="avatar-section">
-  <h3 class="h5 mb-3"><%= t("account_settings.avatar.title") %></h3>
-  <div class="card">
-    <div class="card-body">
-      <div class="mb-3" data-controller="avatar-preview">
-        <p class="form-text mb-2"><%= t("account_settings.avatar.current") %></p>
-        <div id="avatar-preview-container" class="mb-3">
+<div class="account-section h-100 d-flex flex-column" id="avatar-section">
+  <h3 class="h5 mb-3 ps-1"><%= t("account_settings.avatar.title") %></h3>
+  <div class="card h-100 d-flex flex-column">
+    <div class="card-body d-flex flex-column flex-grow-1">
+      <div class="d-flex flex-column flex-grow-1" data-controller="avatar-preview">
+        <div id="avatar-preview-container" class="mb-3 d-flex justify-content-center">
           <% if user.avatar.attached? %>
-            <%= image_tag user.avatar, class: "rounded", style: "height: 100px; width: 100px; object-fit: cover; display: block;", data: { avatar_preview_target: "preview" } %>
+            <%= image_tag user.avatar, class: "rounded", style: "height: 100px; width: 100px; object-fit: cover;", data: { avatar_preview_target: "preview" } %>
           <% else %>
-            <div class="rounded bg-secondary d-flex align-items-center justify-content-center" style="height: 100px; width: 100px; display: block;" data-avatar-preview-target="placeholder">
-              <span class="text-white fs-4"><%= user.username.first.upcase %></span>
+            <div class="rounded bg-secondary d-flex align-items-center justify-content-center" style="height: 100px; width: 100px;" data-avatar-preview-target="placeholder">
+              <span class="text-white fs-4">/</span>
             </div>
           <% end %>
         </div>
 
-        <%= form_with model: user, url: update_avatar_account_settings_path, method: :patch, multipart: true, data: { turbo: true }, local: false do |f| %>
-          <% if user.errors[:avatar].any? %>
-            <div class="alert alert-danger">
-              <%= user.errors[:avatar].join(", ") %>
-            </div>
-          <% end %>
+        <%= form_with model: user, url: update_avatar_account_settings_path, method: :patch, multipart: true, data: { turbo: true }, local: false, html: { class: "d-flex flex-column flex-grow-1" } do |f| %>
+          <div class="flex-grow-1">
+            <% if user.errors[:avatar].any? %>
+              <div class="alert alert-danger">
+                <%= user.errors[:avatar].join(", ") %>
+              </div>
+            <% end %>
 
-          <div class="mb-3">
-            <%= f.file_field :avatar, class: "form-control", accept: "image/*", data: { avatar_preview_target: "fileInput", action: "change->avatar-preview#fileSelected" } %>
-            <div class="form-text"><%= t("account_settings.avatar.hint") %></div>
+            <div class="mb-3">
+              <%= f.file_field :avatar, class: "form-control", accept: "image/*", data: { avatar_preview_target: "fileInput", action: "change->avatar-preview#fileSelected" } %>
+              <div class="form-text"><%= t("account_settings.avatar.hint") %></div>
+            </div>
           </div>
 
-          <div class="form-actions d-flex flex-column gap-2">
+          <div class="form-actions d-flex flex-column gap-2 mt-auto">
             <%= f.submit t("account_settings.avatar.update"), class: "btn btn-primary", data: { avatar_preview_target: "submitButton" } %>
             <button type="button" class="btn btn-primary <%= 'd-none' unless user.avatar.attached? %>" data-bs-toggle="modal" data-bs-target="#delete-avatar-modal" id="delete-avatar-button">
               <%= t("account_settings.avatar.delete") %>

@@ -1,20 +1,22 @@
-<div class="account-section h-100" id="bio-section">
-  <h3 class="h5 mb-3"><%= t("account_settings.bio.title") %></h3>
-  <div class="card">
-    <div class="card-body">
-      <%= form_with model: user, url: update_bio_account_settings_path, method: :patch, data: { turbo: true, controller: "bio-form" }, local: false do |f| %>
-        <% if user.errors[:user_bio].any? %>
-          <div class="alert alert-danger">
-            <%= user.errors[:user_bio].join(", ") %>
-          </div>
-        <% end %>
+<div class="account-section h-100 d-flex flex-column" id="bio-section">
+  <h3 class="h5 mb-3 ps-1"><%= t("account_settings.bio.title") %></h3>
+  <div class="card h-100 d-flex flex-column">
+    <div class="card-body d-flex flex-column flex-grow-1">
+      <%= form_with model: user, url: update_bio_account_settings_path, method: :patch, data: { turbo: true, controller: "bio-form" }, local: false, html: { class: "d-flex flex-column flex-grow-1" } do |f| %>
+        <div class="flex-grow-1">
+          <% if user.errors[:user_bio].any? %>
+            <div class="alert alert-danger">
+              <%= user.errors[:user_bio].join(", ") %>
+            </div>
+          <% end %>
 
-        <div class="mb-3">
-          <%= f.text_area :user_bio, class: "form-control", rows: 3, data: { bio_form_target: "textarea", action: "input->bio-form#valueChanged" }, value: user.user_bio %>
-          <div class="form-text"><%= t("account_settings.bio.hint") %></div>
+          <div class="mb-3">
+            <%= f.text_area :user_bio, class: "form-control", rows: 3, data: { bio_form_target: "textarea", action: "input->bio-form#valueChanged" }, value: user.user_bio %>
+            <div class="form-text"><%= t("account_settings.bio.hint") %></div>
+          </div>
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions mt-auto">
           <%= f.submit t("account_settings.bio.update"), class: "btn btn-primary w-100", data: { bio_form_target: "submitButton" } %>
         </div>
       <% end %>

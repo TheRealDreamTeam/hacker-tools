@@ -13,15 +13,17 @@
   // Wider container for account settings (2-column layout)
   &.account-settings-container {
     max-width: 900px; // Wider to accommodate 2 columns
+
+    .form-text {
+      padding-left: 4px;
+    }
+
+    .form-label {
+      padding-left: 2px;
+    }
     
     @media (min-width: 992px) {
       max-width: 1000px;
-    }
-    
-    // Increase row gap globally and ensure equal height columns
-    .row {
-      --bs-gutter-y: 1.5rem; // Increased gap between rows
-      align-items: stretch; // Ensure columns stretch to equal height
     }
   }
   
