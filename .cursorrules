@@ -623,6 +623,7 @@ en:
    - Associations and scopes
    - Callbacks (when they contain logic)
    - Data transformation methods
+   - **CRITICAL**: When adding or changing models, tests MUST be updated or rewritten to reflect the changes
 
 2. **Controller/Request Specs**
    - HTTP request handling
@@ -669,6 +670,21 @@ en:
 - Use `beforeEach`/`afterEach` for setup/teardown
 - Clean test database between test suites
 - Mock external dependencies consistently
+
+### Model Testing Requirements
+**CRITICAL**: Model changes require test updates:
+- **When adding a new model**: Create comprehensive tests covering validations, associations, scopes, and helper methods
+- **When modifying an existing model**: Update or rewrite tests to reflect changes (validations, associations, scopes, methods)
+- **When removing model features**: Remove or update corresponding tests
+- **Test coverage**: All models must have tests for:
+  - All validations (presence, uniqueness, format, etc.)
+  - All associations (belongs_to, has_many, has_one, through associations)
+  - All scopes (with various data scenarios)
+  - All custom methods and helper methods
+  - Dependent destroy/nullify behaviors
+  - Edge cases and error scenarios
+- **FactoryBot factories**: Create or update factories in `test/factories/` for all models to support testing
+- **Test file location**: Model tests go in `test/models/[model_name]_test.rb`
 
 ## Quality Assurance
 
