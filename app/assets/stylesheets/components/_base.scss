@@ -122,18 +122,24 @@ textarea {
   width: 1.25rem;
   height: 1.25rem;
   margin-top: 0.25rem;
-  transition: all 0.2s ease-in-out;
+  transition: box-shadow 0.2s ease-in-out;
   cursor: pointer;
   
-  // Hover animation for better UX
+  // Hover animation for better UX - keep original 0.2s speed
   &:hover:not(:disabled) {
     transform: scale(1.1);
     box-shadow: 0 2px 4px rgba($primary, 0.15);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   }
   
-  // Active/checked state
+  // Active/checked state - fast transition only for check/uncheck
   &:checked {
-    transform: scale(1);
+    transition: transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  
+  // Unchecked state - fast transition for check/uncheck
+  &:not(:checked) {
+    transition: transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
   }
   
   // Focus state for accessibility
