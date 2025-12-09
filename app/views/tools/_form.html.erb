@@ -1,0 +1,19 @@
+<%= simple_form_for(@tool) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="row g-3">
+    <div class="col-12">
+      <%= f.input :tool_url, label: t("tools.form.tool_url"), required: true %>
+    </div>
+
+    <div class="col-12">
+      <%= f.input :author_note, as: :text, label: t("tools.form.author_note"), input_html: { rows: 3 } %>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex gap-2">
+    <%= f.button :submit, class: "btn btn-primary" %>
+    <%= link_to t("actions.cancel"), tools_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>
+

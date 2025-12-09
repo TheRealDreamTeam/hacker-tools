@@ -19,11 +19,30 @@ class Tool < ApplicationRecord
   has_many :favoriters, -> { where(user_tools: { favorite: true }) }, through: :user_tools, source: :user
   has_many :subscribers, -> { where(user_tools: { subscribe: true }) }, through: :user_tools, source: :user
 
+  # Use prefix to avoid clashing with Ruby's `public?`/`private?` methods.
+  enum visibility: { public: 0, unlisted: 1, private: 2 }, _prefix: :visibility
+
+  before_validation :set_tool_name_from_url
+
   validates :tool_name, presence: true
+  validates :tool_url, presence: true
+  validates :visibility, presence: true
 
   # Scopes for filtering
-  scope :public_tools, -> { where(visibility: 0) }
+  scope :public_tools, -> { where(visibility: visibilities[:public]) }
   scope :recent, -> { order(created_at: :desc) }
   scope :most_upvoted, -> { joins(:user_tools).where(user_tools: { upvote: true }).group("tools.id").order("COUNT(user_tools.id) DESC") }
+
+  private
+
+  # Derive a placeholder tool name from the URL host so users only provide URL/author note.
+  def set_tool_name_from_url
+    return if tool_name.present? || tool_url.blank?
+
+    uri_host = URI.parse(tool_url).host
+    self.tool_name = uri_host&.sub(/\Awww\./, "") if uri_host.present?
+  rescue URI::InvalidURIError
+    # Keep tool_name nil; validation will surface an error to the user if URL is invalid.
+  end
 end
 

@@ -11,7 +11,7 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 ## Core Features
 
 ### Tool Catalog
-- **Status**: Planned
+- **Status**: In Progress
 - **Description**: Users publish tools with descriptions, links, and media. Visibility controls allow private/unlisted/public sharing.
 - **User Stories**:
   - As a user, I want to create a tool entry with description, icon, and link so others can discover it.
@@ -21,6 +21,9 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Ownership: `Tool` belongs to `User`
   - Visibility/list types modeled as enums on `Tool` and `List`
   - Tagging and list inclusion via join tables
+  - Routes: `resources :tools` (index, show, new, create, edit, update, destroy)
+  - Active Storage attachments for tool `icon` and `picture`
+  - Creation flow: user supplies URL + author note; name/description/picture can be LLM-generated from URL
 - **UI/UX Considerations**:
   - Use Bootstrap grid/cards; responsive at mobile breakpoints
   - Turbo Streams for live updates when tools are added/edited

@@ -1,0 +1,7 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3 m-0"><%= t("tools.edit.title") %></h1>
+  <%= link_to t("actions.back"), tool_path(@tool), class: "btn btn-secondary" %>
+</div>
+
+<%= render "form", tool: @tool %>
+
