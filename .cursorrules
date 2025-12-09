@@ -226,6 +226,30 @@ class NotFoundError < StandardError
 end
 ```
 
+### Confirmation Modals for Destructive Actions
+**CRITICAL**: All destructive actions (delete, remove, destroy) MUST use the custom confirmation modal:
+- **Use `shared/_confirmation_modal` partial** instead of browser `confirm()` dialogs
+- Provides consistent UX across the application with centered modal and dimmed background
+- Styled with 12px rounded corners consistent with design system
+- **Pattern**: Button triggers modal via `data-bs-toggle="modal"`, modal contains form submission
+- **Example Usage**:
+  ```erb
+  <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delete-item-modal">
+    Delete Item
+  </button>
+  
+  <%= render "shared/confirmation_modal",
+      id: "delete-item-modal",
+      title: "Delete Item",
+      message: "Are you sure you want to delete this item?",
+      confirm_text: "Yes, Delete",
+      confirm_class: "btn-outline-danger",
+      form_action: item_path(@item),
+      form_method: :delete %>
+  ```
+- **When to use**: Account deletion, avatar deletion, tool deletion, list deletion, comment deletion, etc.
+- **Never use**: Browser `confirm()`, `data-confirm`, or `turbo_confirm` for destructive actions
+
 ### Logging Strategy
 **Use Rails.logger** for all logging:
 - **Development**: Log to console/terminal

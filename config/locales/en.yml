@@ -70,6 +70,7 @@ en:
     previous: "Previous"
     submit: "Submit"
     search: "Search"
+    confirm: "Confirm"
   
   # Common messages
   messages:
@@ -88,6 +89,7 @@ en:
     email: "Email"
     password: "Password"
     password_confirmation: "Password Confirmation"
+    username: "Username"
     name: "Name"
     title: "Title"
     description: "Description"
@@ -99,6 +101,61 @@ en:
     too_short: "is too short"
     too_long: "is too long"
     taken: "has already been taken"
+  
+  # Profile page
+  profiles:
+    show:
+      title: "Profile"
+      no_bio: "No bio yet. Edit your account to add one."
+      edit_account: "Edit Account"
+  
+  # Account Settings (custom, independent from Devise)
+  account_settings:
+    title: "Account Settings"
+    back: "Back to Profile"
+    avatar:
+      title: "Profile Picture"
+      current: "Current avatar:"
+      hint: "Upload a profile picture (JPG, PNG, GIF)"
+      update: "Update Avatar"
+      delete: "Delete Avatar"
+      updated: "Avatar updated successfully"
+      deleted: "Avatar deleted successfully"
+      no_avatar: "No avatar to delete"
+      delete_modal_title: "Delete Avatar"
+      delete_modal_message: "Are you sure you want to delete your avatar? This action cannot be undone."
+      delete_confirm_button: "Yes, Delete Avatar"
+    bio:
+      title: "Bio"
+      hint: "A short description about yourself"
+      update: "Update Bio"
+      updated: "Bio updated successfully"
+    username_email:
+      title: "Username and Email"
+      update: "Update Username and Email"
+      updated: "Account updated successfully"
+      current_password: "Current Password"
+      current_password_hint: "We need your current password to confirm your changes"
+      invalid_password: "is incorrect"
+    password:
+      title: "Change Password"
+      update: "Update Password"
+      updated: "Password updated successfully"
+      hint: "Your new password"
+      current_password: "Current Password"
+      current_password_hint: "We need your current password to confirm your changes"
+      invalid_password: "is incorrect"
+    destroy:
+      title: "Delete Account"
+      warning: "Once you delete your account, there is no going back. Please be certain."
+      button: "Delete Account"
+      modal_title: "Delete Account"
+      modal_message: "Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted."
+      confirm_button: "Yes, Delete My Account"
+      password_label: "Password"
+      password_placeholder: "Enter your password to confirm"
+      invalid_password: "is incorrect"
+      success: "Your account has been deleted successfully"
   
   # Devise views
   devise:
@@ -113,7 +170,7 @@ en:
         password_hint: "%{count} characters minimum"
       edit:
         title: "Edit %{resource}"
-        password_hint: "leave it blank if you don't want to change it"
+        password_hint: "Your new password"
         current_password_hint: "we need your current password to confirm your changes"
         pending_confirmation: "Currently waiting confirmation for: %{email}"
         cancel_account: "Cancel my account"

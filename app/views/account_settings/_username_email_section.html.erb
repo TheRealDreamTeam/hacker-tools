@@ -1,0 +1,37 @@
+<div class="account-section mb-4" id="username-email-section">
+  <h3 class="h5 mb-3"><%= t("account_settings.username_email.title") %></h3>
+  <div class="card">
+    <div class="card-body">
+      <%= form_with model: user, url: update_username_email_account_settings_path, method: :patch, data: { turbo: true }, local: false do |f| %>
+        <% if user.errors[:username].any? || user.errors[:email].any? || user.errors[:current_password].any? %>
+          <div class="alert alert-danger">
+            <% (user.errors[:username] + user.errors[:email] + user.errors[:current_password]).each do |error| %>
+              <div><%= error %></div>
+            <% end %>
+          </div>
+        <% end %>
+
+        <div class="mb-3">
+          <%= f.label :username, t("forms.username"), class: "form-label" %>
+          <%= f.text_field :username, class: "form-control", required: true %>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :email, t("forms.email"), class: "form-label" %>
+          <%= f.email_field :email, class: "form-control", required: true %>
+        </div>
+
+        <div class="mb-3">
+          <%= f.label :current_password, t("account_settings.username_email.current_password"), class: "form-label" %>
+          <%= f.password_field :current_password, class: "form-control", autocomplete: "current-password", required: true %>
+          <div class="form-text"><%= t("account_settings.username_email.current_password_hint") %></div>
+        </div>
+
+        <div class="form-actions">
+          <%= f.submit t("account_settings.username_email.update"), class: "btn btn-primary w-100" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+

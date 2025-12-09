@@ -9,6 +9,11 @@
   min-width: 300px;
   max-width: 500px;
   
+  // Ensure alert content wraps properly - use flexbox for text and button alignment
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  
   // White background, primary text color
   background-color: white;
   color: $primary;
@@ -28,6 +33,7 @@
     right: 1rem;
     min-width: auto;
     max-width: none;
+    padding: 0.875rem 1rem;
   }
   
   // Remove Bootstrap's default background colors
@@ -55,11 +61,22 @@
     color: $primary;
   }
   
+  // Alert message text - allow wrapping and take available space
+  > *:not(.btn-close) {
+    flex: 1;
+    min-width: 0; // Allow text to shrink below content size
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
   // Close button styling
   .btn-close {
     border-radius: 0.5rem;
     opacity: 0.7;
     transition: opacity 0.2s ease-in-out;
+    flex-shrink: 0; // Prevent button from shrinking
+    margin-left: 0.5rem; // Space from text
     
     &:hover {
       opacity: 1;

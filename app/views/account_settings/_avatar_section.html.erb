@@ -1,0 +1,40 @@
+<div class="account-section mb-4" id="avatar-section">
+  <h3 class="h5 mb-3"><%= t("account_settings.avatar.title") %></h3>
+  <div class="card">
+    <div class="card-body">
+      <div class="mb-3" data-controller="avatar-preview">
+        <p class="form-text mb-2"><%= t("account_settings.avatar.current") %></p>
+        <div id="avatar-preview-container" class="mb-3">
+          <% if user.avatar.attached? %>
+            <%= image_tag user.avatar, class: "rounded", style: "height: 100px; width: 100px; object-fit: cover; display: block;", data: { avatar_preview_target: "preview" } %>
+          <% else %>
+            <div class="rounded bg-secondary d-flex align-items-center justify-content-center" style="height: 100px; width: 100px; display: block;" data-avatar-preview-target="placeholder">
+              <span class="text-white fs-4"><%= user.username.first.upcase %></span>
+            </div>
+          <% end %>
+        </div>
+
+        <%= form_with model: user, url: update_avatar_account_settings_path, method: :patch, multipart: true, data: { turbo: true }, local: false do |f| %>
+          <% if user.errors[:avatar].any? %>
+            <div class="alert alert-danger">
+              <%= user.errors[:avatar].join(", ") %>
+            </div>
+          <% end %>
+
+          <div class="mb-3">
+            <%= f.file_field :avatar, class: "form-control", accept: "image/*", data: { avatar_preview_target: "fileInput", action: "change->avatar-preview#fileSelected" } %>
+            <div class="form-text"><%= t("account_settings.avatar.hint") %></div>
+          </div>
+
+          <div class="form-actions d-flex flex-column gap-2">
+            <%= f.submit t("account_settings.avatar.update"), class: "btn btn-primary", data: { avatar_preview_target: "submitButton" } %>
+            <button type="button" class="btn btn-primary <%= 'd-none' unless user.avatar.attached? %>" data-bs-toggle="modal" data-bs-target="#delete-avatar-modal" id="delete-avatar-button">
+              <%= t("account_settings.avatar.delete") %>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
