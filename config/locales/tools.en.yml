@@ -1,0 +1,41 @@
+en:
+  actions:
+    back: "Back"
+    cancel: "Cancel"
+    edit: "Edit"
+    delete: "Delete"
+  tools:
+    index:
+      title: "Tools"
+      new_tool: "New tool"
+      owner: "by %{owner}"
+      empty_state: "No tools yet. Create the first one!"
+    new:
+      title: "Create tool"
+    edit:
+      title: "Edit tool"
+    show:
+      owner: "Owned by %{owner}"
+      description: "Description"
+      author_note: "Author note"
+      picture: "Picture"
+    form:
+      tool_name: "Name"
+      tool_description: "Description"
+      tool_url: "Link"
+      author_note: "Author note"
+      visibility: "Visibility"
+      icon: "Icon"
+      picture: "Picture"
+    visibility:
+      private: "Private"
+      unlisted: "Unlisted"
+      public: "Public"
+    confirmations:
+      destroy: "Are you sure you want to delete this tool?"
+    flash:
+      created: "Tool created successfully."
+      updated: "Tool updated successfully."
+      destroyed: "Tool deleted."
+      unauthorized: "You are not allowed to modify this tool."
+
