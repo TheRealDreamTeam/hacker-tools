@@ -56,7 +56,10 @@
 }
 
 // Offcanvas menu styling
-.offcanvas {
+.offcanvas,
+.offcanvas-start {
+  width: 80% !important; // Limit drawer to 80% of the viewport width
+  max-width: 80% !important; // Ensure max-width is also 80%
   
   .offcanvas-header {
     border-bottom: 1px solid #e9ecef;
