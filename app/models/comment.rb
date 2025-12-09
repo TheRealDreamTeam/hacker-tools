@@ -10,7 +10,12 @@ class Comment < ApplicationRecord
   has_many :comment_upvotes, dependent: :destroy
   has_many :upvoters, through: :comment_upvotes, source: :user
 
+  enum comment_type: { comment: 0, flag: 1, bug: 2 }, _prefix: true
+
+  before_validation :default_comment_type
+
   validates :comment, presence: true
+  validates :comment_type, presence: true
 
   # Scopes
   scope :top_level, -> { where(parent_id: nil) }
@@ -18,6 +23,27 @@ class Comment < ApplicationRecord
   scope :solved, -> { where(solved: true) }
   scope :unsolved, -> { where(solved: false) }
   scope :recent, -> { order(created_at: :desc) }
-  scope :most_upvoted, -> { joins(:comment_upvotes).group("comments.id").order("COUNT(comment_upvotes.id) DESC") }
+  # Most upvoted includes comments with 0 upvotes (left join)
+  scope :most_upvoted, -> { left_joins(:comment_upvotes).group("comments.id").order("COUNT(comment_upvotes.id) DESC, comments.created_at DESC") }
+  # Trending: most upvoted in last 7 days
+  scope :trending, -> { where("comments.created_at >= ?", 7.days.ago).left_joins(:comment_upvotes).group("comments.id").order("COUNT(comment_upvotes.id) DESC, comments.created_at DESC") }
+
+  # Check if current user has upvoted this comment
+  def upvoted_by?(user)
+    return false unless user
+
+    comment_upvotes.exists?(user: user)
+  end
+
+  # Get upvote count
+  def upvote_count
+    comment_upvotes.count
+  end
+
+  private
+
+  def default_comment_type
+    self.comment_type ||= :comment
+  end
 end
 

@@ -19,6 +19,9 @@ en:
       description: "Description"
       author_note: "Author note"
       picture: "Picture"
+      comments_title: "Discussion"
+      flags_title: "Flags"
+      bugs_title: "Bugs"
     form:
       tool_name: "Name"
       tool_description: "Description"
@@ -38,4 +41,43 @@ en:
       updated: "Tool updated successfully."
       destroyed: "Tool deleted."
       unauthorized: "You are not allowed to modify this tool."
+
+  comments:
+    actions:
+      submit: "Submit"
+      post_comment: "Post comment"
+      reply: "Reply"
+      add_flag: "Flag issue"
+      add_bug: "Report bug"
+      submit_flag: "Submit flag"
+      submit_bug: "Submit bug"
+      delete: "Delete"
+      toggle_resolve: "Toggle resolve"
+      upvote: "Upvote"
+      remove_upvote: "Remove upvote"
+    sort:
+      recent: "Recent"
+      most_upvoted: "Most upvoted"
+      trending: "Trending"
+    form:
+      placeholder: "Write your comment..."
+      comment_placeholder: "Share your thoughts or questions"
+      reply_placeholder: "Write a reply..."
+      flag_placeholder: "Describe what's wrong (e.g., broken URL, outdated info)"
+      bug_placeholder: "Describe the bug, what you tried, and any error message"
+    labels:
+      resolved: "Resolved"
+      unresolved: "Unresolved"
+    confirmations:
+      delete: "Delete this comment?"
+    flash:
+      created: "Comment submitted."
+      deleted: "Comment deleted."
+      resolved: "Comment status updated."
+      unauthorized: "You are not authorized to perform this action."
+      upvoted: "Upvoted!"
+      upvote_removed: "Upvote removed."
+    empty:
+      flags: "No flags yet."
+      bugs: "No bugs reported yet."
 

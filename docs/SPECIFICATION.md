@@ -32,7 +32,7 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Active Storage optional for icons/pictures
 
 ### Engagement & Feedback
-- **Status**: Planned
+- **Status**: In Progress
 - **Description**: Users discuss tools and react with upvotes, favorites, subscriptions, and read tracking.
 - **User Stories**:
   - As a user, I want to comment on a tool and reply to threads so I can ask questions or provide feedback.
@@ -41,10 +41,13 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Technical Implementation**:
   - Models: `Comment`, `CommentUpvote`, `UserTool`
   - Threaded comments via `parent_id` on `Comment`
+  - Comment types: `comment`, `flag`, `bug`; `solved` marks resolved flags/bugs
+  - Tool show page sections: comments (threaded), flags (resolvable), bugs (resolvable)
   - User-tool interaction flags stored on `UserTool`
 - **UI/UX Considerations**:
-  - Turbo Streams for live comment threads
+  - Turbo Streams for live comment threads (future)
   - Accessible forms and focus management for replies
+  - Inline, collapsible forms for flag/bug submissions
 - **Dependencies**:
   - Devise-authenticated users for interactions
 
@@ -81,9 +84,9 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ### Comment
 - **Purpose**: Threaded discussion on a tool.
-- **Attributes**: `comment` (text, required), `comment_type` (integer enum), `visibility` (integer enum), `parent_id` (self-referential), `solved` (boolean)
+- **Attributes**: `comment` (text, required), `comment_type` (integer enum: comment/flag/bug), `parent_id` (self-referential), `solved` (boolean)
 - **Associations**: `belongs_to :tool`; `belongs_to :user`; `belongs_to :parent, class_name: "Comment", optional: true`; `has_many :replies, class_name: "Comment"`
-- **Validations**: Presence on body; enums for type/visibility.
+- **Validations**: Presence on body; presence on type.
 
 ### Tag
 - **Purpose**: Classification for tools.
