@@ -1,0 +1,45 @@
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <h1 class="h3 mb-2"><%= @tool.tool_name %></h1>
+    <p class="text-secondary mb-1"><%= t("tools.show.owner", owner: @tool.user.username || @tool.user.email) %></p>
+    <% if @tool.tool_url.present? %>
+      <p class="mb-0">
+        <%= link_to @tool.tool_url, @tool.tool_url, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none" %>
+      </p>
+    <% end %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <% if @tool.icon.attached? %>
+      <%= image_tag @tool.icon, class: "rounded", style: "height: 64px; width: 64px; object-fit: cover;" %>
+    <% end %>
+  </div>
+</div>
+
+<div class="mb-4">
+  <h2 class="h5"><%= t("tools.show.description") %></h2>
+  <p><%= simple_format(@tool.tool_description) %></p>
+</div>
+
+<div class="mb-4">
+  <h2 class="h5"><%= t("tools.show.author_note") %></h2>
+  <p><%= simple_format(@tool.author_note) %></p>
+</div>
+
+<% if @tool.picture.attached? %>
+  <div class="mb-4">
+    <h2 class="h5"><%= t("tools.show.picture") %></h2>
+    <%= image_tag @tool.picture, class: "img-fluid rounded" %>
+  </div>
+<% end %>
+
+<div class="d-flex gap-2">
+  <% if @tool.user == current_user %>
+    <%= link_to t("actions.edit"), edit_tool_path(@tool), class: "btn btn-outline-primary" %>
+    <%= button_to t("actions.delete"), tool_path(@tool), method: :delete,
+                  data: { turbo_confirm: t("tools.confirmations.destroy") },
+                  class: "btn btn-outline-danger" %>
+  <% end %>
+  <%= link_to t("actions.back"), tools_path, class: "btn btn-secondary" %>
+</div>
+
