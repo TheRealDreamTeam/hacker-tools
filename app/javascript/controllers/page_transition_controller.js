@@ -30,7 +30,7 @@ export default class extends Controller {
       // Remove the class after animation completes to allow re-triggering
       setTimeout(() => {
         this.element.classList.remove("page-transition-enter")
-      }, 300) // Match CSS animation duration
+      }, 250) // Match CSS animation duration (0.25s)
     } else {
       // Turbo handled this - clear the flag for next navigation
       sessionStorage.removeItem("turbo-navigation")

@@ -4,8 +4,11 @@
 
 // Animation class applied on full page reload
 // Fades in the page content smoothly
+// Duration: 250ms is optimal for page transitions - fast enough to feel responsive,
+// slow enough to be smooth and noticeable without feeling sluggish
+// Easing: ease-out feels more natural for fade-ins (starts fast, ends slow)
 body.page-transition-enter {
-  animation: pageFadeIn 0.3s ease-in-out;
+  animation: pageFadeIn 0.25s ease-out;
 }
 
 @keyframes pageFadeIn {
