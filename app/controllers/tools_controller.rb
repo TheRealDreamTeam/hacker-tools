@@ -9,6 +9,29 @@ class ToolsController < ApplicationController
 
   # GET /tools/:id
   def show
+    @sort_by = params[:sort_by] || "recent"
+    @sort_by_flags = params[:sort_by_flags] || "recent"
+    @sort_by_bugs = params[:sort_by_bugs] || "recent"
+
+    # Load comments with upvote counts and user upvote status
+    comments_base = @tool.comments.comment_type_comment.top_level.includes(:user, :comment_upvotes, replies: [:user, :comment_upvotes])
+    @comments = apply_sort(comments_base, @sort_by)
+
+    # Load flags with upvote counts
+    flags_base = @tool.comments.comment_type_flag.includes(:user, :comment_upvotes)
+    @flags = apply_sort(flags_base, @sort_by_flags)
+    # For flags, show unsolved first when sorting by recent
+    @flags = @flags.order(solved: :asc) if @sort_by_flags == "recent"
+
+    # Load bugs with upvote counts
+    bugs_base = @tool.comments.comment_type_bug.includes(:user, :comment_upvotes)
+    @bugs = apply_sort(bugs_base, @sort_by_bugs)
+    # For bugs, show unsolved first when sorting by recent
+    @bugs = @bugs.order(solved: :asc) if @sort_by_bugs == "recent"
+
+    @new_comment = @tool.comments.new(comment_type: :comment)
+    @new_flag = @tool.comments.new(comment_type: :flag)
+    @new_bug = @tool.comments.new(comment_type: :bug)
   end
 
   # GET /tools/new
@@ -61,6 +84,19 @@ class ToolsController < ApplicationController
 
   def tool_params
     params.require(:tool).permit(:tool_url, :author_note)
+  end
+
+  def apply_sort(collection, sort_by)
+    case sort_by
+    when "most_upvoted"
+      # For most_upvoted, we need to handle the GROUP BY properly
+      # Use a subquery or reorder to maintain the grouping
+      collection.most_upvoted
+    when "trending"
+      collection.trending
+    else # "recent" or default
+      collection.recent
+    end
   end
 end
 

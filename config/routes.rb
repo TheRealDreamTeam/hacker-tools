@@ -17,7 +17,12 @@ Rails.application.routes.draw do
       end
     end
     root to: "pages#home"
-    resources :tools
+    resources :tools do
+      resources :comments, only: [:create, :destroy] do
+        patch :resolve, on: :member
+        post :upvote, on: :member
+      end
+    end
     # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
     # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
