@@ -7,18 +7,24 @@
     <div class="col-12 col-lg-8">
       <%= form_with url: root_path,
                     method: :get,
-                    local: true,
+                    local: false,
+                    data: { turbo_stream: true },
                     role: "search",
                     class: "row g-2 align-items-center" do |form| %>
         <div class="col-12 col-md-9">
           <%= form.search_field :query,
+                                value: params[:query],
+                                id: "tool-search-input",
                                 class: "form-control form-control-lg",
                                 placeholder: t("pages.home.search_placeholder"),
-                                aria: { label: t("pages.home.search_placeholder") } %>
+                                aria: { label: t("pages.home.search_placeholder") },
+                                oninput: "debounceSearch(this)" %>
         </div>
         <div class="col-12 col-md-3 d-grid">
           <%= form.submit t("actions.search"), class: "btn btn-primary btn-lg" %>
         </div>
+        <!-- Hidden field to preserve category selection -->
+        <%= hidden_field_tag :category, params[:category] || "trending" %>
       <% end %>
     </div>
   </div>
@@ -29,13 +35,13 @@
   <div class="row justify-content-center mb-4">
     <div class="col-12 col-lg-8">
       <div class="btn-group w-100" role="group" aria-label="<%= t('pages.home.category_aria_label') %>">
-        <button type="button" class="btn btn-outline-primary active category-toggle" data-category="trending" aria-pressed="true">
+        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'trending' %> category-toggle" data-category="trending" aria-pressed="<%= @category == 'trending' %>">
           <%= t("pages.home.categories.trending") %>
         </button>
-        <button type="button" class="btn btn-outline-primary category-toggle" data-category="new" aria-pressed="false">
+        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'new' %> category-toggle" data-category="new" aria-pressed="<%= @category == 'new' %>">
           <%= t("pages.home.categories.new_hot") %>
         </button>
-        <button type="button" class="btn btn-outline-primary category-toggle" data-category="upvoted" aria-pressed="false">
+        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'upvoted' %> category-toggle" data-category="upvoted" aria-pressed="<%= @category == 'upvoted' %>">
           <%= t("pages.home.categories.most_upvoted") %>
         </button>
       </div>
@@ -48,67 +54,14 @@
       <% panels = { "trending" => @trending_tools, "new" => @new_hot_tools, "upvoted" => @most_upvoted_tools } %>
 
       <% panels.each_with_index do |(panel, tools), panel_idx| %>
-        <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless panel_idx.zero? %>" data-category-panel="<%= panel %>">
+        <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless @category == panel %>" data-category-panel="<%= panel %>" id="category-panel-<%= panel %>">
           <div class="card-body">
             <% if tools.blank? %>
               <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
             <% else %>
               <% tools.each_with_index do |tool, i| %>
                 <% upvotes = (tool.respond_to?(:upvotes_count) && tool.upvotes_count.present?) ? tool.upvotes_count.to_i : 0 %>
-                <div class="card mb-3 position-relative card-hover">
-                  <div class="card-body">
-                    <div class="row align-items-center">
-                      <!-- Left content: star, title, description, tags -->
-                      <div class="col-12 col-md-5">
-                        <h5 class="card-title mb-1">
-                          <span class="text-warning me-2" aria-hidden="true">★</span>
-                          <%= "#{i + 1}. #{tool.tool_name}" %>
-                        </h5>
-                        <p class="card-text text-muted mb-2"><%= tool.tool_description.presence || t("pages.home.card.description", index: i + 1) %></p>
-                        <div class="d-flex flex-wrap gap-2">
-                          <% displayed_tags = tool.tags.limit(3) %>
-                          <% if displayed_tags.any? %>
-                            <% displayed_tags.each do |tag| %>
-                              <span class="badge bg-light text-primary border"><%= tag.tag_name %></span>
-                            <% end %>
-                          <% else %>
-                            <% [
-                              t("pages.home.card.sample_tag_one"),
-                              t("pages.home.card.sample_tag_two"),
-                              t("pages.home.card.sample_tag_three")
-                            ].each do |tag| %>
-                              <span class="badge bg-light text-primary border"><%= tag %></span>
-                            <% end %>
-                          <% end %>
-                        </div>
-                        <%= link_to "/tools/#{tool.id}",
-                                    class: "stretched-link",
-                                    aria: { label: t("pages.home.card.view_placeholder") },
-                                    data: { placeholder: "tool-link" } do %>
-                          <span class="visually-hidden"><%= t("pages.home.card.view_placeholder") %></span>
-                        <% end %>
-                      </div>
-
-                      <!-- Right content: logo + upvotes aligned on the same row -->
-                      <div class="col-12 col-md-7 d-flex justify-content-md-end justify-content-start align-items-center gap-3 mt-3 mt-md-0">
-                        <div class="border rounded-circle bg-light d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
-                          <% if tool.icon.attached? %>
-                            <%= image_tag tool.icon, alt: tool.tool_name, class: "rounded-circle", style: "width: 64px; height: 64px; object-fit: cover;" %>
-                          <% else %>
-                            <span class="text-muted small"><%= t("pages.home.card.logo_placeholder") %></span>
-                          <% end %>
-                        </div>
-                        <button type="button"
-                                class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2 upvote-button"
-                                data-count="<%= upvotes %>"
-                                data-tool-id="<%= tool.id %>">
-                          <span aria-hidden="true">▲</span>
-                          <span data-upvote-count><%= t("pages.home.card.upvotes", count: upvotes) %></span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <%= render partial: "tool_card", locals: { tool: tool, index: i, upvotes: upvotes } %>
               <% end %>
             <% end %>
           </div>
@@ -140,9 +93,31 @@
     };
 
     buttons.forEach((btn) => {
-      btn.addEventListener("click", () => showCategory(btn.dataset.category));
+      btn.addEventListener("click", () => {
+        const category = btn.dataset.category;
+        showCategory(category);
+        // Update hidden field in search form
+        const categoryInput = document.querySelector('input[name="category"]');
+        if (categoryInput) {
+          categoryInput.value = category;
+        }
+        // Submit form to update results
+        const form = btn.closest('.container').querySelector('form');
+        if (form) {
+          form.requestSubmit();
+        }
+      });
     });
   };
+
+  // Debounce function for search input
+  let searchTimeout;
+  function debounceSearch(input) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      input.form.requestSubmit();
+    }, 300); // Wait 300ms after user stops typing
+  }
 
   document.addEventListener("turbo:load", attachCategoryToggle);
   document.addEventListener("DOMContentLoaded", attachCategoryToggle);
@@ -172,8 +147,15 @@
     });
   };
 
-  document.addEventListener("turbo:load", attachUpvoteHandlers);
-  document.addEventListener("DOMContentLoaded", attachUpvoteHandlers);
+  // Reattach handlers after Turbo Stream updates
+  const reattachHandlers = () => {
+    attachCategoryToggle();
+    attachUpvoteHandlers();
+  };
+
+  document.addEventListener("turbo:load", reattachHandlers);
+  document.addEventListener("DOMContentLoaded", reattachHandlers);
+  document.addEventListener("turbo:frame-load", reattachHandlers);
 <% end %>
 
 <style>

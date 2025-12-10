@@ -2,7 +2,17 @@ class PagesController < ApplicationController
   skip_before_action :authenticate_user!, only: [ :home ]
 
   def home
+    @query = params[:query]&.strip
+    @category = params[:category] || "trending"
     base_scope = Tool.public_tools.includes(:tags, :user_tools)
+
+    # Apply search query filter if present (search in tool name, description, and tags)
+    if @query.present?
+      base_scope = base_scope.left_joins(:tags).where(
+        "tools.tool_name ILIKE ? OR tools.tool_description ILIKE ? OR tags.tag_name ILIKE ?",
+        "%#{@query}%", "%#{@query}%", "%#{@query}%"
+      ).distinct
+    end
 
     # Trending: Tools with most upvotes in the last 30 days
     @trending_tools = base_scope
@@ -29,5 +39,10 @@ class PagesController < ApplicationController
       .group("tools.id")
       .order("upvotes_count DESC, tools.created_at DESC")
       .limit(10)
+
+    respond_to do |format|
+      format.html
+      format.turbo_stream
+    end
   end
 end
