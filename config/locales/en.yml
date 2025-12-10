@@ -40,8 +40,15 @@ en:
   pages:
     home:
       title: "Home"
-      heading: "Welcome"
+      heading: "Welcome to HackerTool. Your peer-powered guide to the most relevant dev tools."
       description: "Search less. Build more."
+      hero:
+        heading: "Search less. Build more."
+        subheading: "Your peer-powered guide to the most relevant dev tools. Because staying up to date shouldn't cost you time."
+        articles:
+          newest: "<Newest article from admin>"
+          roadmaps: "Roadmaps"
+          about_us: "About us"
       search_placeholder: "Search tools, tags, or lists"
       category_aria_label: "Tool category filters"
       categories:
