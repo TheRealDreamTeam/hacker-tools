@@ -10,6 +10,23 @@
   border-radius: 0.75rem; // 12px
   box-shadow: 0 2px 12px rgba($primary, 0.1);
   
+  // Wider container for account settings (2-column layout)
+  &.account-settings-container {
+    max-width: 900px; // Wider to accommodate 2 columns
+
+    .form-text {
+      padding-left: 4px;
+    }
+
+    .form-label {
+      padding-left: 2px;
+    }
+    
+    @media (min-width: 992px) {
+      max-width: 1000px;
+    }
+  }
+  
   // Responsive padding for mobile - more compact
   @media (max-width: 576px) {
     margin: 1rem;
@@ -39,6 +56,13 @@
   color: $primary;
   padding-top: 2rem;
   border-top: 1px solid #e9ecef;
+}
+
+// Remove divider lines for account sections
+.devise-container .account-section h3 {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
 }
 
 // Form styling within Devise pages
@@ -88,6 +112,19 @@
       border-color: $primary;
       box-shadow: 0 0 0 0.2rem rgba($primary, 0.15);
       outline: none;
+    }
+  }
+  
+  // Textarea fields - 3x input height, no resize, scrollable
+  textarea.form-control {
+    height: 8.25rem; // 3 × 2.75rem (3x input height)
+    resize: none; // Disable resize handle to prevent lag
+    overflow-y: auto; // Enable vertical scrolling when content overflows
+    line-height: 1.5; // Better readability with scrolling
+    
+    // Slightly smaller on mobile (3x mobile input height)
+    @media (max-width: 576px) {
+      height: 7.5rem; // 3 × 2.5rem
     }
   }
   
@@ -263,7 +300,79 @@
   }
 }
 
-// Cancel account section
+// Account sections - separate cards for each section
+.devise-container .account-section {
+  margin-bottom: 0.75rem; // Significantly reduced from 2rem
+  
+  // Override Bootstrap margin utilities
+  &.mb-4 {
+    margin-bottom: 0.75rem !important;
+  }
+  
+  .card {
+    border-radius: 0.75rem; // 12px
+    border: 1px solid #dee2e6; // Restored border
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); // Restored shadow
+    
+    .card-body {
+      padding: 1rem; // Reduced from 1.5rem
+    }
+  }
+  
+  h3 {
+    font-weight: 600;
+    color: $primary;
+    margin-bottom: 0.5rem; // Reduced from 1rem
+    border-top: none; // Remove divider line before section
+    padding-top: 0; // Remove padding that was for border
+  }
+  
+  // Form inputs in account sections
+  .form-control {
+    // More compact on mobile
+    @media (max-width: 576px) {
+      height: 2.5rem; // 40px
+      padding: 0.5rem 0.875rem;
+      font-size: 0.9375rem;
+    }
+  }
+  
+  // Textarea in account sections
+  textarea.form-control {
+    // More compact on mobile
+    @media (max-width: 576px) {
+      height: 7.5rem; // 3 × 2.5rem (3x mobile input height)
+    }
+  }
+  
+  // Buttons in account sections
+  .btn {
+    // More compact on mobile
+    @media (max-width: 576px) {
+      height: 2.5rem; // 40px
+      padding: 0.5rem 1.25rem;
+      font-size: 0.9375rem;
+    }
+  }
+  
+  // Form groups
+  .mb-3 {
+    margin-bottom: 0.5rem !important; // Reduced globally
+  }
+  
+  // Form actions
+  .form-actions {
+    margin-top: 0.5rem; // Reduced from 1rem
+  }
+  
+  // Danger zone styling
+  .card.border-danger {
+    border-color: #dc3545 !important;
+    border-width: 2px;
+  }
+}
+
+// Cancel account section (legacy - keeping for backwards compatibility)
 .devise-container .cancel-account-section {
   margin-top: 2.5rem;
   padding-top: 2rem;

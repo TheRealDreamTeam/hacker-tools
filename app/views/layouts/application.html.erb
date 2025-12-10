@@ -50,11 +50,36 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <!-- Prevent FOUC (Flash of Unstyled Content) -->
+    <!-- Hide body until styles and JavaScript are ready -->
+    <!-- Fallback: Show content after 1 second if JavaScript fails -->
+    <style>
+      body:not(.fouc-ready) {
+        visibility: hidden;
+        opacity: 0;
+      }
+      body.fouc-ready {
+        visibility: visible;
+        opacity: 1;
+        transition: opacity 0.2s ease-out;
+      }
+      /* Fallback: Show content if JavaScript fails to load (after 1 second) */
+      body:not(.fouc-ready) {
+        animation: fouc-fallback 0.1s 1s forwards;
+      }
+      @keyframes fouc-fallback {
+        to {
+          visibility: visible;
+          opacity: 1;
+        }
+      }
+    </style>
+
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body data-controller="page-transition">
     <%= render "shared/navbar" %>
     <%= render "shared/flashes" %>
     <%= yield %>

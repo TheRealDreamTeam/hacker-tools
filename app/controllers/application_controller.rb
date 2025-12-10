@@ -25,8 +25,9 @@ class ApplicationController < ActionController::Base
   end
 
   # Permit additional Devise parameters such as username to satisfy DB null constraints.
+  # Avatar and user_bio are optional and only permitted on account_update (not sign_up)
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: [:username])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:username])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:username, :avatar, :user_bio])
   end
 end

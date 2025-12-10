@@ -1,0 +1,82 @@
+<div class="devise-container account-settings-container">
+  <h2 class="border-bottom pb-3"><%= t("account_settings.title") %></h2>
+
+  <!-- Flash messages container for Turbo Stream updates -->
+  <div id="flash-messages"></div>
+
+  <!-- Two column layout on desktop, single column on mobile -->
+  <div class="row g-3 pt-3">
+    <!-- Left Column: Profile Information -->
+      <!-- Section 1: Avatar Update -->
+      <div class="col-12 col-md-6 ">
+        <%= render partial: "account_settings/avatar_section", locals: { user: @user }%>
+      </div>
+
+      <!-- Section 2: Bio Update -->
+      <div class="col-12 col-md-6">
+        <%= render partial: "account_settings/bio_section", locals: { user: @user }%>
+      </div>
+
+    <!-- Right Column: Account Security -->
+      <!-- Section 3: Username and Email Update -->
+      <div class="col-12 col-md-6">
+        <%= render partial: "account_settings/username_email_section", locals: { user: @user }%>
+      </div>
+
+      <!-- Section 4: Password Update -->
+      <div class="col-12 col-md-6">
+        <%= render partial: "account_settings/password_section", locals: { user: @user }%>
+      </div>
+
+      <!-- Section 5: Account Deletion -->
+      <div class="account-section col-12 col-md-6 h-100 d-flex flex-column" id="delete-section">
+        <h3 class="h5 mb-3 ps-1"><%= t("account_settings.destroy.title") %></h3>
+        <div class="card border-danger h-100 d-flex flex-column">
+          <div class="card-body d-flex flex-column flex-grow-1">
+            <p class="text-danger mb-3"><%= t("account_settings.destroy.warning") %></p>
+            <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#delete-account-modal">
+              <%= t("account_settings.destroy.button") %>
+            </button>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <%= link_to t("account_settings.back"), profile_path, class: "back-link mt-4 d-inline-block" %>
+</div>
+
+<%# Confirmation Modal for Avatar Deletion %>
+<%= render "shared/confirmation_modal",
+    id: "delete-avatar-modal",
+    title: t("account_settings.avatar.delete_modal_title"),
+    message: t("account_settings.avatar.delete_modal_message"),
+    confirm_text: t("account_settings.avatar.delete_confirm_button"),
+    confirm_class: "btn-primary",
+    form_action: delete_avatar_account_settings_path,
+    form_method: :delete %>
+
+<%# Confirmation Modal for Account Deletion %>
+<div class="modal fade" id="delete-account-modal" tabindex="-1" aria-labelledby="delete-account-modal-label" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="delete-account-modal-label"><%= t("account_settings.destroy.modal_title") %></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t("navigation.close") %>"></button>
+      </div>
+      <%= form_with model: @user, url: account_settings_path, method: :delete, data: { turbo: false }, local: true do |f| %>
+        <div class="modal-body">
+          <p><%= t("account_settings.destroy.modal_message") %></p>
+          <div class="mt-3">
+            <%= f.label :password, t("account_settings.destroy.password_label"), class: "form-label" %>
+            <%= f.password_field :password, class: "form-control", placeholder: t("account_settings.destroy.password_placeholder"), required: true, autocomplete: "current-password" %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= t("actions.cancel") %></button>
+          <%= f.submit t("account_settings.destroy.confirm_button"), class: "btn btn-outline-danger" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
