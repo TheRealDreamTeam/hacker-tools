@@ -1,0 +1,17 @@
+<% if @user.errors.any? %>
+  <%= turbo_stream.replace "avatar-section" do %>
+    <%= render partial: "account_settings/avatar_section", locals: { user: @user } %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.replace "avatar-section" do %>
+    <%= render partial: "account_settings/avatar_section", locals: { user: @user } %>
+  <% end %>
+  
+  <%= turbo_stream.append "flash-messages" do %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert" data-controller="flash" data-flash-auto-dismiss-value="2000">
+      <span><%= t("account_settings.avatar.updated") %></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="<%= t("navigation.close") %>"></button>
+    </div>
+  <% end %>
+<% end %>
+

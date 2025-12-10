@@ -232,6 +232,44 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Responsive design for mobile devices
 - **Internationalization**: All Devise views fully internationalized using Rails i18n
 
+## User Profile
+
+- **Status**: Complete
+- **Description**: User profile page and account settings management
+- **Features**:
+  - Profile display page showing username, avatar, and bio
+  - Account settings with separate sections for different updates
+  - Avatar management (upload, delete) - no password required
+  - Bio management - no password required
+  - Username and email updates - password required
+  - Password changes - password required
+  - Account deletion with confirmation modal
+- **Routes**:
+  - `GET /profile` → `profiles#show` (profile display page)
+  - `GET /users/edit` → `users/registrations#edit` (account settings)
+  - `DELETE /users/delete_avatar` → `users/registrations#delete_avatar` (delete avatar)
+- **Controllers**:
+  - `ProfilesController` - Simple controller for profile display
+  - `Users::RegistrationsController` - Custom Devise controller extending default registrations
+- **Views**:
+  - Profile page (`profiles/show.html.erb`) - Read-only profile display with link to account settings
+  - Account settings (`devise/registrations/edit.html.erb`) - Split into 5 sections:
+    1. Avatar update (with delete button)
+    2. Bio update
+    3. Username and email update
+    4. Password change
+    5. Account deletion
+- **Security**:
+  - Avatar and bio updates don't require password (less sensitive)
+  - Username, email, and password changes require current password
+  - Account deletion requires confirmation via modal
+- **UI/UX**:
+  - Profile page shows avatar (or gray placeholder with initial)
+  - Account settings organized in card-based sections
+  - Each section has its own submit button
+  - Confirmation modal for destructive actions (avatar deletion, account deletion)
+  - Consistent styling with design system (12px rounded corners, proper spacing)
+
 ## UI Components
 
 ### Navigation
@@ -268,6 +306,43 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Auto-dismisses after 2 seconds (2000ms)
   - Manual dismiss via close button
   - Smooth animations for both appear and dismiss
+
+### Confirmation Modal
+- **Status**: Complete
+- **Description**: Reusable confirmation modal for destructive actions (delete, remove, etc.)
+- **Components**:
+  - Confirmation modal partial (`shared/_confirmation_modal.html.erb`)
+  - Stimulus controller (`confirmation_modal_controller.js`) for modal interactions
+- **Usage Pattern**:
+  - Use for all destructive actions (delete account, delete avatar, delete tool, etc.)
+  - Replace browser default `confirm()` dialogs with this modal
+  - Provides consistent UX across the application
+- **Implementation**:
+  - Bootstrap modal with centered dialog
+  - Dimmed background overlay
+  - Configurable title, message, and button text
+  - Supports form submission via `button_to` for DELETE requests
+  - Styled with 12px rounded corners consistent with design system
+- **Styling**:
+  - Modal content has 12px rounded corners
+  - Dimmed background (rgba(0, 0, 0, 0.5))
+  - Centered modal dialog
+  - Consistent button styling with app design system
+  - Proper spacing and typography
+- **Example Usage**:
+  ```erb
+  <%= render "shared/confirmation_modal",
+      id: "delete-avatar-modal",
+      title: "Delete Avatar",
+      message: "Are you sure you want to delete your avatar?",
+      confirm_text: "Yes, Delete Avatar",
+      confirm_class: "btn-danger",
+      form_action: delete_avatar_user_registration_path,
+      form_method: :delete %>
+  ```
+- **Current Usage**:
+  - Account deletion (`devise/registrations/edit.html.erb`)
+  - Avatar deletion (`devise/registrations/edit.html.erb`)
 
 ### Home Page
 - **Status**: Complete

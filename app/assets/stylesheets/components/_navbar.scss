@@ -23,13 +23,12 @@
   
   // Navbar toggler button
   .navbar-toggler {
-    border: 1px solid #dee2e6;
+    border: none;
     border-radius: 0.75rem; // 12px
-    padding: 0.5rem 0.75rem;
+    padding: 0;
     transition: all 0.2s ease-in-out;
     
     &:hover {
-      border-color: $primary;
       box-shadow: 0 2px 4px rgba($primary, 0.1);
     }
     
