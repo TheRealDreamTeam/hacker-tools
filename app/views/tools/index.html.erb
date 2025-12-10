@@ -18,6 +18,20 @@
               <% end %>
             </div>
             <p class="text-muted mb-2"><%= truncate(tool.tool_description, length: 140) %></p>
+            <% if tool.tags.any? %>
+              <div class="mb-2 d-flex flex-wrap gap-1">
+                <% tool.tags.limit(5).each do |tag| %>
+                  <span class="badge <%= tag_badge_class(tag.tag_type) %>" style="font-size: 0.75rem;">
+                    <%= tag.display_name %>
+                  </span>
+                <% end %>
+                <% if tool.tags.count > 5 %>
+                  <span class="badge bg-secondary" style="font-size: 0.75rem;">
+                    +<%= tool.tags.count - 5 %>
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
             <p class="small mb-0 text-secondary">
               <%= t("tools.index.owner", owner: tool.user.username || tool.user.email) %>
             </p>

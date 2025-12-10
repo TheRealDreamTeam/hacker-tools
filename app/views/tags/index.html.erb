@@ -1,0 +1,32 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3 mb-0"><%= t("tags.index.title") %></h1>
+  <%= link_to t("tags.actions.new"), new_tag_path, class: "btn btn-primary" %>
+</div>
+
+<% if @tags_by_type.any? %>
+  <% @tags_by_type.each do |tag_type, tags| %>
+    <div class="card mb-4">
+      <div class="card-header" style="background-color: <%= tag_type_color(tag_type) %>">
+        <h2 class="h5 mb-0 text-white"><%= t("tags.tag_types.#{tag_type}") %></h2>
+      </div>
+      <div class="card-body">
+        <% root_tags = tags.select(&:root?) %>
+        <% if root_tags.any? %>
+          <ul class="list-unstyled mb-0">
+            <% root_tags.each do |root_tag| %>
+              <%= render "tags/tag_item", tag: root_tag, all_tags: tags %>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-muted mb-0"><%= t("tags.index.no_tags") %></p>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <div class="alert alert-light border">
+    <p class="mb-0"><%= t("tags.index.empty") %></p>
+    <%= link_to t("tags.actions.new"), new_tag_path, class: "btn btn-primary mt-2" %>
+  </div>
+<% end %>
+

@@ -19,9 +19,15 @@ en:
       description: "Description"
       author_note: "Author note"
       picture: "Picture"
+      tags_title: "Tags"
+      no_tags: "No tags yet."
+      select_tag: "Select a tag to add"
       comments_title: "Discussion"
       flags_title: "Flags"
       bugs_title: "Bugs"
+    actions:
+      add_tag: "Add tag"
+      remove_tag: "Remove tag"
     form:
       tool_name: "Name"
       tool_description: "Description"
@@ -41,6 +47,9 @@ en:
       updated: "Tool updated successfully."
       destroyed: "Tool deleted."
       unauthorized: "You are not allowed to modify this tool."
+      tag_added: "Tag added successfully."
+      tag_removed: "Tag removed successfully."
+      tag_not_found: "Tag not found."
 
   comments:
     actions:
@@ -80,4 +89,41 @@ en:
     empty:
       flags: "No flags yet."
       bugs: "No bugs reported yet."
+
+  tags:
+    index:
+      title: "Tags"
+      empty: "No tags created yet."
+      no_tags: "No tags in this category."
+    new:
+      title: "Create tag"
+    edit:
+      title: "Edit tag"
+    actions:
+      new: "New tag"
+    form:
+      tag_name: "Tag name"
+      tag_description: "Description"
+      tag_type: "Tag type"
+      parent: "Parent tag"
+      no_parent: "None (root tag)"
+    tag_types:
+      category: "Category"
+      language: "Programming Language"
+      framework: "Framework"
+      library: "Library"
+      version: "Version"
+      platform: "Platform"
+      other: "Other"
+    labels:
+      parent: "Parent"
+      tools_count:
+        one: "1 tool"
+        other: "%{count} tools"
+    confirmations:
+      destroy: "Are you sure you want to delete this tag? This will remove it from all tools."
+    flash:
+      created: "Tag created successfully."
+      updated: "Tag updated successfully."
+      destroyed: "Tag deleted successfully."
 

@@ -1,0 +1,34 @@
+<li class="mb-3">
+  <div class="d-flex justify-content-between align-items-start">
+    <div class="flex-grow-1">
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <span class="badge <%= tag_badge_class(tag.tag_type) %>"><%= t("tags.tag_types.#{tag.tag_type}") %></span>
+        <strong><%= tag.tag_name %></strong>
+        <% if tag.parent %>
+          <span class="text-muted small">(<%= t("tags.labels.parent") %>: <%= tag.parent.tag_name %>)</span>
+        <% end %>
+      </div>
+      <% if tag.tag_description.present? %>
+        <p class="text-muted small mb-2"><%= tag.tag_description %></p>
+      <% end %>
+      <p class="text-secondary small mb-0">
+        <%= t("tags.labels.tools_count", count: tag.tools.count) %>
+      </p>
+    </div>
+    <div class="d-flex gap-2">
+      <%= link_to t("actions.edit"), edit_tag_path(tag), class: "btn btn-sm btn-outline-primary" %>
+      <%= button_to t("actions.delete"), tag_path(tag),
+                    method: :delete,
+                    data: { turbo_confirm: t("tags.confirmations.destroy") },
+                    class: "btn btn-sm btn-outline-danger" %>
+    </div>
+  </div>
+  <% if tag.children.any? %>
+    <ul class="list-unstyled ms-4 mt-2">
+      <% tag.children.each do |child_tag| %>
+        <%= render "tags/tag_item", tag: child_tag, all_tags: all_tags %>
+      <% end %>
+    </ul>
+  <% end %>
+</li>
+
