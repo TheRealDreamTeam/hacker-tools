@@ -50,8 +50,6 @@ en:
         most_upvoted: "Most Upvoted"
       list_placeholder: "Tool cards for the selected category will appear here."
       ads:
-        heading: "Sponsored"
-        supporting_text: "Reserve this space for partners or announcements."
 
       card:
         title: "%{ordinal} Tool %{index}"
@@ -61,7 +59,6 @@ en:
         sample_tag_three: "AI"
         logo_placeholder: "Logo"
         upvotes: "%{count} upvotes"
-        view_placeholder: "View tool"
         upvote_guest_alert: "Please sign in before you can upvote."
   
   # Navigation and common actions

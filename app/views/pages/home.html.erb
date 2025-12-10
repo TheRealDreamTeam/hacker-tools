@@ -45,67 +45,53 @@
   <!-- Three-column layout: side rails for promos and center column for tool cards -->
   <div class="row g-3 justify-content-center">
     <div class="col-12 col-lg-10">
-      <% panels = { "trending" => @trending_tools, "new" => @new_hot_tools, "upvoted" => @most_upvoted_tools } %>
-
-      <% panels.each_with_index do |(panel, tools), panel_idx| %>
+      <% ["trending", "new", "upvoted"].each_with_index do |panel, panel_idx| %>
         <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless panel_idx.zero? %>" data-category-panel="<%= panel %>">
           <div class="card-body">
-            <% if tools.blank? %>
-              <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
-            <% else %>
-              <% tools.each_with_index do |tool, i| %>
-                <% tool_id = tool.id %>
-                <% upvotes = (tool.respond_to?(:upvotes_count) && tool.upvotes_count.present?) ? tool.upvotes_count.to_i : 0 %>
-                <div class="card mb-3 position-relative card-hover">
-                  <div class="card-body">
-                    <div class="row align-items-center">
-                      <!-- Left content: star, title, description, tags -->
-                      <div class="col-12 col-md-5">
-                        <h5 class="card-title mb-1">
-                          <span class="text-warning me-2" aria-hidden="true">★</span>
-                          <%= t("pages.home.card.title", index: i + 1, ordinal: "#{i + 1}.") %>
-                        </h5>
-                        <p class="card-text text-muted mb-2"><%= tool.tool_description.presence || t("pages.home.card.description", index: i + 1) %></p>
-                        <div class="d-flex flex-wrap gap-2">
-                          <% displayed_tags = tool.tags.limit(3) %>
-                          <% if displayed_tags.any? %>
-                            <% displayed_tags.each do |tag| %>
-                              <span class="badge bg-light text-primary border"><%= tag.tag_name %></span>
-                            <% end %>
-                          <% else %>
-                            <% [
-                              t("pages.home.card.sample_tag_one"),
-                              t("pages.home.card.sample_tag_two"),
-                              t("pages.home.card.sample_tag_three")
-                            ].each do |tag| %>
-                              <span class="badge bg-light text-primary border"><%= tag %></span>
-                            <% end %>
-                          <% end %>
-                        </div>
-                        <%= link_to "/tools/#{tool_id}",
-                                    class: "stretched-link",
-                                    aria: { label: t("pages.home.card.view_placeholder") },
-                                    data: { placeholder: "tool-link" } do %>
-                          <span class="visually-hidden"><%= t("pages.home.card.view_placeholder") %></span>
+            <% 10.times do |i| %>
+              <% tool_id = i + 1 %>
+              <div class="card mb-3 position-relative card-hover">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <!-- Left content: star, title, description, tags -->
+                    <div class="col-12 col-md-5">
+                      <h5 class="card-title mb-1">
+                        <span class="text-warning me-2" aria-hidden="true">★</span>
+                        <%= t("pages.home.card.title", index: tool_id, ordinal: "#{tool_id}.") %>
+                      </h5>
+                      <p class="card-text text-muted mb-2"><%= t("pages.home.card.description", index: tool_id) %></p>
+                      <div class="d-flex flex-wrap gap-2">
+                        <% [
+                          t("pages.home.card.sample_tag_one"),
+                          t("pages.home.card.sample_tag_two"),
+                          t("pages.home.card.sample_tag_three")
+                        ].each do |tag| %>
+                          <span class="badge bg-light text-primary border"><%= tag %></span>
                         <% end %>
                       </div>
+                      <%= link_to "/tools/#{tool_id}",
+                                  class: "stretched-link",
+                                  aria: { label: t("pages.home.card.view_placeholder") },
+                                  data: { placeholder: "tool-link" } do %>
+                        <span class="visually-hidden"><%= t("pages.home.card.view_placeholder") %></span>
+                      <% end %>
+                    </div>
 
-                      <!-- Right content: logo + upvotes aligned on the same row -->
-                      <div class="col-12 col-md-7 d-flex justify-content-md-end justify-content-start align-items-center gap-3 mt-3 mt-md-0">
-                        <div class="border rounded-circle bg-light d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
-                          <span class="text-muted small"><%= t("pages.home.card.logo_placeholder") %></span>
-                        </div>
-                        <button type="button"
-                                class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2 upvote-button"
-                                data-count="<%= upvotes %>">
-                          <span aria-hidden="true">▲</span>
-                          <span data-upvote-count><%= t("pages.home.card.upvotes", count: upvotes) %></span>
-                        </button>
+                    <!-- Right content: logo + upvotes aligned on the same row -->
+                    <div class="col-12 col-md-7 d-flex justify-content-md-end justify-content-start align-items-center gap-3 mt-3 mt-md-0">
+                      <div class="border rounded-circle bg-light d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
+                        <span class="text-muted small"><%= t("pages.home.card.logo_placeholder") %></span>
                       </div>
+                      <button type="button"
+                              class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2 upvote-button"
+                              data-count="128">
+                        <span aria-hidden="true">▲</span>
+                        <span data-upvote-count><%= t("pages.home.card.upvotes", count: 128) %></span>
+                      </button>
                     </div>
                   </div>
                 </div>
-              <% end %>
+              </div>
             <% end %>
           </div>
         </div>
