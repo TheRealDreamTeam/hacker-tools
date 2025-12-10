@@ -126,10 +126,9 @@ class AccountSettingsController < ApplicationController
     unless @user.valid_password?(params[:user][:password])
       # Use specific error key to avoid conflicts with password section
       @user.errors.add(:delete_account_password, t("account_settings.destroy.invalid_password"))
-      respond_to do |format|
-        format.html { render :show, status: :unprocessable_entity }
-        format.turbo_stream { render :destroy, status: :unprocessable_entity }
-      end
+      flash[:alert] = t("account_settings.destroy.invalid_password")
+      # Redirect back to account settings with error
+      redirect_to account_settings_path, status: :see_other
       return
     end
 
@@ -140,7 +139,9 @@ class AccountSettingsController < ApplicationController
     # Sign out after soft delete
     sign_out(@user)
 
-    redirect_to root_path, notice: t("account_settings.destroy.success")
+    # Force full page redirect by using 303 See Other status
+    # Since Turbo is disabled on the form, this will perform a full page reload
+    redirect_to root_path, notice: t("account_settings.destroy.success"), status: :see_other
   end
 
   private

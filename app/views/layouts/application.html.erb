@@ -61,7 +61,8 @@
       body.fouc-ready {
         visibility: visible;
         opacity: 1;
-        transition: opacity 0.2s ease-out;
+        /* No transition - instant visibility prevents flickering during Turbo navigation */
+        /* Full page reload animations are handled by page-transition-enter class */
       }
       /* Fallback: Show content if JavaScript fails to load (after 1 second) */
       body:not(.fouc-ready) {
@@ -79,7 +80,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body data-controller="page-transition">
+  <body data-controller="page-transition" style="visibility: hidden; opacity: 0;">
     <%= render "shared/navbar" %>
     <%= render "shared/flashes" %>
     <%= yield %>

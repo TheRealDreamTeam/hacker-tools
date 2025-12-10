@@ -37,6 +37,24 @@ class ApplicationController < ActionController::Base
     { locale: I18n.locale }
   end
 
+  # Redirect to homepage after sign in
+  # Returns path that will be used by Devise for redirect
+  def after_sign_in_path_for(resource)
+    root_path
+  end
+
+  # Redirect to homepage after sign up
+  # Returns path that will be used by Devise for redirect
+  def after_sign_up_path_for(resource)
+    root_path
+  end
+
+  # Redirect to homepage after sign out
+  # Returns path that will be used by Devise for redirect
+  def after_sign_out_path_for(resource_or_scope)
+    root_path
+  end
+
   # Permit additional Devise parameters such as username to satisfy DB null constraints.
   # Avatar and user_bio are optional and only permitted on account_update (not sign_up)
   def configure_permitted_parameters

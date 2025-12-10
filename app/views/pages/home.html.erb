@@ -142,6 +142,64 @@
 </div>
 
 <%= javascript_tag do %>
+  (function() {
+    // Prevent duplicate initialization by checking if handlers are already set up
+    if (window.homePageHandlersInitialized) {
+      // Just reattach handlers for this page load
+      const reattachHandlers = () => {
+        const buttons = Array.from(document.querySelectorAll(".category-toggle"));
+        const panels = Array.from(document.querySelectorAll("[data-category-panel]"));
+        if (buttons.length && panels.length) {
+          const showCategory = (category) => {
+            buttons.forEach((btn) => {
+              const isActive = btn.dataset.category === category;
+              btn.classList.toggle("active", isActive);
+              btn.setAttribute("aria-pressed", isActive);
+            });
+            panels.forEach((panel) => {
+              const isTarget = panel.dataset.categoryPanel === category;
+              panel.classList.toggle("d-none", !isTarget);
+            });
+          };
+        }
+        
+        // Reattach upvote handlers
+        const signedIn = <%= user_signed_in? ? 'true' : 'false' %>;
+        const guestMessage = "<%= j t('pages.home.card.upvote_guest_alert') %>";
+        document.querySelectorAll(".upvote-button").forEach((button) => {
+          const countSpan = button.querySelector("[data-upvote-count]");
+          const handler = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (!signedIn) {
+              alert(guestMessage);
+              return;
+            }
+            const current = parseInt(button.dataset.count || "0", 10);
+            const next = current + 1;
+            button.dataset.count = next;
+            if (countSpan) {
+              countSpan.textContent = `<%= t("pages.home.card.upvotes", count: "%{count}") %>`.replace("%{count}", next);
+            }
+          };
+          button.addEventListener("click", handler);
+        });
+      };
+      
+      // Use turbo:load with once: true to prevent duplicates
+      document.addEventListener("turbo:load", reattachHandlers, { once: true });
+      if (document.readyState !== 'loading') {
+        reattachHandlers();
+      }
+      return;
+    }
+    
+    window.homePageHandlersInitialized = true;
+    
+    // Store button handlers to prevent duplicates
+    const buttonHandlers = new WeakMap();
+    const upvoteHandlers = new WeakMap();
+    
   // Simple client-side toggle to switch between category panels without reload.
   const attachCategoryToggle = () => {
     const buttons = Array.from(document.querySelectorAll(".category-toggle"));
@@ -163,7 +221,13 @@
     };
 
     buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
+        // Remove old listener if it exists
+        const oldHandler = buttonHandlers.get(btn);
+        if (oldHandler) {
+          btn.removeEventListener("click", oldHandler);
+        }
+        
+        const handler = () => {
         const category = btn.dataset.category;
         showCategory(category);
         // Update hidden field in search form
@@ -176,29 +240,35 @@
         if (form) {
           form.requestSubmit();
         }
-      });
+        };
+        
+        btn.addEventListener("click", handler);
+        buttonHandlers.set(btn, handler);
     });
   };
 
   // Debounce function for search input
   let searchTimeout;
-  function debounceSearch(input) {
+    window.debounceSearch = function(input) {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
       input.form.requestSubmit();
     }, 300); // Wait 300ms after user stops typing
-  }
-
-  document.addEventListener("turbo:load", attachCategoryToggle);
-  document.addEventListener("DOMContentLoaded", attachCategoryToggle);
+    };
 
   const attachUpvoteHandlers = () => {
     const signedIn = <%= user_signed_in? ? 'true' : 'false' %>;
     const guestMessage = "<%= j t('pages.home.card.upvote_guest_alert') %>";
 
     document.querySelectorAll(".upvote-button").forEach((button) => {
+        // Remove old listener if it exists
+        const oldHandler = upvoteHandlers.get(button);
+        if (oldHandler) {
+          button.removeEventListener("click", oldHandler);
+        }
+        
       const countSpan = button.querySelector("[data-upvote-count]");
-      button.addEventListener("click", (event) => {
+        const handler = (event) => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -213,7 +283,10 @@
         if (countSpan) {
           countSpan.textContent = `<%= t("pages.home.card.upvotes", count: "%{count}") %>`.replace("%{count}", next);
         }
-      });
+        };
+        
+        button.addEventListener("click", handler);
+        upvoteHandlers.set(button, handler);
     });
   };
 
@@ -223,9 +296,16 @@
     attachUpvoteHandlers();
   };
 
+    // Use turbo:load only (not DOMContentLoaded) to avoid duplicate listeners
+    // Use once: false so handlers work on every navigation
   document.addEventListener("turbo:load", reattachHandlers);
-  document.addEventListener("DOMContentLoaded", reattachHandlers);
   document.addEventListener("turbo:frame-load", reattachHandlers);
+    
+    // Initial attachment if page is already loaded
+    if (document.readyState !== 'loading') {
+      reattachHandlers();
+    }
+  })();
 <% end %>
 
 <style>

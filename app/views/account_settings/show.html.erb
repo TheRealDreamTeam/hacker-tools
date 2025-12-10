@@ -63,7 +63,7 @@
         <h5 class="modal-title" id="delete-account-modal-label"><%= t("account_settings.destroy.modal_title") %></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t("navigation.close") %>"></button>
       </div>
-      <%= form_with model: @user, url: account_settings_path, method: :delete, data: { turbo: true }, local: false do |f| %>
+      <%= form_with model: @user, url: account_settings_path, method: :delete, data: { turbo: false }, local: true do |f| %>
         <div class="modal-body" id="delete-account-modal-body">
           <p><%= t("account_settings.destroy.modal_message") %></p>
           <div class="mt-3">

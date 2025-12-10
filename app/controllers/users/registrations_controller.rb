@@ -1,4 +1,34 @@
 class Users::RegistrationsController < Devise::RegistrationsController
+  # Override create to ensure redirect uses HTML format after sign up
+  # This prevents TURBO_STREAM format from being preserved on redirect
+  def create
+    build_resource(sign_up_params)
+
+    resource.save
+    yield resource if block_given?
+    if resource.persisted?
+      if resource.active_for_authentication?
+        set_flash_message! :notice, :signed_up
+        sign_up(resource_name, resource)
+        # Force full page redirect by using 303 See Other status and setting Turbo header
+        # This ensures Turbo performs a full page load instead of preserving format
+        response.headers["Turbo-Location"] = after_sign_up_path_for(resource)
+        redirect_to after_sign_up_path_for(resource), status: :see_other
+      else
+        set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
+        expire_data_after_sign_in!
+        # Force full page redirect by using 303 See Other status and setting Turbo header
+        # This ensures Turbo performs a full page load instead of preserving format
+        response.headers["Turbo-Location"] = after_inactive_sign_up_path_for(resource)
+        redirect_to after_inactive_sign_up_path_for(resource), status: :see_other
+      end
+    else
+      clean_up_passwords resource
+      set_minimum_password_length
+      respond_with resource
+    end
+  end
+
   # Override Devise's update action to allow avatar and bio updates without password
   # For security, password is still required for username, email, and password changes
 

@@ -7,17 +7,11 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   connect() {
     // Prevent FOUC: Reveal content once controller is connected (styles and JS are ready)
-    // Use requestAnimationFrame to ensure DOM is fully ready
-    // Also add a timeout fallback in case requestAnimationFrame is delayed
-    requestAnimationFrame(() => {
-      this.element.classList.add("fouc-ready")
-    })
-    
-    // Fallback: Ensure content is visible even if requestAnimationFrame is delayed
-    // This prevents content from staying hidden if there are any timing issues
-    setTimeout(() => {
-      this.element.classList.add("fouc-ready")
-    }, 100)
+    // Remove inline style first (set in body tag), then add fouc-ready class
+    // This ensures smooth transition from inline style to CSS class
+    this.element.style.visibility = ""
+    this.element.style.opacity = ""
+    this.element.classList.add("fouc-ready")
     
     // Check if this is a full page reload (not a Turbo visit)
     // Turbo sets a flag in sessionStorage when it handles navigation
@@ -54,18 +48,32 @@ export default class extends Controller {
     sessionStorage.setItem("turbo-navigation", "true")
   }
   
-  handleTurboBeforeRender() {
-    // Hide content during Turbo navigation to prevent flickering
-    // This ensures smooth transition between pages
-    this.element.classList.remove("fouc-ready")
+  handleTurboBeforeRender(event) {
+    // Ensure the new body element is visible immediately
+    // Remove inline style and add fouc-ready class before swap
+    // This prevents any flash of hidden content when the new page is swapped in
+    if (event && event.detail && event.detail.newBody) {
+      const newBody = event.detail.newBody
+      newBody.style.visibility = ""
+      newBody.style.opacity = ""
+      newBody.classList.add("fouc-ready")
+    }
   }
   
-  handleTurboRender() {
-    // Reveal content after Turbo has rendered the new page
-    // Use requestAnimationFrame to ensure rendering is complete
-    requestAnimationFrame(() => {
+  handleTurboRender(event) {
+    // Ensure content is visible immediately when Turbo renders the new page
+    // Remove inline style and add fouc-ready synchronously
+    if (event && event.detail && event.detail.newBody) {
+      const newBody = event.detail.newBody
+      newBody.style.visibility = ""
+      newBody.style.opacity = ""
+      newBody.classList.add("fouc-ready")
+    } else {
+      // Fallback: ensure current body is visible
+      this.element.style.visibility = ""
+      this.element.style.opacity = ""
       this.element.classList.add("fouc-ready")
-    })
+    }
   }
 }
 
