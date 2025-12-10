@@ -2,7 +2,7 @@
 
 This document serves as the human-readable specification for the Hacker Tools application. It is maintained alongside development and updated as features are built.
 
-**Last Updated**: [Date will be updated as spec evolves]
+**Last Updated**: 2025-12-09
 
 ## Overview
 
@@ -102,10 +102,13 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Validations**: Presence on body; presence on type.
 
 ### Tag
-- **Purpose**: Classification for tools.
-- **Attributes**: `tag_name` (string, required), `tag_description` (text), `tag_type` (integer enum), `parent_id` (self-referential)
-- **Associations**: `has_many :tools, through: :tool_tags`; `belongs_to :parent, class_name: "Tag", optional: true`; `has_many :children, class_name: "Tag"`
-- **Validations**: Presence on name; enum on type.
+- **Purpose**: Hierarchical classification system for tools with parent-child relationships.
+- **Attributes**: `tag_name` (string, required, unique), `tag_description` (text), `tag_type` (integer enum: category/language/framework/library/version/platform/other), `parent_id` (self-referential, optional)
+- **Associations**: `has_many :tools, through: :tool_tags`; `belongs_to :parent, class_name: "Tag", optional: true`; `has_many :children, class_name: "Tag"`; `has_many :tool_tags, dependent: :destroy`
+- **Validations**: Presence on name (case-insensitive uniqueness); presence on type; circular parent reference prevention
+- **Scopes**: `roots` (tags without parent), `by_type` (ordered by type and name), `with_children` (includes children)
+- **Helper Methods**: `display_name` (shows parent/child hierarchy), `ancestors` (parent chain), `root?` (checks if no parent)
+- **Status**: Complete - Full CRUD with hierarchical display, color-coded by type, add/remove from tools
 
 ### ToolTag (join)
 - **Purpose**: Many-to-many between tools and tags.
@@ -373,13 +376,21 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ### Home Page
 - **Status**: Complete
-- **Description**: Landing page with welcome content
+- **Description**: Landing page organized around discovery-first browsing with multiple search entry points
 - **Components**: Home page view (`pages/home.html.erb`)
+- **Layout & UX**:
+  - Divider under navbar, then an 8-column wide primary search bar (large input + search button)
+  - Category toggle bar for `Trending`, `New & Hot`, and `Most Upvoted` lists (JS-ready to switch lists without reload)
+  - Each category panel renders up to 10 live tools:
+    - Trending: most upvoted in the last 30 days (by `user_tools.upvote`)
+    - New & Hot: tools from last 7 days ranked by upvotes
+    - Most Upvoted: highest upvotes all time
+    - Left (≈5 cols @ ≥md): star, ordinalized position, tool description or fallback, tags (or sample tags), stretched-link to `/tools/:id`
+    - Right (≈7 cols @ ≥md): logo stub plus inline upvote button showing “▲ X upvotes”; signed-in users increment inline, guests see an alert to sign in
 - **Styling**:
-  - Centered container (max-width: 1200px)
-  - Proper spacing and typography
-  - Responsive padding for mobile devices
-  - Heading with zero margins (controlled by container)
+  - Bootstrap grid-first layout, responsive down to mobile
+  - Buttons and cards use design-system spacing/shadows with a noticeable hover lift (`card-hover`)
+  - Ready to swap placeholder link and logo with real assets/data streams
 
 ## Future Considerations
 

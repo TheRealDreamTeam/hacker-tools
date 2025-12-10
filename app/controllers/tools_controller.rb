@@ -1,10 +1,10 @@
 class ToolsController < ApplicationController
-  before_action :set_tool, only: %i[show edit update destroy]
-  before_action :authorize_owner!, only: %i[edit update destroy]
+  before_action :set_tool, only: %i[show edit update destroy add_tag remove_tag]
+  before_action :authorize_owner!, only: %i[edit update destroy add_tag remove_tag]
 
   # GET /tools
   def index
-    @tools = Tool.includes(:user).order(created_at: :desc)
+    @tools = Tool.includes(:user, :tags).order(created_at: :desc)
   end
 
   # GET /tools/:id
@@ -32,6 +32,10 @@ class ToolsController < ApplicationController
     @new_comment = @tool.comments.new(comment_type: :comment)
     @new_flag = @tool.comments.new(comment_type: :flag)
     @new_bug = @tool.comments.new(comment_type: :bug)
+
+    # Load tags for the tool and all available tags grouped by type
+    @tool_tags = @tool.tags.includes(:parent)
+    @available_tags = Tag.includes(:parent).order(tag_type: :asc, tag_name: :asc)
   end
 
   # GET /tools/new
@@ -69,6 +73,24 @@ class ToolsController < ApplicationController
   def destroy
     @tool.destroy
     redirect_to tools_path, notice: t("tools.flash.destroyed")
+  end
+
+  # POST /tools/:id/add_tag
+  def add_tag
+    tag = Tag.find(params[:tag_id])
+    @tool.tags << tag unless @tool.tags.include?(tag)
+    redirect_to tool_path(@tool), notice: t("tools.flash.tag_added")
+  rescue ActiveRecord::RecordNotFound
+    redirect_to tool_path(@tool), alert: t("tools.flash.tag_not_found")
+  end
+
+  # DELETE /tools/:id/remove_tag
+  def remove_tag
+    tag = Tag.find(params[:tag_id])
+    @tool.tags.delete(tag)
+    redirect_to tool_path(@tool), notice: t("tools.flash.tag_removed")
+  rescue ActiveRecord::RecordNotFound
+    redirect_to tool_path(@tool), alert: t("tools.flash.tag_not_found")
   end
 
   private

@@ -17,11 +17,14 @@ Rails.application.routes.draw do
       end
     end
     root to: "pages#home"
+    resources :tags, except: [:show]
     resources :tools do
       resources :comments, only: [:create, :destroy] do
         patch :resolve, on: :member
         post :upvote, on: :member
       end
+      post :add_tag, on: :member
+      delete :remove_tag, on: :member
     end
     # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

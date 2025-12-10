@@ -40,8 +40,33 @@ en:
   pages:
     home:
       title: "Home"
-      heading: "Welcome"
-      description: "Find me in app/views/pages/home.html.erb"
+      heading: "Welcome to HackerTool. Your peer-powered guide to the most relevant dev tools."
+      description: "Search less. Build more."
+      hero:
+        heading: "Search less. Build more."
+        subheading: "Your peer-powered guide to the most relevant dev tools. Because staying up to date shouldn't cost you time."
+        articles:
+          newest: "<Newest article from admin>"
+          roadmaps: "Roadmaps"
+          about_us: "About us"
+      search_placeholder: "Search tools, tags, or lists"
+      category_aria_label: "Tool category filters"
+      categories:
+        trending: "Trending"
+        new_hot: "New & Hot"
+        most_upvoted: "Most Upvoted"
+      list_placeholder: "Tool cards for the selected category will appear here."
+      ads:
+
+      card:
+        title: "%{ordinal} Tool %{index}"
+        description: "Description placeholder for tool %{index}."
+        sample_tag_one: "Performance"
+        sample_tag_two: "DevOps"
+        sample_tag_three: "AI"
+        logo_placeholder: "Logo"
+        upvotes: "%{count} upvotes"
+        upvote_guest_alert: "Please sign in before you can upvote."
   
   # Navigation and common actions
   navigation:
@@ -227,3 +252,11 @@ en:
         confirmation_instructions: "Didn't receive confirmation instructions?"
         unlock_instructions: "Didn't receive unlock instructions?"
         sign_in_with: "Sign in with %{provider}"
+
+  footer:
+    about: "About"
+    guidelines: "Guidelines"
+    roadmap: "Roadmap"
+    github: "GitHub"
+    privacy: "Privacy"
+    terms: "Terms"
