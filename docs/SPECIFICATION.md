@@ -2,7 +2,7 @@
 
 This document serves as the human-readable specification for the Hacker Tools application. It is maintained alongside development and updated as features are built.
 
-**Last Updated**: [Date will be updated as spec evolves]
+**Last Updated**: 2025-12-09
 
 ## Overview
 
@@ -346,13 +346,21 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ### Home Page
 - **Status**: Complete
-- **Description**: Landing page with welcome content
+- **Description**: Landing page organized around discovery-first browsing with multiple search entry points
 - **Components**: Home page view (`pages/home.html.erb`)
+- **Layout & UX**:
+  - Divider under navbar, then an 8-column wide primary search bar (large input + search button)
+  - Category toggle bar for `Trending`, `New & Hot`, and `Most Upvoted` lists (JS-ready to switch lists without reload)
+  - Each category panel renders up to 10 live tools:
+    - Trending: most upvoted in the last 30 days (by `user_tools.upvote`)
+    - New & Hot: tools from last 7 days ranked by upvotes
+    - Most Upvoted: highest upvotes all time
+    - Left (≈5 cols @ ≥md): star, ordinalized position, tool description or fallback, tags (or sample tags), stretched-link to `/tools/:id`
+    - Right (≈7 cols @ ≥md): logo stub plus inline upvote button showing “▲ X upvotes”; signed-in users increment inline, guests see an alert to sign in
 - **Styling**:
-  - Centered container (max-width: 1200px)
-  - Proper spacing and typography
-  - Responsive padding for mobile devices
-  - Heading with zero margins (controlled by container)
+  - Bootstrap grid-first layout, responsive down to mobile
+  - Buttons and cards use design-system spacing/shadows with a noticeable hover lift (`card-hover`)
+  - Ready to swap placeholder link and logo with real assets/data streams
 
 ## Future Considerations
 
