@@ -29,13 +29,7 @@
       <%= image_tag @tool.picture, class: "img-fluid rounded" %>
     </div>
   <% end %>
-  <div class="d-flex gap-2">
-    <% if @tool.user == current_user %>
-      <%= link_to t("actions.edit"), edit_tool_path(@tool), class: "btn btn-outline-primary" %>
-      <%= button_to t("actions.delete"), tool_path(@tool), method: :delete,
-<% end %>
-
-<div class="mb-4">
+  <div class="mb-4">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h2 class="h5 mb-0"><%= t("tools.show.tags_title") %></h2>
     <% if @tool.user == current_user %>
