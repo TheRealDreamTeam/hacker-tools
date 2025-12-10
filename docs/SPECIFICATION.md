@@ -89,10 +89,13 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Validations**: Presence on body; presence on type.
 
 ### Tag
-- **Purpose**: Classification for tools.
-- **Attributes**: `tag_name` (string, required), `tag_description` (text), `tag_type` (integer enum), `parent_id` (self-referential)
-- **Associations**: `has_many :tools, through: :tool_tags`; `belongs_to :parent, class_name: "Tag", optional: true`; `has_many :children, class_name: "Tag"`
-- **Validations**: Presence on name; enum on type.
+- **Purpose**: Hierarchical classification system for tools with parent-child relationships.
+- **Attributes**: `tag_name` (string, required, unique), `tag_description` (text), `tag_type` (integer enum: category/language/framework/library/version/platform/other), `parent_id` (self-referential, optional)
+- **Associations**: `has_many :tools, through: :tool_tags`; `belongs_to :parent, class_name: "Tag", optional: true`; `has_many :children, class_name: "Tag"`; `has_many :tool_tags, dependent: :destroy`
+- **Validations**: Presence on name (case-insensitive uniqueness); presence on type; circular parent reference prevention
+- **Scopes**: `roots` (tags without parent), `by_type` (ordered by type and name), `with_children` (includes children)
+- **Helper Methods**: `display_name` (shows parent/child hierarchy), `ancestors` (parent chain), `root?` (checks if no parent)
+- **Status**: Complete - Full CRUD with hierarchical display, color-coded by type, add/remove from tools
 
 ### ToolTag (join)
 - **Purpose**: Many-to-many between tools and tags.
