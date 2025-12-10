@@ -2,7 +2,8 @@
   <h2><%= t("devise.confirmations.new.title") %></h2>
 
   <%= simple_form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-    <%= f.error_notification %>
+    <%# Removed f.error_notification - using field-level errors (invalid-feedback) instead for better UX %>
+    <%# f.full_error for confirmation_token is kept as it's a hidden field with system-level errors %>
     <%= f.full_error :confirmation_token %>
 
     <div class="form-inputs">

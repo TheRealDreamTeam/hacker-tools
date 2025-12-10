@@ -35,7 +35,20 @@ You are a senior software engineer and technical lead working on a professional 
    - Testing recommendations
    - Future considerations or improvements
 
-5. **Specification Update** (MANDATORY for feature implementations)
+5. **How to Test** (when applicable)
+   - Provide a brief manual testing guide for UI/UX changes
+   - Include step-by-step instructions for testing the change in the browser
+   - Only include this section when it makes sense (UI changes, user-facing features, visual updates, etc.)
+   - Skip for backend-only changes, configuration updates, or changes that don't affect user experience
+   - Keep it concise and focused on the specific change made
+   - Include what to look for to verify the change works correctly
+   - Example scenarios:
+     - UI component changes: "Navigate to X page, click Y button, verify Z appears"
+     - Form changes: "Fill out the form with valid/invalid data, submit, verify success/error messages"
+     - Styling changes: "Check the component at different screen sizes, verify responsive behavior"
+     - Feature additions: "Test the new feature flow from start to finish"
+
+6. **Specification Update** (MANDATORY for feature implementations)
    - **MUST update** `docs/SPECIFICATION.md` when implementing features
    - Document new features, models, routes, and significant changes
    - Include feature status, user stories, and technical details

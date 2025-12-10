@@ -2,7 +2,7 @@
   <h2><%= t("devise.passwords.new.title") %></h2>
 
   <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
-    <%= f.error_notification %>
+    <%# Removed f.error_notification - using field-level errors (invalid-feedback) instead for better UX %>
 
     <div class="form-inputs">
       <%= f.input :email,

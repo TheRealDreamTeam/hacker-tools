@@ -4,14 +4,16 @@
     <div class="card-body d-flex flex-column flex-grow-1">
       <%= form_with model: user, url: update_bio_account_settings_path, method: :patch, data: { turbo: true, controller: "bio-form" }, local: false, html: { class: "d-flex flex-column flex-grow-1" } do |f| %>
         <div class="flex-grow-1">
-          <% if user.errors[:user_bio].any? %>
-            <div class="alert alert-danger">
-              <%= user.errors[:user_bio].join(", ") %>
-            </div>
-          <% end %>
-
           <div class="mb-3">
-            <%= f.text_area :user_bio, class: "form-control", rows: 3, data: { bio_form_target: "textarea", action: "input->bio-form#valueChanged" }, value: user.user_bio %>
+            <%= f.label :user_bio, class: "form-label" %>
+            <%= f.text_area :user_bio, class: "form-control #{'is-invalid' if user.errors[:user_bio].any?}", rows: 3, data: { bio_form_target: "textarea", action: "input->bio-form#valueChanged" }, value: user.user_bio %>
+            <% if user.errors[:user_bio].any? %>
+              <div class="invalid-feedback">
+                <% user.errors[:user_bio].each do |error| %>
+                  <div><%= error %></div>
+                <% end %>
+              </div>
+            <% end %>
             <div class="form-text"><%= t("account_settings.bio.hint") %></div>
           </div>
         </div>

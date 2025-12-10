@@ -1,5 +1,6 @@
 // Flash messages styling - white background, primary text, bolder borders
-.alert {
+// Only apply flash message styling to alerts with the flash controller (data-controller="flash")
+.alert[data-controller="flash"] {
   position: fixed;
   bottom: 16px;
   right: 16px;
@@ -8,10 +9,14 @@
   padding: 1rem 1.25rem;
   min-width: 300px;
   max-width: 500px;
+  border-color: #e5e7eb; // Neutral light gray border for clean look across types
+  
+  // Remove any margin that might affect alignment
+  margin: 0 !important;
   
   // Ensure alert content wraps properly - use flexbox for text and button alignment
   display: flex;
-  align-items: flex-start;
+  align-items: center; // Vertically center all items including close button
   gap: 0.5rem;
   
   // White background, primary text color
@@ -34,27 +39,45 @@
     min-width: auto;
     max-width: none;
     padding: 0.875rem 1rem;
+    gap: 0.75rem; // Slightly larger gap on mobile for better spacing
+    
+    // Ensure message has proper spacing on mobile
+    .alert-message {
+      padding-right: 0.875rem; // More space on mobile
+      margin-right: 0.5rem; // Slightly less margin on mobile
+      font-size: 0.9375rem; // Slightly smaller text on mobile for better fit
+      border-right: 1px solid rgba($primary, 0.12); // Slightly lighter divider on mobile
+    }
+    
+    // Ensure close button is easily tappable on mobile
+    .btn-close {
+      width: 2rem !important; // Larger touch target on mobile (44px minimum)
+      height: 2rem !important;
+      min-width: 2rem !important;
+      min-height: 2rem !important;
+      max-width: 2rem !important;
+      max-height: 2rem !important;
+      padding: 0.375rem !important; // More padding for easier tapping
+      line-height: 2rem !important; // Match height for proper centering
+      align-self: center !important; // Keep vertically centered on mobile
+    }
   }
   
   // Remove Bootstrap's default background colors
-  &.alert-info {
-    border-color: $info;
-    background-color: white;
-    color: $primary;
-  }
-  
+  // Neutral for info/success; colored borders for warning/danger
+  &.alert-info,
   &.alert-success {
-    border-color: $success;
+    border-color: #e5e7eb;
     background-color: white;
     color: $primary;
   }
-  
+
   &.alert-warning {
     border-color: $warning;
     background-color: white;
     color: $primary;
   }
-  
+
   &.alert-danger {
     border-color: $danger;
     background-color: white;
@@ -62,21 +85,65 @@
   }
   
   // Alert message text - allow wrapping and take available space
-  > *:not(.btn-close) {
+  // Wrap text content in a span to ensure proper flex behavior
+  .alert-message {
     flex: 1;
-    min-width: 0; // Allow text to shrink below content size
+    min-width: 0; // Allow text to shrink below content size - critical for wrapping
     word-wrap: break-word;
     overflow-wrap: break-word;
+    word-break: break-word; // Break long words if needed
     hyphens: auto;
+    line-height: 1.5; // Better readability for wrapped text
+    padding-right: 1rem; // Space between text and divider/close button
+    border-right: 1px solid rgba($primary, 0.15); // Gentle divider line
+    margin-right: 0.75rem; // Space between divider and close button
   }
   
-  // Close button styling
+  // Close button styling - always visible, never overlapped, vertically centered
   .btn-close {
+    // Override Bootstrap defaults completely
     border-radius: 0.5rem;
     opacity: 0.7;
     transition: opacity 0.2s ease-in-out;
-    flex-shrink: 0; // Prevent button from shrinking
-    margin-left: 0.5rem; // Space from text
+    
+    // Flexbox properties for alignment
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    align-self: center !important;
+    
+    // Remove all margins and positioning that might affect centering
+    margin: 0 !important;
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    float: none !important;
+    
+    // Fixed dimensions for consistent sizing
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    min-width: 1.5rem !important;
+    min-height: 1.5rem !important;
+    max-width: 1.5rem !important;
+    max-height: 1.5rem !important;
+    
+    // Padding for touch target
+    padding: 0.25rem !important;
+    
+    // Override Bootstrap's line-height which can affect vertical alignment
+    line-height: 1.5rem !important;
+    
+    // Ensure background image (X icon) is perfectly centered
+    background-position: center !important;
+    background-size: 1em auto !important;
+    background-repeat: no-repeat !important;
+    
+    // Use flexbox to center the background image visually
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
     
     &:hover {
       opacity: 1;

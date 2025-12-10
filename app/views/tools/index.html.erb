@@ -1,33 +1,32 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h1 class="h3 m-0"><%= t("tools.index.title") %></h1>
-  <%= link_to t("tools.index.new_tool"), new_tool_path, class: "btn btn-primary" %>
-</div>
-
-<% if @tools.any? %>
-  <div class="row row-cols-1 row-cols-md-2 g-3">
-    <% @tools.each do |tool| %>
-      <div class="col">
-        <div class="card h-100 shadow-sm">
-          <div class="card-body">
-            <div class="d-flex align-items-center justify-content-between">
-              <h2 class="h5 mb-1">
-                <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
-              </h2>
-              <% if tool.icon.attached? %>
-                <%= image_tag tool.icon, class: "rounded", style: "height: 48px; width: 48px; object-fit: cover;" %>
-              <% end %>
+<div class="p-3">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 m-0"><%= t("tools.index.title") %></h1>
+    <%= link_to t("tools.index.new_tool"), new_tool_path, class: "btn btn-primary" %>
+  </div>
+  <% if @tools.any? %>
+    <div class="row row-cols-1 row-cols-md-2 g-3">
+      <% @tools.each do |tool| %>
+        <div class="col">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between">
+                <h2 class="h5 mb-1">
+                  <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
+                </h2>
+                <% if tool.icon.attached? %>
+                  <%= image_tag tool.icon, class: "rounded", style: "height: 48px; width: 48px; object-fit: cover;" %>
+                <% end %>
+              </div>
+              <p class="text-muted mb-2"><%= truncate(tool.tool_description, length: 140) %></p>
+              <p class="small mb-0 text-secondary">
+                <%= t("tools.index.owner", owner: display_user_name(tool.user)) %>
+              </p>
             </div>
-            <p class="text-muted mb-2"><%= truncate(tool.tool_description, length: 140) %></p>
-            <p class="small mb-0 text-secondary">
-              <%= t("tools.index.owner", owner: tool.user.username || tool.user.email) %>
-            </p>
           </div>
         </div>
-      </div>
-    <% end %>
-  </div>
-<% else %>
-  <div class="alert alert-info"><%= t("tools.index.empty_state") %></div>
-<% end %>
-
-
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info"><%= t("tools.index.empty_state") %></div>
+  <% end %>
+</div>

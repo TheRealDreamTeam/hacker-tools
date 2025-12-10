@@ -3,9 +3,11 @@
     <!-- Just to push nav items and hamburger button to the right -->
     <!-- Hamburger (mobile only) - hidden during wizard, landing page, and Devise auth pages -->
     <%# CSS class on body handles hiding to prevent flash %>
-    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+    <% unless devise_controller? %>
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    <% end %>
     <div class="navbar-brand"></div>
     <!-- Desktop links – visible only ≥lg -->
     <!-- Hide navigation during wizard -->

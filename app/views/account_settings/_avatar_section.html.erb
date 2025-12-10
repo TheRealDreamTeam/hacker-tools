@@ -15,14 +15,16 @@
 
         <%= form_with model: user, url: update_avatar_account_settings_path, method: :patch, multipart: true, data: { turbo: true }, local: false, html: { class: "d-flex flex-column flex-grow-1" } do |f| %>
           <div class="flex-grow-1">
-            <% if user.errors[:avatar].any? %>
-              <div class="alert alert-danger">
-                <%= user.errors[:avatar].join(", ") %>
-              </div>
-            <% end %>
-
             <div class="mb-3">
-              <%= f.file_field :avatar, class: "form-control", accept: "image/*", data: { avatar_preview_target: "fileInput", action: "change->avatar-preview#fileSelected" } %>
+              <%= f.label :avatar, class: "form-label" %>
+              <%= f.file_field :avatar, class: "form-control #{'is-invalid' if user.errors[:avatar].any?}", accept: "image/*", data: { avatar_preview_target: "fileInput", action: "change->avatar-preview#fileSelected" } %>
+              <% if user.errors[:avatar].any? %>
+                <div class="invalid-feedback">
+                  <% user.errors[:avatar].each do |error| %>
+                    <div><%= error %></div>
+                  <% end %>
+                </div>
+              <% end %>
               <div class="form-text"><%= t("account_settings.avatar.hint") %></div>
             </div>
           </div>

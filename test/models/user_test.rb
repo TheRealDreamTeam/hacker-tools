@@ -8,18 +8,38 @@ class UserTest < ActiveSupport::TestCase
     assert_includes user.errors[:username], "can't be blank"
   end
 
-  test "should require unique username" do
+  test "should require unique username among active users" do
     user1 = create(:user, username: "testuser")
     user2 = build(:user, username: "testuser")
     assert_not user2.valid?
     assert_includes user2.errors[:username], "has already been taken"
   end
 
-  test "should require unique email" do
+  test "should allow username reuse after user is deleted" do
+    user1 = create(:user, username: "reusable")
+    user1.soft_delete!
+    
+    user2 = build(:user, username: "reusable")
+    assert user2.valid?
+    assert user2.save
+    assert_equal "reusable", user2.username
+  end
+
+  test "should require unique email among active users" do
     user1 = create(:user, email: "test@example.com")
     user2 = build(:user, email: "test@example.com")
     assert_not user2.valid?
     assert_includes user2.errors[:email], "has already been taken"
+  end
+
+  test "should allow email reuse after user is deleted" do
+    user1 = create(:user, email: "reuse@example.com")
+    user1.soft_delete!
+    
+    user2 = build(:user, email: "reuse@example.com")
+    assert user2.valid?
+    assert user2.save
+    assert_equal "reuse@example.com", user2.email
   end
 
   # Associations
@@ -174,5 +194,146 @@ class UserTest < ActiveSupport::TestCase
     assert_difference "UserTool.count", -1 do
       user.destroy
     end
+  end
+
+  # Soft delete functionality
+  test "user_status enum should have active and deleted values" do
+    user = create(:user, user_status: :active)
+    assert user.active?
+    assert_not user.deleted?
+    
+    user.user_status = :deleted
+    user.save!
+    assert user.deleted?
+    assert_not user.active?
+  end
+
+  test "deleted? should return true for deleted users" do
+    user = create(:user, user_status: :deleted)
+    assert user.deleted?
+  end
+
+  test "deleted? should return false for active users" do
+    user = create(:user, user_status: :active)
+    assert_not user.deleted?
+  end
+
+  test "active scope should return only active users" do
+    active_user = create(:user, user_status: :active)
+    deleted_user = create(:user, user_status: :deleted)
+    
+    active_users = User.active.to_a
+    assert_includes active_users, active_user
+    assert_not_includes active_users, deleted_user
+  end
+
+  test "deleted scope should return only deleted users" do
+    active_user = create(:user, user_status: :active)
+    deleted_user = create(:user, user_status: :deleted)
+    
+    deleted_users = User.deleted.to_a
+    assert_includes deleted_users, deleted_user
+    assert_not_includes deleted_users, active_user
+  end
+
+  test "User.all should include both active and deleted users" do
+    active_user = create(:user, user_status: :active)
+    deleted_user = create(:user, user_status: :deleted)
+    
+    all_users = User.all.to_a
+    assert_includes all_users, active_user
+    assert_includes all_users, deleted_user
+  end
+
+  test "soft_delete! should mark user as deleted" do
+    user = create(:user, user_status: :active)
+    user.soft_delete!
+    
+    assert user.deleted?
+    assert_equal "deleted", user.user_status
+  end
+
+  test "soft_delete! should anonymize username" do
+    user = create(:user, username: "original_username")
+    original_id = user.id
+    
+    user.soft_delete!
+    
+    assert_equal "deleted_user_#{original_id}", user.username
+  end
+
+  test "soft_delete! should anonymize email" do
+    user = create(:user, email: "original@example.com")
+    original_id = user.id
+    
+    user.soft_delete!
+    
+    assert_equal "deleted_#{original_id}@deleted.local", user.email
+  end
+
+  test "soft_delete! should clear authentication tokens" do
+    user = create(:user)
+    user.update(reset_password_token: "some_token", reset_password_sent_at: Time.current)
+    
+    user.soft_delete!
+    
+    assert_nil user.reset_password_token
+    assert_nil user.reset_password_sent_at
+    assert_nil user.remember_created_at
+  end
+
+  test "soft_delete! should preserve associated data" do
+    user = create(:user)
+    tool = create(:tool, user: user)
+    comment = create(:comment, user: user, tool: tool)
+    list = create(:list, user: user)
+    
+    user.soft_delete!
+    
+    tool.reload
+    comment.reload
+    list.reload
+    
+    assert_equal user.id, tool.user_id
+    assert_equal user.id, comment.user_id
+    assert_equal user.id, list.user_id
+  end
+
+  test "associations should work with deleted users" do
+    user = create(:user)
+    tool = create(:tool, user: user)
+    comment = create(:comment, user: user, tool: tool)
+    
+    user.soft_delete!
+    
+    tool.reload
+    comment.reload
+    
+    assert_equal user, tool.user
+    assert_equal user, comment.user
+    assert tool.user.deleted?
+    assert comment.user.deleted?
+  end
+
+  test "active_for_authentication? should return false for deleted users" do
+    user = create(:user, user_status: :deleted)
+    assert_not user.active_for_authentication?
+  end
+
+  test "active_for_authentication? should return true for active users" do
+    user = create(:user, user_status: :active)
+    assert user.active_for_authentication?
+  end
+
+  test "inactive_message should return :deleted for deleted users" do
+    user = create(:user, user_status: :deleted)
+    assert_equal :deleted, user.inactive_message
+  end
+
+  test "inactive_message should return super for active users" do
+    user = create(:user, user_status: :active)
+    # For active users, inactive_message should return the default Devise message
+    # which is typically :inactive or similar
+    assert_not_equal :deleted, user.inactive_message
   end
 end

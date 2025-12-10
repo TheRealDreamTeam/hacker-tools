@@ -117,23 +117,28 @@ class AccountSettingsController < ApplicationController
     end
   end
 
-  # Delete account (redirects and signs out)
+  # Soft delete account (marks as deleted, anonymizes username/email, signs out)
+  # Uses soft delete to preserve historical data (comments, tools) while freeing username/email for reuse
   def destroy
     @user = current_user
 
     # Verify password before deletion
     unless @user.valid_password?(params[:user][:password])
-      @user.errors.add(:password, t("account_settings.destroy.invalid_password"))
+      # Use specific error key to avoid conflicts with password section
+      @user.errors.add(:delete_account_password, t("account_settings.destroy.invalid_password"))
       respond_to do |format|
         format.html { render :show, status: :unprocessable_entity }
-        format.turbo_stream { render :show, status: :unprocessable_entity }
+        format.turbo_stream { render :destroy, status: :unprocessable_entity }
       end
       return
     end
 
-    # Sign out before destroying
+    # Soft delete: mark as deleted and anonymize username/email
+    # This preserves historical data (comments, tools) while freeing credentials for reuse
+    @user.soft_delete!
+
+    # Sign out after soft delete
     sign_out(@user)
-    @user.destroy
 
     redirect_to root_path, notice: t("account_settings.destroy.success")
   end

@@ -3,7 +3,7 @@
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-start">
         <div class="flex-grow-1">
-          <p class="mb-1 fw-semibold"><%= comment.user.username || comment.user.email %></p>
+          <p class="mb-1 fw-semibold"><%= display_user_name(comment.user) %></p>
           <p class="mb-2"><%= simple_format(comment.comment) %></p>
           <p class="text-secondary small mb-0"><%= l(comment.created_at, format: :short) %></p>
         </div>

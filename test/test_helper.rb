@@ -49,5 +49,6 @@ module ActiveSupport
     include ActiveJob::TestHelper
     include FactoryBot::Syntax::Methods
     include ActiveSupport::Testing::TimeHelpers
+    include Devise::Test::IntegrationHelpers
   end
 end

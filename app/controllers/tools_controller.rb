@@ -50,6 +50,7 @@ class ToolsController < ApplicationController
     if @tool.save
       redirect_to @tool, notice: t("tools.flash.created")
     else
+      # Validation errors are displayed inline under each input field
       render :new, status: :unprocessable_entity
     end
   end
@@ -59,6 +60,7 @@ class ToolsController < ApplicationController
     if @tool.update(tool_params)
       redirect_to @tool, notice: t("tools.flash.updated")
     else
+      # Validation errors are displayed inline under each input field
       render :edit, status: :unprocessable_entity
     end
   end

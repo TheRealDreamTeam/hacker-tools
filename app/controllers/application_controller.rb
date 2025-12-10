@@ -2,8 +2,21 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :set_locale
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :set_no_cache_for_authenticated_pages
 
   private
+
+  # Prevent browser caching of authenticated pages so back button after sign-out
+  # does not show sensitive account content. This disables storing pages visited
+  # while signed in; after logout, the browser back stack will refetch and
+  # redirect, instead of showing cached HTML.
+  def set_no_cache_for_authenticated_pages
+    return unless user_signed_in?
+
+    response.headers["Cache-Control"] = "no-store, no-cache, max-age=0, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+  end
 
   # Set locale from params, user preference, or default
   # Locale can be set via ?locale=en in URL params
