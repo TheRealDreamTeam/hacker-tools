@@ -30,7 +30,7 @@ html {
   }
 
   -webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.25);
+    background: rgba(0, 0, 0, 0.15);
     border-radius: 6px;
     border: 3px solid transparent;
     /* creates padding effect */
@@ -39,7 +39,7 @@ html {
   }
 
   -webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.3);
     background-clip: content-box;
   }
 
@@ -49,7 +49,7 @@ html {
 /* Firefox – removes arrows and uses native thin style */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
 }
 
 // Ensure body background is white (overriding Bootstrap default)
