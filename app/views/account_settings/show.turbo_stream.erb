@@ -1,0 +1,36 @@
+<%# This template is used when there are errors in any update action %>
+<%# It re-renders the entire page with error messages %>
+
+<%= turbo_stream.replace "flash-messages" do %>
+  <% if notice %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= notice %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="<%= t("navigation.close") %>"></button>
+    </div>
+  <% end %>
+
+  <% if alert %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <%= alert %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="<%= t("navigation.close") %>"></button>
+    </div>
+  <% end %>
+<% end %>
+
+<%# Replace each section that might have errors %>
+<%= turbo_stream.replace "avatar-section" do %>
+  <%= render partial: "account_settings/avatar_section", locals: { user: @user } %>
+<% end %>
+
+<%= turbo_stream.replace "bio-section" do %>
+  <%= render partial: "account_settings/bio_section", locals: { user: @user } %>
+<% end %>
+
+<%= turbo_stream.replace "username-email-section" do %>
+  <%= render partial: "account_settings/username_email_section", locals: { user: @user } %>
+<% end %>
+
+<%= turbo_stream.replace "password-section" do %>
+  <%= render partial: "account_settings/password_section", locals: { user: @user } %>
+<% end %>
+

@@ -1,0 +1,44 @@
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="h3 mb-4"><%= t("profiles.show.title") %></h1>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-start gap-4 mb-4">
+            <!-- Avatar -->
+            <div>
+              <% if @user.avatar.attached? %>
+                <%= image_tag @user.avatar, class: "rounded", style: "height: 120px; width: 120px; object-fit: cover;" %>
+              <% else %>
+                <div class="rounded bg-secondary d-flex align-items-center justify-content-center" style="height: 120px; width: 120px;">
+                  <span class="text-white fs-1"><%= @user.username.first.upcase %></span>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- Username and Bio -->
+            <div class="flex-grow-1">
+              <h2 class="h4 mb-2"><%= @user.username %></h2>
+              <% if @user.user_bio.present? %>
+                <p class="text-muted mb-0"><%= simple_format(@user.user_bio) %></p>
+              <% else %>
+                <p class="text-muted mb-0"><em><%= t("profiles.show.no_bio") %></em></p>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Link to Account Settings -->
+          <div class="mt-4">
+            <%= link_to t("profiles.show.edit_account"), account_settings_path, class: "btn btn-primary w-100" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

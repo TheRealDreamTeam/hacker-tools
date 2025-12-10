@@ -4,6 +4,18 @@ Rails.application.routes.draw do
   # The locale is optional and defaults to the configured default locale
   scope "(:locale)", locale: /#{I18n.available_locales.join("|")}/ do
     devise_for :users
+    
+    # Custom account settings routes
+    resource :account_settings, only: [:show] do
+      member do
+        patch :update_avatar
+        patch :update_bio
+        patch :update_username_email
+        patch :update_password
+        delete :delete_avatar
+        delete :destroy
+      end
+    end
     root to: "pages#home"
     resources :tools
     # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
@@ -14,5 +26,6 @@ Rails.application.routes.draw do
 
     # Defines the root path route ("/")
     # root "posts#index"
+    get "profile" => "profiles#show", as: :profile
   end
 end
