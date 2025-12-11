@@ -11,15 +11,9 @@
                   hint: t("submissions.form.author_note_hint") %>
     </div>
 
-    <div class="col-12">
-      <%= f.input :tool_id, 
-                  as: :select,
-                  collection: Tool.order(:tool_name).map { |t| [t.tool_name, t.id] },
-                  label: t("submissions.form.tool"),
-                  hint: t("submissions.form.tool_hint"),
-                  include_blank: t("submissions.form.tool_prompt"),
-                  input_html: { class: "form-select" } %>
-    </div>
+    <%# Tool selection hidden - will be auto-linked during processing pipeline %>
+    <%# TODO: Re-enable manual tool linking in future if needed %>
+    <%= f.hidden_field :tool_id, value: @submission.tool_id %>
   </div>
 
   <div class="mt-4 d-flex gap-2">
