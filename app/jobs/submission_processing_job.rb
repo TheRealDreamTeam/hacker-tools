@@ -4,7 +4,7 @@ class SubmissionProcessingJob < ApplicationJob
   queue_as :default
 
   # Retry on transient errors
-  retry_on StandardError, wait: :exponentially_longer, attempts: 3
+  retry_on StandardError, wait: :polynomially_longer, attempts: 3
 
   # Discard if submission no longer exists
   discard_on ActiveRecord::RecordNotFound
@@ -75,13 +75,16 @@ class SubmissionProcessingJob < ApplicationJob
   private
 
   # Broadcast status update via Turbo Stream
+  # Note: Status badge partial not yet implemented - broadcasts disabled for now
+  # TODO: Create status badge partial and enable broadcasts when UI is ready
   def broadcast_status_update(submission, status)
-    Turbo::StreamsChannel.broadcast_update_to(
-      "submission_#{submission.id}",
-      target: "submission-status-#{submission.id}",
-      partial: "submissions/status_badge",
-      locals: { submission: submission }
-    )
+    # Status badge UI not yet implemented - skip broadcast for now
+    # Turbo::StreamsChannel.broadcast_update_to(
+    #   "submission_#{submission.id}",
+    #   target: "submission-status-#{submission.id}",
+    #   partial: "submissions/status_badge",
+    #   locals: { submission: submission }
+    # )
   rescue StandardError => e
     # Don't fail the job if broadcast fails
     Rails.logger.warn "Failed to broadcast status update: #{e.message}"

@@ -32,11 +32,15 @@ module SubmissionProcessing
         
         # Extract title
         title = extract_title(doc)
-        submission.update!(submission_name: title) if title.present?
+        if title.present? && title.length > 3 # Only update if we got a meaningful title
+          submission.update!(submission_name: title)
+        end
         
         # Extract description
         description = extract_description(doc)
-        submission.update!(submission_description: description) if description.present?
+        if description.present? && description.length > 10 # Only update if we got a meaningful description
+          submission.update!(submission_description: description)
+        end
         
         # Extract Open Graph image
         og_image = extract_og_image(doc)
@@ -62,31 +66,37 @@ module SubmissionProcessing
     def extract_title(doc)
       # Try Open Graph title first
       og_title = doc.at_css('meta[property="og:title"]')&.[]('content')
-      return og_title if og_title.present?
+      return og_title.strip if og_title.present? && og_title.strip.present?
       
       # Try Twitter card title
       twitter_title = doc.at_css('meta[name="twitter:title"]')&.[]('content')
-      return twitter_title if twitter_title.present?
+      return twitter_title.strip if twitter_title.present? && twitter_title.strip.present?
       
       # Fall back to page title
-      doc.at_css('title')&.text&.strip
+      title = doc.at_css('title')&.text&.strip
+      return title if title.present?
+      
+      nil
     end
 
     def extract_description(doc)
       # Try Open Graph description first
       og_desc = doc.at_css('meta[property="og:description"]')&.[]('content')
-      return og_desc if og_desc.present?
+      return og_desc.strip if og_desc.present? && og_desc.strip.present?
       
       # Try Twitter card description
       twitter_desc = doc.at_css('meta[name="twitter:description"]')&.[]('content')
-      return twitter_desc if twitter_desc.present?
+      return twitter_desc.strip if twitter_desc.present? && twitter_desc.strip.present?
       
       # Try meta description
       meta_desc = doc.at_css('meta[name="description"]')&.[]('content')
-      return meta_desc if meta_desc.present?
+      return meta_desc.strip if meta_desc.present? && meta_desc.strip.present?
       
-      # Fall back to first paragraph
-      doc.at_css('p')&.text&.strip&.truncate(500)
+      # Fall back to first meaningful paragraph (skip empty/short ones)
+      paragraphs = doc.css('p').map { |p| p.text.strip }.reject { |text| text.length < 50 }
+      return paragraphs.first&.truncate(500) if paragraphs.any?
+      
+      nil
     end
 
     def extract_og_image(doc)
