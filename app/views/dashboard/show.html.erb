@@ -140,7 +140,7 @@
                 <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
                   <div>
                     <div class="fw-semibold"><%= link_to tool.tool_name, tool_path(tool) %></div>
-                    <div class="text-muted small"><%= t("dashboard.sections.shared.by_user", username: tool.user.username) %></div>
+                    <%# Tools are community-owned, no owner to display %>
                   </div>
                   <span class="badge bg-warning-subtle text-warning"><%= t("dashboard.sections.favorites.badge") %></span>
                 </li>
@@ -238,7 +238,7 @@
                     <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
                       <div>
                         <div class="fw-semibold"><%= link_to tool.tool_name, tool_path(tool) %></div>
-                        <div class="text-muted small"><%= t("dashboard.sections.shared.by_user", username: tool.user.username) %></div>
+                        <%# Tools are community-owned, no owner to display %>
                       </div>
                       <span class="badge bg-info-subtle text-info"><%= t("dashboard.sections.follows.badge") %></span>
                     </li>

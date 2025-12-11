@@ -44,7 +44,7 @@ class ToolsController < ApplicationController
 
   # GET /tools/new
   def new
-    @tool = current_user.tools.new
+    @tool = Tool.new
   end
 
   # GET /tools/:id/edit
@@ -53,7 +53,7 @@ class ToolsController < ApplicationController
 
   # POST /tools
   def create
-    @tool = current_user.tools.new(tool_params)
+    @tool = Tool.new(tool_params)
 
     if @tool.save
       redirect_to @tool, notice: t("tools.flash.created")

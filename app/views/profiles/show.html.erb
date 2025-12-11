@@ -179,9 +179,9 @@
                         <p class="mb-1 text-muted"><%= truncate(tool.tool_description, length: 150) %></p>
                       <% end %>
                       <small class="text-muted">
-                        <%= t("profiles.show.tabs.by_user", username: tool.user.username) %>
+                        <%# Tools are community-owned, no owner to display %>
                         <% if tool.tags.any? %>
-                          • <%= tool.tags.limit(3).pluck(:tag_name).join(", ") %>
+                          <%= tool.tags.limit(3).pluck(:tag_name).join(", ") %>
                         <% end %>
                       </small>
                     </div>
