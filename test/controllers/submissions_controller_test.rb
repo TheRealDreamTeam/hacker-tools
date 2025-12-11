@@ -47,13 +47,13 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   # Show tests
   test "should show submission" do
-    get submission_path(@submission.id)
+    get submission_path(id: @submission.id)
     assert_response :success
   end
 
   test "should show submission with comments" do
     comment = create(:comment, commentable: @submission, user: @user)
-    get submission_path(@submission.id)
+    get submission_path(id: @submission.id)
     assert_response :success
   end
 
@@ -80,7 +80,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
         }
       }
     end
-    assert_redirected_to submission_path(Submission.last.id)
+    assert_redirected_to submission_path(id: Submission.last.id)
   end
 
   test "should not create submission when not signed in" do
@@ -140,8 +140,10 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "should allow same URL from different users" do
     sign_in @other_user
+    # Create submission with URL for first user
     existing = create(:submission, user: @user, submission_url: "https://example.com/shared-article")
     
+    # Second user should be able to submit same URL (validation and index are scoped to user_id)
     assert_difference "Submission.count", 1 do
       post submissions_path, params: {
         submission: {
@@ -155,37 +157,37 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   # Edit tests
   test "should get edit when owner" do
     sign_in @user
-    get edit_submission_path(@submission.id)
+    get edit_submission_path(id: @submission.id)
     assert_response :success
   end
 
   test "should redirect edit when not signed in" do
-    get edit_submission_path(@submission.id)
+    get edit_submission_path(id: @submission.id)
     assert_redirected_to new_user_session_path
   end
 
   test "should redirect edit when not owner" do
     sign_in @other_user
-    get edit_submission_path(@submission.id)
+    get edit_submission_path(id: @submission.id)
     assert_redirected_to submissions_path
   end
 
   # Update tests
   test "should update submission when owner" do
     sign_in @user
-    patch submission_path(@submission.id), params: {
+    patch submission_path(id: @submission.id), params: {
       submission: {
         author_note: "Updated note"
       }
     }
-    assert_redirected_to submission_path(@submission.id)
+    assert_redirected_to submission_path(id: @submission.id)
     @submission.reload
     assert_equal "Updated note", @submission.author_note
   end
 
   test "should not update submission when not signed in" do
     original_note = @submission.author_note
-    patch submission_path(@submission.id), params: {
+    patch submission_path(id: @submission.id), params: {
       submission: {
         author_note: "Updated note"
       }
@@ -198,7 +200,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   test "should not update submission when not owner" do
     sign_in @other_user
     original_note = @submission.author_note
-    patch submission_path(@submission.id), params: {
+    patch submission_path(id: @submission.id), params: {
       submission: {
         author_note: "Updated note"
       }
@@ -211,7 +213,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
 
   test "should not update submission with invalid data" do
     sign_in @user
-    patch submission_path(@submission.id), params: {
+    patch submission_path(id: @submission.id), params: {
       submission: {
         submission_url: "not-a-valid-url"
       }
@@ -223,14 +225,14 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   test "should destroy submission when owner" do
     sign_in @user
     assert_difference "Submission.count", -1 do
-      delete submission_path(@submission.id)
+      delete submission_path(id: @submission.id)
     end
     assert_redirected_to submissions_path
   end
 
   test "should not destroy submission when not signed in" do
     assert_no_difference "Submission.count" do
-      delete submission_path(@submission.id)
+      delete submission_path(id: @submission.id)
     end
     assert_redirected_to new_user_session_path
   end
@@ -238,7 +240,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   test "should not destroy submission when not owner" do
     sign_in @other_user
     assert_no_difference "Submission.count" do
-      delete submission_path(@submission.id)
+      delete submission_path(id: @submission.id)
     end
     assert_redirected_to submissions_path
   end
@@ -248,15 +250,15 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     tag = create(:tag)
     assert_difference "@submission.tags.count", 1 do
-      post add_tag_submission_path(@submission.id), params: { tag_id: tag.id }
+      post add_tag_submission_path(id: @submission.id), params: { tag_id: tag.id }
     end
-    assert_redirected_to submission_path(@submission.id)
+    assert_redirected_to submission_path(id: @submission.id)
   end
 
   test "should not add tag when not signed in" do
     tag = create(:tag)
     assert_no_difference "@submission.tags.count" do
-      post add_tag_submission_path(@submission.id), params: { tag_id: tag.id }
+      post add_tag_submission_path(id: @submission.id), params: { tag_id: tag.id }
     end
     assert_redirected_to new_user_session_path
   end
@@ -265,7 +267,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     sign_in @other_user
     tag = create(:tag)
     assert_no_difference "@submission.tags.count" do
-      post add_tag_submission_path(@submission.id), params: { tag_id: tag.id }
+      post add_tag_submission_path(id: @submission.id), params: { tag_id: tag.id }
     end
     assert_redirected_to submissions_path
   end
@@ -276,9 +278,9 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     @submission.tags << tag
     
     assert_no_difference "@submission.tags.count" do
-      post add_tag_submission_path(@submission.id), params: { tag_id: tag.id }
+      post add_tag_submission_path(id: @submission.id), params: { tag_id: tag.id }
     end
-    assert_redirected_to submission_path(@submission.id)
+    assert_redirected_to submission_path(id: @submission.id)
   end
 
   # Remove tag tests
@@ -288,9 +290,9 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     @submission.tags << tag
     
     assert_difference "@submission.tags.count", -1 do
-      delete remove_tag_submission_path(@submission.id), params: { tag_id: tag.id }
+      delete remove_tag_submission_path(id: @submission.id), params: { tag_id: tag.id }
     end
-    assert_redirected_to submission_path(@submission.id)
+    assert_redirected_to submission_path(id: @submission.id)
   end
 
   test "should not remove tag when not signed in" do
@@ -298,7 +300,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     @submission.tags << tag
     
     assert_no_difference "@submission.tags.count" do
-      delete remove_tag_submission_path(@submission.id), params: { tag_id: tag.id }
+      delete remove_tag_submission_path(id: @submission.id), params: { tag_id: tag.id }
     end
     assert_redirected_to new_user_session_path
   end
@@ -309,7 +311,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     @submission.tags << tag
     
     assert_no_difference "@submission.tags.count" do
-      delete remove_tag_submission_path(@submission.id), params: { tag_id: tag.id }
+      delete remove_tag_submission_path(id: @submission.id), params: { tag_id: tag.id }
     end
     assert_redirected_to submissions_path
   end
@@ -318,9 +320,9 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   test "should follow submission when signed in" do
     sign_in @user
     assert_difference "@submission.follows.count", 1 do
-      post follow_submission_path(@submission.id)
+      post follow_submission_path(id: @submission.id)
     end
-    assert_redirected_to submission_path(@submission.id)
+    assert_redirected_to submission_path(id: @submission.id)
   end
 
   test "should unfollow submission when already following" do
@@ -328,14 +330,14 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     create(:follow, followable: @submission, user: @user)
     
     assert_difference "@submission.follows.count", -1 do
-      post follow_submission_path(@submission.id)
+      post follow_submission_path(id: @submission.id)
     end
-    assert_redirected_to submission_path(@submission.id)
+    assert_redirected_to submission_path(id: @submission.id)
   end
 
   test "should not follow submission when not signed in" do
     assert_no_difference "@submission.follows.count" do
-      post follow_submission_path(@submission.id)
+      post follow_submission_path(id: @submission.id)
     end
     assert_redirected_to new_user_session_path
   end

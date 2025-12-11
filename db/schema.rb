@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_11_212441) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_11_220000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -137,7 +137,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_212441) do
     t.datetime "updated_at", null: false
     t.index ["duplicate_of_id"], name: "index_submissions_on_duplicate_of_id"
     t.index ["metadata"], name: "index_submissions_on_metadata", using: :gin
-    t.index ["normalized_url"], name: "index_submissions_on_normalized_url", unique: true, where: "(normalized_url IS NOT NULL)"
+    t.index ["normalized_url", "user_id"], name: "index_submissions_on_normalized_url_and_user_id", unique: true, where: "(normalized_url IS NOT NULL)"
     t.index ["processed_at"], name: "index_submissions_on_processed_at"
     t.index ["status", "submission_type"], name: "index_submissions_on_status_and_submission_type"
     t.index ["status"], name: "index_submissions_on_status"
