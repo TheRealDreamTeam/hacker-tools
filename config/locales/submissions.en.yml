@@ -67,6 +67,7 @@ en:
         not_found: "Tag '%{tag}' not found on this submission."
       follow:
         success: "You are now following this submission."
+        unfollowed: "You are no longer following this submission."
         already_following: "You are already following this submission."
     create:
       success: "Submission created successfully."

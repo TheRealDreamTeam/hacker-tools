@@ -143,14 +143,26 @@ class SubmissionsController < ApplicationController
 
   # POST /submissions/:id/follow
   def follow
-    follow = current_user.follows.find_or_initialize_by(followable: @submission)
+    follow_record = current_user.follows.find_by(followable: @submission)
     
-    if follow.new_record?
-      follow.save
-      flash[:notice] = t("submissions.follow.success")
+    if follow_record
+      # Already following - unfollow
+      follow_record.destroy
+      flash[:notice] = t("submissions.follow.unfollowed")
     else
-      flash[:alert] = t("submissions.follow.already_following")
+      # Not following - follow
+      current_user.follows.create!(followable: @submission)
+      flash[:notice] = t("submissions.follow.success")
     end
+    
+    respond_to do |format|
+      format.html { redirect_to @submission }
+      format.turbo_stream { render :follow }
+    end
+  rescue ActiveRecord::RecordNotUnique
+    # Handle race condition: if another request created it between find_by and create
+    follow_record = current_user.follows.find_by(followable: @submission)
+    follow_record&.destroy
     
     respond_to do |format|
       format.html { redirect_to @submission }
@@ -167,7 +179,7 @@ class SubmissionsController < ApplicationController
   def authorize_owner!
     return if @submission.user == current_user
 
-    redirect_to @submission, alert: t("submissions.unauthorized")
+    redirect_to submissions_path, alert: t("submissions.flash.unauthorized")
   end
 
   def submission_params
