@@ -128,6 +128,58 @@ h6,
   }
 }
 
+// Interaction buttons (upvote/favorite/follow) - allow compact sizing and icon alignment
+.interaction-buttons .btn {
+  width: 64px;
+  height: 64px;
+  padding: 0.4rem !important;
+  border-radius: 0.75rem !important;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  text-align: center;
+
+  i {
+    line-height: 1;
+    font-size: 2rem;
+    margin: 0 auto;
+  }
+
+  .badge {
+    height: auto;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.4rem;
+    font-size: 0.95rem; // increased by ~+2px equivalent
+    line-height: 1.1;
+    margin: 0 auto;
+  }
+
+  // Keep icons visible on hover by using a light background and stable icon color
+  &:hover {
+    background-color: #f8f9fa !important;
+    border-color: #d8dde4 !important;
+    box-shadow: none !important;
+  }
+}
+
+.interaction-buttons .interaction-item {
+  width: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.interaction-buttons .interaction-count {
+  font-size: 0.95rem;
+  color: #6c757d;
+  line-height: 1.2;
+  text-align: center;
+  margin-top: 0.1rem;
+}
+
 // All form inputs should have consistent height and rounded corners
 .form-control:not(textarea),
 .form-select,

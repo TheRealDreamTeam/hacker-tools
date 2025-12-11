@@ -18,26 +18,25 @@
                 <% end %>
               </div>
               <p class="text-muted mb-2"><%= truncate(tool.tool_description, length: 140) %></p>
-              <p class="small mb-0 text-secondary">
+              <% if tool.tags.any? %>
+                <div class="mb-2 d-flex flex-wrap gap-1" data-controller="tooltip">
+                  <% tool.tags.limit(5).each do |tag| %>
+                    <%= render_tag_link(tag, style: "font-size: 0.75rem;") %>
+                  <% end %>
+                  <% if tool.tags.count > 5 %>
+                    <span class="badge bg-secondary" style="font-size: 0.75rem;">
+                      +<%= tool.tags.count - 5 %>
+                    </span>
+                  <% end %>
+                </div>
+              <% end %>
+              <p class="small mb-2 text-secondary">
                 <%= t("tools.index.owner", owner: display_user_name(tool.user)) %>
               </p>
-            </div>
-            <p class="text-muted mb-2"><%= truncate(tool.tool_description, length: 140) %></p>
-            <% if tool.tags.any? %>
-              <div class="mb-2 d-flex flex-wrap gap-1" data-controller="tooltip">
-                <% tool.tags.limit(5).each do |tag| %>
-                  <%= render_tag_link(tag, style: "font-size: 0.75rem;") %>
-                <% end %>
-                <% if tool.tags.count > 5 %>
-                  <span class="badge bg-secondary" style="font-size: 0.75rem;">
-                    +<%= tool.tags.count - 5 %>
-                  </span>
-                <% end %>
+              <div>
+                <%= render "tools/interaction_buttons", tool: tool %>
               </div>
-            <% end %>
-            <p class="small mb-0 text-secondary">
-              <%= t("tools.index.owner", owner: tool.user.username || tool.user.email) %>
-            </p>
+            </div>
           </div>
         </div>
       <% end %>

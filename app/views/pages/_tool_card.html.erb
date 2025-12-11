@@ -3,10 +3,13 @@
     <div class="row align-items-center">
       <!-- Left content: star, title, description, tags -->
       <div class="col-12 col-md-5">
-        <h5 class="card-title mb-1">
-          <span class="text-warning me-2" aria-hidden="true">★</span>
-          <%= "#{index + 1}. #{tool.tool_name}" %>
-        </h5>
+        <div class="d-flex justify-content-between align-items-start mb-1 position-relative">
+          <h5 class="card-title mb-0">
+            <%= link_to "#{index + 1}. #{tool.tool_name}", tool_path(tool), class: "text-decoration-none" %>
+            <em class="text-secondary small ms-2 fst-italic"><%= display_user_name(tool.user) %></em>
+          </h5>
+          <%= render "tools/read_state", tool: tool, classes: "position-absolute top-0 end-0 mt-1 me-1" %>
+        </div>
         <p class="card-text text-muted mb-2"><%= tool.tool_description.presence || t("pages.home.card.description", index: index + 1) %></p>
         <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
           <% displayed_tags = tool.tags.limit(3) %>
@@ -24,12 +27,7 @@
             <% end %>
           <% end %>
         </div>
-        <%= link_to "/tools/#{tool.id}",
-                    class: "stretched-link",
-                    aria: { label: t("pages.home.card.view_placeholder") },
-                    data: { placeholder: "tool-link" } do %>
-          <span class="visually-hidden"><%= t("pages.home.card.view_placeholder") %></span>
-        <% end %>
+        <!-- Removed stretched-link to keep interaction buttons clickable without redirect -->
       </div>
 
       <!-- Right content: logo + upvotes aligned on the same row -->
@@ -41,13 +39,7 @@
             <span class="text-muted small"><%= t("pages.home.card.logo_placeholder") %></span>
           <% end %>
         </div>
-        <button type="button"
-                class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2 upvote-button"
-                data-count="<%= upvotes %>"
-                data-tool-id="<%= tool.id %>">
-          <span aria-hidden="true">▲</span>
-          <span data-upvote-count><%= t("pages.home.card.upvotes", count: upvotes) %></span>
-        </button>
+        <%= render "tools/interaction_buttons", tool: tool %>
       </div>
     </div>
   </div>

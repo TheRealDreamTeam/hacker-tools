@@ -133,6 +133,7 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Attributes**: `read_at` (datetime), `upvote` (boolean), `favorite` (boolean), `subscribe` (boolean), foreign keys to user/tool
 - **Associations**: `belongs_to :user`; `belongs_to :tool`
 - **Validations**: Uniqueness on `[user_id, tool_id]`.
+- **Behavior**: Created/touched on tool show (sets `read_at`), toggled via upvote/favorite/follow buttons on home, tools index, and tool show.
 
 ### CommentUpvote (join)
 - **Purpose**: User upvotes on comments.

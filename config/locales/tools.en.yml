@@ -18,16 +18,25 @@ en:
       owner: "Owned by %{owner}"
       description: "Description"
       author_note: "Author note"
+      first_viewed: "First viewed"
       picture: "Picture"
       tags_title: "Tags"
       no_tags: "No tags yet."
       select_tag: "Select a tag to add"
+      interactions_hint: "Upvote, favorite, or follow this tool."
       comments_title: "Discussion"
       flags_title: "Flags"
       bugs_title: "Bugs"
     actions:
       add_tag: "Add tag"
       remove_tag: "Remove tag"
+      upvote: "Upvote"
+      favorite: "Favorite"
+      follow: "Follow"
+    read:
+      visited: "Viewed"
+      not_visited: "Not viewed yet"
+      first_viewed_at: "First viewed: %{timestamp}"
     form:
       tool_name: "Name"
       tool_description: "Description"
@@ -52,6 +61,9 @@ en:
       tag_added: "Tag added successfully."
       tag_removed: "Tag removed successfully."
       tag_not_found: "Tag not found."
+      tool_upvote: "Upvote updated."
+      tool_favorite: "Favorite updated."
+      tool_follow: "Follow state updated."
 
   comments:
     actions:
