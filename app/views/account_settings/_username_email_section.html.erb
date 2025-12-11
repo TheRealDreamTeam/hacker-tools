@@ -30,7 +30,7 @@
 
           <div class="mb-3">
             <%= f.label :current_password, t("account_settings.username_email.current_password"), class: "form-label" %>
-            <%= f.password_field :current_password, class: "form-control #{'is-invalid' if user.errors[:current_password].any?}", autocomplete: "current-password", required: true %>
+        <%= f.password_field :current_password, id: "username-email-current-password", class: "form-control #{'is-invalid' if user.errors[:current_password].any?}", autocomplete: "current-password", required: true %>
             <% if user.errors[:current_password].any? %>
               <div class="invalid-feedback">
                 <% user.errors[:current_password].each do |error| %>
