@@ -66,7 +66,7 @@ class SubmissionsController < ApplicationController
       
       respond_to do |format|
         format.html { redirect_to @submission, notice: t("submissions.create.success") }
-        format.turbo_stream { render :create }
+        format.turbo_stream { redirect_to @submission, status: :see_other, notice: t("submissions.create.success") }
       end
     else
       respond_to do |format|
