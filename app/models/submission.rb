@@ -50,7 +50,7 @@ class Submission < ApplicationRecord
   validates :user_id, presence: true
   validates :submission_type, presence: true
   validates :status, presence: true
-  validates :normalized_url, uniqueness: { allow_nil: true }, if: -> { normalized_url.present? }
+  validates :normalized_url, uniqueness: { scope: :user_id, allow_nil: true }, if: -> { normalized_url.present? }
   validate :submission_url_format, if: -> { submission_url.present? }
   
   # Callbacks

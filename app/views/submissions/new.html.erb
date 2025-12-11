@@ -3,6 +3,8 @@
     <h1 class="h3 m-0"><%= t("submissions.new.title") %></h1>
     <%= link_to t("actions.back"), submissions_path, class: "btn btn-secondary" %>
   </div>
-  <%= render "form", submission: @submission %>
+  <div id="submission-form-container">
+    <%= render "form", submission: @submission %>
+  </div>
 </div>
 
