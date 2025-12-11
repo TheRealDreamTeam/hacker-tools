@@ -22,6 +22,13 @@ module SubmissionProcessing
       submission = Submission.find_by(id: submission_id)
       return unless submission
 
+      # Check if embedding column exists (pgvector extension must be installed)
+      unless submission.class.column_names.include?("embedding")
+        Rails.logger.warn "Embedding column not available for submission #{submission_id}. " \
+                         "pgvector extension is not installed. Skipping embedding generation."
+        return
+      end
+
       Rails.logger.info "Generating embedding for submission #{submission_id}"
 
       # Combine text from multiple sources for comprehensive embedding
