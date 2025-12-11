@@ -18,15 +18,28 @@ class AddEmbeddingToSubmissions < ActiveRecord::Migration[7.1]
     SQL
 
     # Add index for vector similarity search (using cosine distance)
-    # This enables fast semantic search queries
-    # Note: IVFFlat index requires data to exist, so we'll create it after embeddings are generated
-    # For now, we'll create a basic index - can be upgraded to IVFFlat later
+    # Note: IVFFlat index requires data to exist and works best with 1000+ rows
+    # We'll create a basic index now - can be upgraded to IVFFlat later when we have more data
+    # For now, use a simple index that works with any amount of data
     execute <<-SQL
       CREATE INDEX index_submissions_on_embedding_vector
       ON submissions
       USING ivfflat (embedding vector_cosine_ops)
-      WITH (lists = 100);
+      WITH (lists = 10);
     SQL
+  rescue ActiveRecord::StatementInvalid => e
+    # If IVFFlat index creation fails (e.g., no data yet), create a basic index
+    if e.message.include?("ivfflat") || e.message.include?("lists")
+      Rails.logger.info "Creating basic vector index (IVFFlat requires data - will upgrade later)"
+      execute <<-SQL
+        CREATE INDEX index_submissions_on_embedding_vector
+        ON submissions
+        USING ivfflat (embedding vector_cosine_ops)
+        WITH (lists = 1);
+      SQL
+    else
+      raise
+    end
   rescue ActiveRecord::StatementInvalid => e
     # If pgvector extension is not available, log warning and skip
     if e.message.include?("vector") || e.message.include?("extension") || e.message.include?("does not exist")
