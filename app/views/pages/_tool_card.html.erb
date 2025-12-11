@@ -8,11 +8,11 @@
           <%= "#{index + 1}. #{tool.tool_name}" %>
         </h5>
         <p class="card-text text-muted mb-2"><%= tool.tool_description.presence || t("pages.home.card.description", index: index + 1) %></p>
-        <div class="d-flex flex-wrap gap-2">
+        <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
           <% displayed_tags = tool.tags.limit(3) %>
           <% if displayed_tags.any? %>
             <% displayed_tags.each do |tag| %>
-              <span class="badge bg-light text-primary border"><%= tag.tag_name %></span>
+              <%= render_tag_link(tag, badge_class: "bg-light text-primary border") %>
             <% end %>
           <% else %>
             <% [

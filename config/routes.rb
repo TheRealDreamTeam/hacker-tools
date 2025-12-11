@@ -17,7 +17,7 @@ Rails.application.routes.draw do
       end
     end
     root to: "pages#home"
-    resources :tags, except: [:show]
+    resources :tags
     resources :tools do
       resources :comments, only: [:create, :destroy] do
         patch :resolve, on: :member

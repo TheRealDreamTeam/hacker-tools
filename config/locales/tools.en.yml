@@ -101,6 +101,10 @@ en:
       title: "Create tag"
     edit:
       title: "Edit tag"
+    show:
+      children_title: "Child Tags"
+      tools_title: "Tools with this tag"
+      no_tools: "No tools have this tag yet."
     actions:
       new: "New tag"
     form:
