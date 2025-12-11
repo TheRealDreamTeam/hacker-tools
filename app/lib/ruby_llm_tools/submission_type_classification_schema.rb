@@ -1,6 +1,8 @@
 # Schema for submission type classification output
 # Documentation: https://rubyllm.com/chat/#getting-structured-output
 # Uses ruby_llm-schema gem: https://github.com/danielfriis/ruby_llm-schema
+require 'ruby_llm/schema'
+
 class SubmissionTypeClassificationSchema < RubyLLM::Schema
   string :submission_type, 
     description: "The classified submission type",

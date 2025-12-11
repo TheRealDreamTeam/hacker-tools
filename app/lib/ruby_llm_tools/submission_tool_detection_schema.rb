@@ -1,6 +1,8 @@
 # Schema for tool detection output
 # Documentation: https://rubyllm.com/chat/#getting-structured-output
 # Uses ruby_llm-schema gem: https://github.com/danielfriis/ruby_llm-schema
+require 'ruby_llm/schema'
+
 class SubmissionToolDetectionSchema < RubyLLM::Schema
   array :tools do
     object do

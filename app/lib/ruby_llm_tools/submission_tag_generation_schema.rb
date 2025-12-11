@@ -1,6 +1,8 @@
 # Schema for tag generation output
 # Documentation: https://rubyllm.com/chat/#getting-structured-output
 # Uses ruby_llm-schema gem: https://github.com/danielfriis/ruby_llm-schema
+require 'ruby_llm/schema'
+
 class SubmissionTagGenerationSchema < RubyLLM::Schema
   array :tags do
     object do
