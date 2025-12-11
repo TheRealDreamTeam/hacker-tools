@@ -2,11 +2,17 @@
 
 This document serves as the human-readable specification for the Hacker Tools application. It is maintained alongside development and updated as features are built.
 
-**Last Updated**: 2025-12-09
+**Last Updated**: 2025-12-11
 
 ## Overview
 
 Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineering tools. Users can publish tools, tag them, group them into lists, discuss via threaded comments, and interact via upvotes/favorites/subscriptions.
+
+### Seed Data Snapshot
+- Tool catalog seeded with 34 tools (original set doubled plus security-focused additions from a soft-deleted user).
+- Tags expanded to include security, CI/CD, and observability to reflect the richer tool set.
+- Lists cover Ruby basics, frontend stack, DevOps essentials, private favorites, a database workbench, and an archived security list owned by a deleted user.
+- Comments include threaded discussions on new tools (CI caching strategies, formatting, observability, API clients) plus security flags/bugs contributed by the deleted user to validate soft-delete associations.
 
 ## Core Features
 

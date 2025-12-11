@@ -65,6 +65,18 @@ users << User.create!(
   user_bio: "Data scientist and ML engineer. Curating tools for data analysis and machine learning."
 )
 
+# Soft-deleted user to validate historical associations remain intact
+deleted_user = User.create!(
+  email: "ghost@example.com",
+  password: "password123",
+  username: "ghost_user",
+  user_type: 0,
+  user_status: 0,
+  user_bio: "Former user whose content remains for historical context. Soft-deleted to verify associations."
+)
+deleted_user.soft_delete! # Applies anonymized email/username and marks user_status as deleted
+users << deleted_user
+
 # Create Tags
 puts "Creating tags..."
 tags = {}
@@ -82,6 +94,9 @@ tags[:productivity] = Tag.create!(tag_name: "Productivity", tag_description: "To
 tags[:api] = Tag.create!(tag_name: "API", tag_description: "API development and testing tools", tag_type: 0)
 tags[:git] = Tag.create!(tag_name: "Git", tag_description: "Version control and Git tools", tag_type: 0)
 tags[:docker] = Tag.create!(tag_name: "Docker", tag_description: "Containerization tools", tag_type: 0, parent: tags[:devops])
+tags[:security] = Tag.create!(tag_name: "Security", tag_description: "Security scanning and auditing utilities", tag_type: 0, parent: tags[:devops])
+tags[:ci_cd] = Tag.create!(tag_name: "CI/CD", tag_description: "Continuous integration and delivery automation", tag_type: 0, parent: tags[:devops])
+tags[:observability] = Tag.create!(tag_name: "Observability", tag_description: "Monitoring, metrics, and tracing", tag_type: 0, parent: tags[:devops])
 
 # Create Tools
 puts "Creating tools..."
@@ -254,6 +269,186 @@ tools << Tool.create!(
   created_at: 3.days.ago
 )
 
+tools << Tool.create!(
+  user: users[0],
+  tool_name: "Pry",
+  tool_description: "A runtime developer console and IRB alternative with powerful introspection tools.",
+  tool_url: "https://pry.github.io",
+  author_note: "Supercharges Ruby debugging with better navigation and context-aware features.",
+  visibility: 0,
+  created_at: 2.days.ago + 3.hours
+)
+
+tools << Tool.create!(
+  user: users[0],
+  tool_name: "Brakeman",
+  tool_description: "Static analysis security scanner for Ruby on Rails applications.",
+  tool_url: "https://brakemanscanner.org",
+  author_note: "Fast way to catch Rails-specific security issues before code review.",
+  visibility: 0,
+  created_at: 1.week.ago + 1.day
+)
+
+tools << Tool.create!(
+  user: users[1],
+  tool_name: "Bundler Audit",
+  tool_description: "Patch-level verification for Bundler to check for vulnerable Ruby gems.",
+  tool_url: "https://github.com/rubysec/bundler-audit",
+  author_note: "Keeps Gemfile.lock honest by flagging known CVEs quickly.",
+  visibility: 0,
+  created_at: 5.days.ago + 6.hours
+)
+
+tools << Tool.create!(
+  user: users[2],
+  tool_name: "Prettier",
+  tool_description: "Opinionated code formatter for JavaScript, TypeScript, and more.",
+  tool_url: "https://prettier.io",
+  author_note: "Removes bikeshedding from code style debates; pairs nicely with ESLint.",
+  visibility: 0,
+  created_at: 2.days.ago + 5.hours
+)
+
+tools << Tool.create!(
+  user: users[2],
+  tool_name: "Cypress",
+  tool_description: "End-to-end testing framework for web applications with fast feedback.",
+  tool_url: "https://www.cypress.io",
+  author_note: "Great DX with time-travel debugging and deterministic runs.",
+  visibility: 0,
+  created_at: 6.days.ago + 8.hours
+)
+
+tools << Tool.create!(
+  user: users[2],
+  tool_name: "Storybook",
+  tool_description: "UI component workshop for building and documenting components in isolation.",
+  tool_url: "https://storybook.js.org",
+  author_note: "Perfect for visual regression workflows and design system work.",
+  visibility: 0,
+  created_at: 4.days.ago + 2.hours
+)
+
+tools << Tool.create!(
+  user: users[3],
+  tool_name: "GitHub Actions",
+  tool_description: "CI/CD platform natively integrated with GitHub repositories.",
+  tool_url: "https://github.com/features/actions",
+  author_note: "Great default for pipelines; reusable workflows keep repos DRY.",
+  visibility: 0,
+  created_at: 3.days.ago + 4.hours
+)
+
+tools << Tool.create!(
+  user: users[3],
+  tool_name: "Argo CD",
+  tool_description: "Declarative, GitOps continuous delivery for Kubernetes.",
+  tool_url: "https://argo-cd.readthedocs.io",
+  author_note: "Reliable Kubernetes deployments with Git as the source of truth.",
+  visibility: 0,
+  created_at: 1.week.ago + 2.days
+)
+
+tools << Tool.create!(
+  user: users[3],
+  tool_name: "Grafana",
+  tool_description: "Open-source analytics and monitoring solution for every database.",
+  tool_url: "https://grafana.com",
+  author_note: "Flexible dashboards for metrics and logs; pairs well with Prometheus.",
+  visibility: 0,
+  created_at: 5.days.ago + 1.hour
+)
+
+tools << Tool.create!(
+  user: users[3],
+  tool_name: "Prometheus",
+  tool_description: "Monitoring system and time series database for metrics.",
+  tool_url: "https://prometheus.io",
+  author_note: "Battle-tested metrics store with powerful PromQL queries.",
+  visibility: 0,
+  created_at: 6.days.ago + 3.hours
+)
+
+tools << Tool.create!(
+  user: users[1],
+  tool_name: "DBeaver",
+  tool_description: "Universal database tool supporting all major DBs with ER diagrams.",
+  tool_url: "https://dbeaver.io",
+  author_note: "Cross-platform and handles odd drivers well; my go-to DB browser.",
+  visibility: 0,
+  created_at: 2.days.ago + 6.hours
+)
+
+tools << Tool.create!(
+  user: users[0],
+  tool_name: "TablePlus",
+  tool_description: "Modern, native database GUI for relational and NoSQL databases.",
+  tool_url: "https://tableplus.com",
+  author_note: "Fast keyboard shortcuts and great diff UI for schema changes.",
+  visibility: 0,
+  created_at: 4.days.ago + 5.hours
+)
+
+tools << Tool.create!(
+  user: users[1],
+  tool_name: "Hoppscotch",
+  tool_description: "Lightweight open-source API request builder.",
+  tool_url: "https://hoppscotch.io",
+  author_note: "Quicker than Postman for quick checks; runs well in browser.",
+  visibility: 0,
+  created_at: 1.day.ago + 6.hours
+)
+
+tools << Tool.create!(
+  user: users[0],
+  tool_name: "HTTPie",
+  tool_description: "User-friendly HTTP client CLI and desktop app.",
+  tool_url: "https://httpie.io",
+  author_note: "Readable CLI requests with colorized responses; great for demos.",
+  visibility: 0,
+  created_at: 2.days.ago + 7.hours
+)
+
+tools << Tool.create!(
+  user: users[2],
+  tool_name: "Notion",
+  tool_description: "All-in-one workspace for docs, tasks, and databases.",
+  tool_url: "https://www.notion.so",
+  author_note: "Solid for lightweight product specs and team docs.",
+  visibility: 0,
+  created_at: 3.days.ago + 6.hours
+)
+
+tools << Tool.create!(
+  user: users[0],
+  tool_name: "Raycast",
+  tool_description: "Fast launcher and productivity platform with an extensions store.",
+  tool_url: "https://www.raycast.com",
+  author_note: "Great for speeding up daily workflows with custom commands.",
+  visibility: 0,
+  created_at: 1.day.ago + 4.hours
+)
+
+tools << Tool.create!(
+  user: deleted_user,
+  tool_name: "OWASP ZAP",
+  tool_description: "Full-featured security scanner for web applications.",
+  tool_url: "https://www.zaproxy.org",
+  author_note: "Reliable baseline DAST scanner; good for CI smoke security checks.",
+  visibility: 0,
+  created_at: 5.days.ago + 2.hours
+)
+
+tools << Tool.create!(
+  user: deleted_user,
+  tool_name: "Trivy",
+  tool_description: "Comprehensive, easy-to-use vulnerability scanner for containers and dependencies.",
+  tool_url: "https://aquasecurity.github.io/trivy",
+  author_note: "Fast container and IaC scanning that fits well into CI pipelines.",
+  visibility: 0,
+  created_at: 4.days.ago + 1.hour
+)
+
 # Associate tags with tools
 puts "Associating tags with tools..."
 ToolTag.create!(tool: tools[0], tag: tags[:ruby]) # RuboCop
@@ -281,6 +476,38 @@ ToolTag.create!(tool: tools[12], tag: tags[:productivity]) # Figma
 ToolTag.create!(tool: tools[13], tag: tags[:api]) # Postman
 ToolTag.create!(tool: tools[14], tag: tags[:api]) # Insomnia
 ToolTag.create!(tool: tools[15], tag: tags[:git]) # GitHub Desktop
+ToolTag.create!(tool: tools[16], tag: tags[:ruby]) # Pry
+ToolTag.create!(tool: tools[17], tag: tags[:ruby]) # Brakeman
+ToolTag.create!(tool: tools[17], tag: tags[:security])
+ToolTag.create!(tool: tools[18], tag: tags[:ruby]) # Bundler Audit
+ToolTag.create!(tool: tools[18], tag: tags[:security])
+ToolTag.create!(tool: tools[19], tag: tags[:javascript]) # Prettier
+ToolTag.create!(tool: tools[19], tag: tags[:productivity])
+ToolTag.create!(tool: tools[20], tag: tags[:javascript]) # Cypress
+ToolTag.create!(tool: tools[20], tag: tags[:testing])
+ToolTag.create!(tool: tools[21], tag: tags[:react]) # Storybook
+ToolTag.create!(tool: tools[21], tag: tags[:javascript])
+ToolTag.create!(tool: tools[22], tag: tags[:git]) # GitHub Actions
+ToolTag.create!(tool: tools[22], tag: tags[:ci_cd])
+ToolTag.create!(tool: tools[22], tag: tags[:devops])
+ToolTag.create!(tool: tools[23], tag: tags[:devops]) # Argo CD
+ToolTag.create!(tool: tools[23], tag: tags[:docker])
+ToolTag.create!(tool: tools[23], tag: tags[:ci_cd])
+ToolTag.create!(tool: tools[24], tag: tags[:observability]) # Grafana
+ToolTag.create!(tool: tools[24], tag: tags[:devops])
+ToolTag.create!(tool: tools[25], tag: tags[:observability]) # Prometheus
+ToolTag.create!(tool: tools[25], tag: tags[:devops])
+ToolTag.create!(tool: tools[26], tag: tags[:database]) # DBeaver
+ToolTag.create!(tool: tools[27], tag: tags[:database]) # TablePlus
+ToolTag.create!(tool: tools[28], tag: tags[:api]) # Hoppscotch
+ToolTag.create!(tool: tools[29], tag: tags[:api]) # HTTPie
+ToolTag.create!(tool: tools[30], tag: tags[:productivity]) # Notion
+ToolTag.create!(tool: tools[31], tag: tags[:productivity]) # Raycast
+ToolTag.create!(tool: tools[32], tag: tags[:security]) # OWASP ZAP
+ToolTag.create!(tool: tools[32], tag: tags[:devops])
+ToolTag.create!(tool: tools[33], tag: tags[:security]) # Trivy
+ToolTag.create!(tool: tools[33], tag: tags[:docker])
+ToolTag.create!(tool: tools[33], tag: tags[:devops])
 
 # Create Lists
 puts "Creating lists..."
@@ -318,6 +545,22 @@ lists << List.create!(
   created_at: 1.day.ago
 )
 
+lists << List.create!(
+  user: users[1],
+  list_name: "Database Workbench",
+  list_type: 0,
+  visibility: 0,
+  created_at: 2.days.ago
+)
+
+lists << List.create!(
+  user: deleted_user,
+  list_name: "Archived Security Picks",
+  list_type: 0,
+  visibility: 1, # Unlisted/private to reflect legacy content
+  created_at: 3.days.ago
+)
+
 # Add tools to lists
 puts "Adding tools to lists..."
 ListTool.create!(list: lists[0], tool: tools[0]) # RuboCop
@@ -336,6 +579,25 @@ ListTool.create!(list: lists[2], tool: tools[8]) # Kubernetes
 ListTool.create!(list: lists[3], tool: tools[11]) # GitHub Copilot
 ListTool.create!(list: lists[3], tool: tools[14]) # Insomnia
 ListTool.create!(list: lists[3], tool: tools[15]) # GitHub Desktop
+ListTool.create!(list: lists[0], tool: tools[16]) # Pry
+ListTool.create!(list: lists[0], tool: tools[17]) # Brakeman
+ListTool.create!(list: lists[0], tool: tools[18]) # Bundler Audit
+ListTool.create!(list: lists[1], tool: tools[19]) # Prettier
+ListTool.create!(list: lists[1], tool: tools[20]) # Cypress
+ListTool.create!(list: lists[1], tool: tools[21]) # Storybook
+ListTool.create!(list: lists[2], tool: tools[22]) # GitHub Actions
+ListTool.create!(list: lists[2], tool: tools[23]) # Argo CD
+ListTool.create!(list: lists[2], tool: tools[24]) # Grafana
+ListTool.create!(list: lists[2], tool: tools[25]) # Prometheus
+ListTool.create!(list: lists[3], tool: tools[28]) # Hoppscotch
+ListTool.create!(list: lists[3], tool: tools[29]) # HTTPie
+ListTool.create!(list: lists[3], tool: tools[31]) # Raycast
+ListTool.create!(list: lists[4], tool: tools[9]) # pgAdmin in Database Workbench
+ListTool.create!(list: lists[4], tool: tools[10]) # Sequel Pro in Database Workbench
+ListTool.create!(list: lists[4], tool: tools[26]) # DBeaver
+ListTool.create!(list: lists[4], tool: tools[27]) # TablePlus
+ListTool.create!(list: lists[5], tool: tools[32]) # OWASP ZAP in Archived Security Picks
+ListTool.create!(list: lists[5], tool: tools[33]) # Trivy in Archived Security Picks
 
 # Create Comments (with some threaded discussions)
 puts "Creating comments..."
@@ -428,6 +690,125 @@ comments << Comment.create!(
   comment_type: 0,
   visibility: 0,
   created_at: 6.days.ago
+)
+
+comments << Comment.create!(
+  tool: tools[19],
+  user: users[2],
+  comment: "Prettier plus ESLint with the right config keeps our PRs clean.",
+  comment_type: 0,
+  visibility: 0,
+  created_at: 1.day.ago + 3.hours
+)
+
+comments << Comment.create!(
+  tool: tools[20],
+  user: users[0],
+  comment: "Cypress Component Testing has been great for catching regressions in UI primitives.",
+  comment_type: 0,
+  visibility: 0,
+  created_at: 2.days.ago + 5.hours
+)
+
+comments << Comment.create!(
+  tool: tools[22],
+  user: users[3],
+  comment: "Reusable workflows help us keep pipeline logic consistent across repos.",
+  comment_type: 0,
+  visibility: 0,
+  created_at: 1.day.ago + 1.hour
+)
+
+comments << Comment.create!(
+  tool: tools[22],
+  user: users[1],
+  comment: "Do you cache Ruby gems between jobs? Curious about speed gains.",
+  comment_type: 0,
+  visibility: 0,
+  created_at: 12.hours.ago
+)
+
+comments << Comment.create!(
+  tool: tools[22],
+  user: users[3],
+  comment: "Yes, we cache bundler and node_modules; shaved off ~2 minutes per run.",
+  comment_type: 0,
+  visibility: 0,
+  parent: comments.last,
+  created_at: 10.hours.ago
+)
+
+comments << Comment.create!(
+  tool: tools[24],
+  user: users[3],
+  comment: "Grafana Loki integration is solid if you need logs and metrics in one place.",
+  comment_type: 0,
+  visibility: 0,
+  created_at: 3.days.ago + 1.hour
+)
+
+comments << Comment.create!(
+  tool: tools[28],
+  user: users[0],
+  comment: "Hoppscotch is great for quick REST calls when I don't want to open Postman.",
+  comment_type: 0,
+  visibility: 0,
+  created_at: 1.day.ago + 2.hours
+)
+
+comments << Comment.create!(
+  tool: tools[29],
+  user: users[1],
+  comment: "HTTPie syntax reads like English; handy for onboarding juniors to APIs.",
+  comment_type: 0,
+  visibility: 0,
+  created_at: 1.day.ago + 5.hours
+)
+
+comments << Comment.create!(
+  tool: tools[31],
+  user: users[2],
+  comment: "Raycast snippets and script commands save me so many context switches.",
+  comment_type: 0,
+  visibility: 0,
+  created_at: 8.hours.ago
+)
+
+comments << Comment.create!(
+  tool: tools[32],
+  user: deleted_user,
+  comment: "Used ZAP for nightly scans before we migrated; keeping results around for reference.",
+  comment_type: 0,
+  visibility: 0,
+  created_at: 2.days.ago + 2.hours
+)
+
+comments << Comment.create!(
+  tool: tools[33],
+  user: deleted_user,
+  comment: "Trivy catches base-image CVEs early in CI. Flagging a noisy rule set that needs tuning.",
+  comment_type: :flag,
+  visibility: 0,
+  created_at: 1.day.ago + 7.hours
+)
+
+comments << Comment.create!(
+  tool: tools[8],
+  user: deleted_user,
+  comment: "BUG: Kubernetes manifests generator sometimes emits invalid apiVersions in our setup.",
+  comment_type: :bug,
+  visibility: 0,
+  created_at: 3.days.ago + 4.hours
+)
+
+comments << Comment.create!(
+  tool: tools[22],
+  user: users[0],
+  comment: "Flagging the noisy rule mentioned above—can we scope Trivy to prod images only?",
+  comment_type: :flag,
+  visibility: 0,
+  parent: comments[-2],
+  created_at: 1.day.ago + 6.hours
 )
 
 # Create UserTool interactions (upvotes, favorites, subscriptions)
@@ -533,6 +914,110 @@ UserTool.create!(
   read_at: 2.weeks.ago
 )
 
+UserTool.create!(
+  user: users[2],
+  tool: tools[19], # Prettier
+  upvote: true,
+  favorite: true,
+  read_at: 1.day.ago + 2.hours
+)
+
+UserTool.create!(
+  user: users[2],
+  tool: tools[21], # Storybook
+  upvote: true,
+  subscribe: true,
+  read_at: 2.days.ago + 1.hour
+)
+
+UserTool.create!(
+  user: users[0],
+  tool: tools[20], # Cypress
+  upvote: true,
+  subscribe: true,
+  read_at: 2.days.ago + 6.hours
+)
+
+UserTool.create!(
+  user: users[3],
+  tool: tools[22], # GitHub Actions
+  upvote: true,
+  favorite: true,
+  read_at: 1.day.ago + 2.hours
+)
+
+UserTool.create!(
+  user: users[3],
+  tool: tools[23], # Argo CD
+  upvote: true,
+  subscribe: true,
+  read_at: 3.days.ago
+)
+
+UserTool.create!(
+  user: users[3],
+  tool: tools[24], # Grafana
+  upvote: true,
+  favorite: true,
+  read_at: 2.days.ago + 3.hours
+)
+
+UserTool.create!(
+  user: users[3],
+  tool: tools[25], # Prometheus
+  upvote: true,
+  read_at: 2.days.ago + 4.hours
+)
+
+UserTool.create!(
+  user: users[1],
+  tool: tools[26], # DBeaver
+  upvote: true,
+  favorite: true,
+  read_at: 2.days.ago + 6.hours
+)
+
+UserTool.create!(
+  user: users[0],
+  tool: tools[27], # TablePlus
+  upvote: true,
+  favorite: true,
+  read_at: 4.days.ago + 5.hours
+)
+
+UserTool.create!(
+  user: users[0],
+  tool: tools[28], # Hoppscotch
+  upvote: true,
+  subscribe: true,
+  read_at: 1.day.ago + 2.hours
+)
+
+UserTool.create!(
+  user: users[1],
+  tool: tools[29], # HTTPie
+  upvote: true,
+  favorite: true,
+  read_at: 1.day.ago + 5.hours
+)
+
+UserTool.create!(
+  user: users[2],
+  tool: tools[30], # Notion
+  upvote: true,
+  favorite: true,
+  read_at: 3.days.ago + 6.hours
+)
+
+UserTool.create!(
+  user: users[0],
+  tool: tools[31], # Raycast
+  upvote: true,
+  favorite: true,
+  subscribe: true,
+  read_at: 1.day.ago + 4.hours
+)
+
 # Create Comment Upvotes
 puts "Creating comment upvotes..."
 CommentUpvote.create!(comment: comments[0], user: users[0]) # Alice upvotes Bob's comment on RuboCop
@@ -544,6 +1029,15 @@ CommentUpvote.create!(comment: comments[5], user: users[0]) # Alice upvotes Char
 CommentUpvote.create!(comment: comments[5], user: users[1]) # Bob upvotes Charlie's answer
 CommentUpvote.create!(comment: comments[6], user: users[0]) # Alice upvotes Diana's comment on Vite
 CommentUpvote.create!(comment: comments[6], user: users[2]) # Charlie upvotes Diana's comment
+CommentUpvote.create!(comment: comments[7], user: users[0]) # Alice upvotes Prettier note
+CommentUpvote.create!(comment: comments[8], user: users[2]) # Charlie upvotes Cypress feedback
+CommentUpvote.create!(comment: comments[9], user: users[0]) # Alice upvotes GHA workflow tip
+CommentUpvote.create!(comment: comments[10], user: users[3]) # Diana upvotes question on caching
+CommentUpvote.create!(comment: comments[11], user: users[1]) # Bob upvotes caching answer
+CommentUpvote.create!(comment: comments[12], user: users[0]) # Alice upvotes Grafana note
+CommentUpvote.create!(comment: comments[13], user: users[2]) # Charlie upvotes Hoppscotch note
+CommentUpvote.create!(comment: comments[14], user: users[0]) # Alice upvotes HTTPie note
+CommentUpvote.create!(comment: comments[15], user: users[1]) # Bob upvotes Raycast note
 
 puts "Seed data created successfully!"
 puts ""
