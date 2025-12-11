@@ -7,6 +7,10 @@ class Tag < ApplicationRecord
   has_many :tool_tags, dependent: :destroy
   has_many :tools, through: :tool_tags
 
+  # Followable
+  has_many :follows, as: :followable, dependent: :destroy
+  has_many :followers, through: :follows, source: :user
+
   # Tag types enum - categories for organizing tags
   enum tag_type: {
     category: 0,

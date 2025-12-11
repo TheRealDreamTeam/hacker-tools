@@ -122,18 +122,16 @@ class UserTest < ActiveSupport::TestCase
     assert_not_includes favorited_tools, tool2
   end
 
-  test "should have many subscribed_tools through user_tools" do
+  test "should have many followed_tools through follows" do
     user = create(:user)
     tool1 = create(:tool)
     tool2 = create(:tool)
-    create(:user_tool, user: user, tool: tool1, subscribe: true)
-    create(:user_tool, user: user, tool: tool2, subscribe: false)
+    create(:follow, user: user, followable: tool1)
 
-    # Access the association to ensure it's executed
-    subscribed_tools = user.subscribed_tools.to_a
-    assert_equal 1, subscribed_tools.count
-    assert_includes subscribed_tools, tool1
-    assert_not_includes subscribed_tools, tool2
+    followed_tools = user.followed_tools.to_a
+    assert_equal 1, followed_tools.count
+    assert_includes followed_tools, tool1
+    assert_not_includes followed_tools, tool2
   end
 
   # Helper methods

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_09_001000) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_11_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -65,6 +65,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_001000) do
     t.index ["parent_id"], name: "index_comments_on_parent_id"
     t.index ["tool_id"], name: "index_comments_on_tool_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "follows", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "followable_type", null: false
+    t.bigint "followable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["followable_type", "followable_id"], name: "index_follows_on_followable"
+    t.index ["followable_type", "followable_id"], name: "index_follows_on_followable_type_and_followable_id"
+    t.index ["user_id", "followable_type", "followable_id"], name: "index_follows_on_user_id_and_followable_type_and_followable_id", unique: true
+    t.index ["user_id"], name: "index_follows_on_user_id"
   end
 
   create_table "list_tools", force: :cascade do |t|
@@ -127,7 +139,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_001000) do
     t.datetime "read_at"
     t.boolean "upvote", default: false, null: false
     t.boolean "favorite", default: false, null: false
-    t.boolean "subscribe", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tool_id"], name: "index_user_tools_on_tool_id"
@@ -157,6 +168,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_001000) do
   add_foreign_key "comments", "comments", column: "parent_id"
   add_foreign_key "comments", "tools"
   add_foreign_key "comments", "users"
+  add_foreign_key "follows", "users"
   add_foreign_key "list_tools", "lists"
   add_foreign_key "list_tools", "tools"
   add_foreign_key "lists", "users"

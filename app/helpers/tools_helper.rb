@@ -6,7 +6,7 @@ module ToolsHelper
       case type
       when :upvote then user_tool&.upvote?
       when :favorite then user_tool&.favorite?
-      when :follow then user_tool&.subscribe?
+      when :follow then current_user&.follows&.exists?(followable: tool)
       else false
       end
 

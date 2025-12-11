@@ -108,7 +108,33 @@ class ToolsController < ApplicationController
 
   # POST /tools/:id/follow
   def follow
-    toggle_interaction_flag(:subscribe, :tool_follow)
+    return redirect_to new_user_session_path unless current_user
+
+    # Toggle follow: if exists, destroy (unfollow); if not, create (follow)
+    follow_record = current_user.follows.find_by(followable: @tool)
+    
+    if follow_record
+      follow_record.destroy
+    else
+      # Use find_or_create_by to handle race conditions gracefully
+      # The unique index at database level prevents duplicates
+      current_user.follows.find_or_create_by!(followable: @tool)
+    end
+
+    respond_to do |format|
+      format.turbo_stream { render "tools/interaction_update" }
+      format.html { redirect_back fallback_location: tool_path(@tool), notice: t("tools.flash.tool_follow") }
+    end
+  rescue ActiveRecord::RecordNotUnique
+    # Handle race condition: if another request created it between find_by and find_or_create_by
+    # The follow now exists, so destroy it (toggle behavior)
+    follow_record = current_user.follows.find_by(followable: @tool)
+    follow_record&.destroy
+
+    respond_to do |format|
+      format.turbo_stream { render "tools/interaction_update" }
+      format.html { redirect_back fallback_location: tool_path(@tool), notice: t("tools.flash.tool_follow") }
+    end
   end
 
   private

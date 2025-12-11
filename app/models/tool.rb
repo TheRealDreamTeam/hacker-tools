@@ -13,11 +13,12 @@ class Tool < ApplicationRecord
   has_many :list_tools, dependent: :destroy
   has_many :lists, through: :list_tools
   has_many :user_tools, dependent: :destroy
+  has_many :follows, as: :followable, dependent: :destroy
 
   # Through associations for user interactions
   has_many :upvoters, -> { where(user_tools: { upvote: true }) }, through: :user_tools, source: :user
   has_many :favoriters, -> { where(user_tools: { favorite: true }) }, through: :user_tools, source: :user
-  has_many :subscribers, -> { where(user_tools: { subscribe: true }) }, through: :user_tools, source: :user
+  has_many :followers, through: :follows, source: :user
 
   # Use prefix to avoid clashing with Ruby's `public?`/`private?` methods.
   enum visibility: { public: 0, unlisted: 1, private: 2 }, _prefix: :visibility
@@ -53,10 +54,6 @@ class Tool < ApplicationRecord
     user_tool_for(user)&.favorite?
   end
 
-  def followed_by?(user)
-    user_tool_for(user)&.subscribe?
-  end
-
   def upvote_count
     user_tools.where(upvote: true).count
   end
@@ -65,8 +62,8 @@ class Tool < ApplicationRecord
     user_tools.where(favorite: true).count
   end
 
-  def subscriber_count
-    user_tools.where(subscribe: true).count
+  def follower_count
+    follows.count
   end
 
   private

@@ -6,7 +6,7 @@ This document serves as the human-readable specification for the Hacker Tools ap
 
 ## Overview
 
-Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineering tools. Users can publish tools, tag them, group them into lists, discuss via threaded comments, and interact via upvotes/favorites/subscriptions.
+Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineering tools. Users can publish tools, tag them, group them into lists, discuss via threaded comments, and interact via upvotes/favorites/follows.
 
 ### Seed Data Snapshot
 - Tool catalog seeded with 34 tools (original set doubled plus security-focused additions from a soft-deleted user).
@@ -39,13 +39,13 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ### Engagement & Feedback
 - **Status**: In Progress
-- **Description**: Users discuss tools and react with upvotes, favorites, subscriptions, and read tracking.
+- **Description**: Users discuss tools and react with upvotes, favorites, follows, and read tracking.
 - **User Stories**:
   - As a user, I want to comment on a tool and reply to threads so I can ask questions or provide feedback.
-  - As a user, I want to upvote/favorite/subscribe to tools so I can track what matters.
+  - As a user, I want to upvote/favorite/follow tools so I can track what matters.
   - As a user, I want to upvote comments so helpful answers are surfaced.
 - **Technical Implementation**:
-  - Models: `Comment`, `CommentUpvote`, `UserTool`
+  - Models: `Comment`, `CommentUpvote`, `UserTool`, `Follow` (polymorphic)
   - Threaded comments via `parent_id` on `Comment`
   - Comment types: `comment`, `flag`, `bug`; `solved` marks resolved flags/bugs
   - Tool show page sections: comments (threaded), flags (resolvable), bugs (resolvable)
@@ -130,10 +130,17 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ### UserTool (join/state)
 - **Purpose**: Per-user interaction state for a tool.
-- **Attributes**: `read_at` (datetime), `upvote` (boolean), `favorite` (boolean), `subscribe` (boolean), foreign keys to user/tool
+- **Attributes**: `read_at` (datetime), `upvote` (boolean), `favorite` (boolean), foreign keys to user/tool
 - **Associations**: `belongs_to :user`; `belongs_to :tool`
 - **Validations**: Uniqueness on `[user_id, tool_id]`.
-- **Behavior**: Created/touched on tool show (sets `read_at`), toggled via upvote/favorite/follow buttons on home, tools index, and tool show.
+- **Behavior**: Created/touched on tool show (sets `read_at`), toggled via upvote/favorite buttons on home, tools index, and tool show.
+
+### Follow (polymorphic)
+- **Purpose**: Unified following system for users, tools, lists, and tags.
+- **Attributes**: `user_id`, `followable_type`, `followable_id`
+- **Associations**: `belongs_to :user`; `belongs_to :followable, polymorphic: true`
+- **Validations**: Uniqueness on `[user_id, followable_type, followable_id]`
+- **Behavior**: Replaces tool subscriptions; used for following users/tools/lists/tags.
 
 ### CommentUpvote (join)
 - **Purpose**: User upvotes on comments.
@@ -284,7 +291,7 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - `AccountSettingsController` - Custom controller for account management (independent from Devise)
 - **Views**:
   - Profile page (`profiles/show.html.erb`) - Read-only profile display (no edit link)
-  - Dashboard (`dashboard/show.html.erb`) - Overview cards (counts) and recent slices for tools, lists, discussions, favorites, subscriptions
+  - Dashboard (`dashboard/show.html.erb`) - Overview cards (counts) and recent slices for tools, lists, discussions, favorites, follows
   - Account settings (`account_settings/show.html.erb`) - Split into 5 sections:
     1. Avatar update (with delete button)
     2. Bio update

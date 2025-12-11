@@ -4,7 +4,6 @@ FactoryBot.define do
     association :tool
     upvote { false }
     favorite { false }
-    subscribe { false }
     read_at { nil }
   end
 end

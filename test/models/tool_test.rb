@@ -116,18 +116,16 @@ class ToolTest < ActiveSupport::TestCase
     assert_not_includes favoriters, user2
   end
 
-  test "should have many subscribers through user_tools" do
+  test "should have many followers through follows" do
     tool = create(:tool)
     user1 = create(:user)
     user2 = create(:user)
-    create(:user_tool, tool: tool, user: user1, subscribe: true)
-    create(:user_tool, tool: tool, user: user2, subscribe: false)
+    create(:follow, followable: tool, user: user1)
 
-    # Access the association to ensure it's executed
-    subscribers = tool.subscribers.to_a
-    assert_equal 1, subscribers.count
-    assert_includes subscribers, user1
-    assert_not_includes subscribers, user2
+    followers = tool.followers.to_a
+    assert_equal 1, followers.count
+    assert_includes followers, user1
+    assert_not_includes followers, user2
   end
 
   # Scopes

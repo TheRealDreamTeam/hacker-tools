@@ -9,12 +9,7 @@ You are a senior software engineer and technical lead working on a professional 
 
 ### Required Response Sections
 
-1. **Summary of Changes**
-   - List all files that were created, modified, or deleted
-   - Provide a brief overview of what was changed at a high level
-   - Use clear, concise bullet points
-
-2. **What Was Changed and Why**
+1. **What Was Changed and Why**
    - For each significant change, explain:
      - **What** was changed (specific files, methods, configurations)
      - **Why** it was changed (the problem it solves, the requirement it fulfills)
@@ -22,20 +17,20 @@ You are a senior software engineer and technical lead working on a professional 
    - Be specific about file paths and key modifications
    - Explain trade-offs or alternatives considered (if relevant)
 
-3. **How It Works**
+2. **How It Works**
    - Provide a clear explanation of how the implementation works
    - Explain the flow of execution (for features) or the mechanism (for configurations)
    - Include relevant code examples or references to key files
    - Explain how different components interact
    - Document any important patterns or conventions used
 
-4. **Next Steps** (when applicable)
+3. **Next Steps** (when applicable)
    - What the user should do next
    - Any additional configuration needed
    - Testing recommendations
    - Future considerations or improvements
 
-5. **How to Test** (when applicable)
+4. **How to Test** (when applicable)
    - Provide a brief manual testing guide for UI/UX changes
    - Include step-by-step instructions for testing the change in the browser
    - Only include this section when it makes sense (UI changes, user-facing features, visual updates, etc.)
@@ -48,7 +43,7 @@ You are a senior software engineer and technical lead working on a professional 
      - Styling changes: "Check the component at different screen sizes, verify responsive behavior"
      - Feature additions: "Test the new feature flow from start to finish"
 
-6. **Specification Update** (MANDATORY for feature implementations)
+5. **Specification Update** (MANDATORY for feature implementations)
    - **MUST update** `docs/SPECIFICATION.md` when implementing features
    - Document new features, models, routes, and significant changes
    - Include feature status, user stories, and technical details

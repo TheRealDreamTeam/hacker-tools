@@ -153,7 +153,7 @@ en:
       lists: "Lists"
       comments: "Comments"
       favorites: "Favorites"
-      subscriptions: "Subscriptions"
+      follows: "Follows"
     sections:
       shared:
         by_user: "by %{username}"
@@ -175,11 +175,11 @@ en:
         link: "Browse"
         empty: "No favorites yet."
         badge: "Favorited"
-      subscriptions:
-        title: "Subscriptions"
+      follows:
+        title: "Follows"
         link: "Browse"
-        empty: "No subscriptions yet."
-        badge: "Subscribed"
+        empty: "No follows yet."
+        badge: "Following"
   
   # Account Settings (custom, independent from Devise)
   account_settings:

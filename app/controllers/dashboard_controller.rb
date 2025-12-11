@@ -9,7 +9,7 @@ class DashboardController < ApplicationController
     @recent_lists = @user.lists.order(created_at: :desc).limit(5)
     @recent_comments = @user.comments.includes(:tool).order(created_at: :desc).limit(5)
     @favorited_tools = @user.favorited_tools.includes(:user).order(created_at: :desc).limit(5)
-    @subscribed_tools = @user.subscribed_tools.includes(:user).order(created_at: :desc).limit(5)
+    @followed_tools = @user.followed_tools.includes(:user).order(created_at: :desc).limit(5)
   end
 end
 

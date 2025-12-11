@@ -811,7 +811,7 @@ comments << Comment.create!(
   created_at: 1.day.ago + 6.hours
 )
 
-# Create UserTool interactions (upvotes, favorites, subscriptions)
+# Create UserTool interactions (upvotes, favorites)
 puts "Creating user interactions..."
 
 # Alice upvotes and favorites several tools
@@ -828,7 +828,6 @@ UserTool.create!(
   tool: tools[5], # Vite
   upvote: true,
   favorite: true,
-  subscribe: true,
   read_at: 4.days.ago
 )
 
@@ -845,7 +844,6 @@ UserTool.create!(
   user: users[1],
   tool: tools[0], # RuboCop
   upvote: true,
-  subscribe: true,
   read_at: 2.days.ago
 )
 
@@ -870,7 +868,6 @@ UserTool.create!(
   tool: tools[4], # React DevTools
   upvote: true,
   favorite: true,
-  subscribe: true,
   read_at: 1.day.ago
 )
 
@@ -902,7 +899,6 @@ UserTool.create!(
   user: users[3],
   tool: tools[7], # Terraform
   upvote: true,
-  subscribe: true,
   read_at: 1.week.ago
 )
 
@@ -926,7 +922,6 @@ UserTool.create!(
   user: users[2],
   tool: tools[21], # Storybook
   upvote: true,
-  subscribe: true,
   read_at: 2.days.ago + 1.hour
 )
 
@@ -934,7 +929,6 @@ UserTool.create!(
   user: users[0],
   tool: tools[20], # Cypress
   upvote: true,
-  subscribe: true,
   read_at: 2.days.ago + 6.hours
 )
 
@@ -950,7 +944,6 @@ UserTool.create!(
   user: users[3],
   tool: tools[23], # Argo CD
   upvote: true,
-  subscribe: true,
   read_at: 3.days.ago
 )
 
@@ -989,7 +982,6 @@ UserTool.create!(
   user: users[0],
   tool: tools[28], # Hoppscotch
   upvote: true,
-  subscribe: true,
   read_at: 1.day.ago + 2.hours
 )
 
@@ -1014,9 +1006,26 @@ UserTool.create!(
   tool: tools[31], # Raycast
   upvote: true,
   favorite: true,
-  subscribe: true,
   read_at: 1.day.ago + 4.hours
 )
+
+# Follows (replaces subscribe for tools)
+puts "Creating follows..."
+follow_pairs = [
+  [users[0], tools[5]],
+  [users[1], tools[0]],
+  [users[2], tools[4]],
+  [users[3], tools[7]],
+  [users[2], tools[21]],
+  [users[0], tools[20]],
+  [users[3], tools[23]],
+  [users[0], tools[28]],
+  [users[0], tools[31]]
+]
+
+follow_pairs.each do |user, tool|
+  Follow.find_or_create_by!(user:, followable: tool)
+end
 
 # Create Comment Upvotes
 puts "Creating comment upvotes..."
@@ -1052,7 +1061,7 @@ puts "  - #{ListTool.count} list-tool associations"
 puts "  - #{UserTool.count} user-tool interactions"
 puts "    * #{UserTool.where(upvote: true).count} upvotes"
 puts "    * #{UserTool.where(favorite: true).count} favorites"
-puts "    * #{UserTool.where(subscribe: true).count} subscriptions"
+puts "  - #{Follow.count} follows"
 puts "  - #{CommentUpvote.count} comment upvotes"
 puts ""
 puts "You can log in with any of these accounts:"

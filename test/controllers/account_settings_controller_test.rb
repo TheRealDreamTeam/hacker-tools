@@ -36,7 +36,9 @@ class AccountSettingsControllerTest < ActionDispatch::IntegrationTest
     @user.reload
     assert_not @user.deleted?
     assert_equal :active, @user.user_status.to_sym
-    assert_response :unprocessable_entity
+    assert_redirected_to account_settings_path
+    # Verify error message is set
+    assert_equal I18n.t("account_settings.destroy.invalid_password"), flash[:alert]
   end
 
   test "should sign out user after soft delete" do

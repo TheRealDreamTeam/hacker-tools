@@ -23,11 +23,21 @@ class User < ApplicationRecord
   has_many :comments, dependent: :destroy
   has_many :user_tools, dependent: :destroy
   has_many :comment_upvotes, dependent: :destroy
+  has_many :follows, dependent: :destroy
 
-  # Through associations
+  # Through associations for interactions
   has_many :upvoted_tools, -> { where(user_tools: { upvote: true }) }, through: :user_tools, source: :tool
   has_many :favorited_tools, -> { where(user_tools: { favorite: true }) }, through: :user_tools, source: :tool
-  has_many :subscribed_tools, -> { where(user_tools: { subscribe: true }) }, through: :user_tools, source: :tool
+
+  # Polymorphic follows
+  has_many :followed_tools, -> { where(follows: { followable_type: "Tool" }) }, through: :follows, source: :followable, source_type: "Tool"
+  has_many :followed_lists, -> { where(follows: { followable_type: "List" }) }, through: :follows, source: :followable, source_type: "List"
+  has_many :followed_tags,  -> { where(follows: { followable_type: "Tag" }) }, through: :follows, source: :followable, source_type: "Tag"
+  has_many :followed_users, -> { where(follows: { followable_type: "User" }) }, through: :follows, source: :followable, source_type: "User"
+
+  # Followers (for this user as followable)
+  has_many :follower_follows, as: :followable, class_name: "Follow", dependent: :destroy
+  has_many :followers, through: :follower_follows, source: :user
 
   # Username validation: must be unique among active users only
   # This allows username reuse after account deletion
@@ -55,6 +65,11 @@ class User < ApplicationRecord
 
   def favorite_count
     user_tools.where(favorite: true).count
+  end
+
+  # Follow helpers
+  def follows?(followable)
+    follows.exists?(followable:)
   end
 
   # Check if user is deleted

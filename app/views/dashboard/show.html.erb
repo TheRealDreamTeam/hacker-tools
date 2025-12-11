@@ -42,8 +42,8 @@
     <div class="col-12 col-md-4 col-xl-2">
       <div class="card h-100">
         <div class="card-body">
-          <p class="text-muted mb-1"><%= t("dashboard.metrics.subscriptions") %></p>
-          <p class="h4 mb-0"><%= @user.subscribed_tools.count %></p>
+          <p class="text-muted mb-1"><%= t("dashboard.metrics.follows") %></p>
+          <p class="h4 mb-0"><%= @user.followed_tools.count %></p>
         </div>
       </div>
     </div>
@@ -156,24 +156,24 @@
     <div class="col-12 col-xl-6">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <span class="fw-semibold"><%= t("dashboard.sections.subscriptions.title") %></span>
-          <%= link_to t("dashboard.sections.subscriptions.link"), tools_path, class: "small" %>
+          <span class="fw-semibold"><%= t("dashboard.sections.follows.title") %></span>
+          <%= link_to t("dashboard.sections.follows.link"), tools_path, class: "small" %>
         </div>
         <div class="card-body">
-          <% if @subscribed_tools.any? %>
+          <% if @followed_tools.any? %>
             <ul class="list-group list-group-flush">
-              <% @subscribed_tools.each do |tool| %>
+              <% @followed_tools.each do |tool| %>
                 <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
                   <div>
                     <div class="fw-semibold"><%= link_to tool.tool_name, tool_path(tool) %></div>
                     <div class="text-muted small"><%= t("dashboard.sections.shared.by_user", username: tool.user.username) %></div>
                   </div>
-                  <span class="badge bg-info-subtle text-info"><%= t("dashboard.sections.subscriptions.badge") %></span>
+                  <span class="badge bg-info-subtle text-info"><%= t("dashboard.sections.follows.badge") %></span>
                 </li>
               <% end %>
             </ul>
           <% else %>
-            <p class="text-muted mb-0"><%= t("dashboard.sections.subscriptions.empty") %></p>
+            <p class="text-muted mb-0"><%= t("dashboard.sections.follows.empty") %></p>
           <% end %>
         </div>
       </div>

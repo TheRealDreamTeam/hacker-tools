@@ -56,13 +56,6 @@ class UserToolTest < ActiveSupport::TestCase
     assert_equal false, user_tool.favorite
   end
 
-  test "should default subscribe to false" do
-    user = create(:user)
-    tool = create(:tool)
-    user_tool = UserTool.create(user: user, tool: tool)
-    assert_equal false, user_tool.subscribe
-  end
-
   # Boolean flags
   test "should allow setting upvote to true" do
     user = create(:user)
@@ -78,20 +71,12 @@ class UserToolTest < ActiveSupport::TestCase
     assert_equal true, user_tool.favorite
   end
 
-  test "should allow setting subscribe to true" do
-    user = create(:user)
-    tool = create(:tool)
-    user_tool = create(:user_tool, user: user, tool: tool, subscribe: true)
-    assert_equal true, user_tool.subscribe
-  end
-
   test "should allow multiple flags to be true simultaneously" do
     user = create(:user)
     tool = create(:tool)
-    user_tool = create(:user_tool, user: user, tool: tool, upvote: true, favorite: true, subscribe: true)
+    user_tool = create(:user_tool, user: user, tool: tool, upvote: true, favorite: true)
     assert_equal true, user_tool.upvote
     assert_equal true, user_tool.favorite
-    assert_equal true, user_tool.subscribe
   end
 end
 
