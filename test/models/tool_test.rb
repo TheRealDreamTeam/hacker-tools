@@ -14,6 +14,12 @@ class ToolTest < ActiveSupport::TestCase
     assert_nil tool.tool_url
   end
 
+  test "should enqueue tool discovery job after creation" do
+    assert_enqueued_with(job: ToolDiscoveryJob) do
+      create(:tool, tool_name: "New Tool")
+    end
+  end
+
   # Note: Tools are now community-owned, not user-owned
   # Users submit content (submissions) about tools, but don't own the tools themselves
 

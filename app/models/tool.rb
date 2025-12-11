@@ -24,6 +24,7 @@ class Tool < ApplicationRecord
   enum visibility: { public: 0, unlisted: 1, private: 2 }, _prefix: :visibility
 
   before_validation :set_tool_name_from_url
+  after_create :enqueue_discovery_job
 
   validates :tool_name, presence: true
   # tool_url is optional - tools can exist without a URL (e.g., Elasticsearch could have multiple valid URLs)
@@ -78,6 +79,11 @@ class Tool < ApplicationRecord
     end
   rescue URI::InvalidURIError
     errors.add(:tool_url, "must be a valid URL (e.g., https://example.com)")
+  end
+
+  # Enqueue tool discovery job to enrich tool information from the internet
+  def enqueue_discovery_job
+    ToolDiscoveryJob.perform_later(id)
   end
 
   # Derive a placeholder tool name from the URL host so users only provide URL/author note.
