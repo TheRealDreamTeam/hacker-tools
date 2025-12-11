@@ -3,6 +3,9 @@ module SubmissionProcessing
   class ContentEnrichmentJob < ApplicationJob
     queue_as :default
 
+    # Load RubyLLM tools explicitly (Rails autoloading may not find them in background jobs)
+    Dir[Rails.root.join("app/lib/ruby_llm_tools/*.rb")].each { |f| require f }
+
     # Public method that can be called directly (for orchestrator)
     def perform(submission_id)
       enrich_content(submission_id)
@@ -33,8 +36,8 @@ module SubmissionProcessing
     def classify_submission_type(submission)
       return if submission.submission_url.blank?
       
-      # Use RubyLLM classification tool
-      tool = SubmissionTypeClassificationTool.new
+      # Use RubyLLM classification tool (use :: prefix to look in root namespace)
+      tool = ::SubmissionTypeClassificationTool.new
       result = tool.execute(
         url: submission.submission_url,
         title: submission.submission_name,
@@ -77,7 +80,7 @@ module SubmissionProcessing
 
     # Detect tools and link submission to them
     def detect_and_link_tools(submission)
-      tool = SubmissionToolDetectionTool.new
+      tool = ::SubmissionToolDetectionTool.new
       result = tool.execute(
         title: submission.submission_name,
         description: submission.submission_description,
@@ -128,7 +131,7 @@ module SubmissionProcessing
 
     # Generate and assign tags
     def generate_and_assign_tags(submission)
-      tool = SubmissionTagGenerationTool.new
+      tool = ::SubmissionTagGenerationTool.new
       result = tool.execute(
         title: submission.submission_name,
         description: submission.submission_description,
