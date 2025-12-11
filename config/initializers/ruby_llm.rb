@@ -1,22 +1,10 @@
 # RubyLLM Configuration
 # Documentation: https://rubyllm.com/
+# RubyLLM uses environment variables for configuration
+# Set OPENAI_API_KEY in your environment or .env file
 
-RubyLLM.configure do |config|
-  # Use OpenAI as the default provider
-  config.provider = :openai
-  
-  # Set API key from environment variable
-  config.api_key = ENV.fetch("OPENAI_API_KEY", nil)
-  
-  # Default model for structured output (classification, tool detection, etc.)
-  config.default_model = "gpt-4o-mini"
-  
-  # Model for complex tasks requiring better reasoning
-  config.complex_model = "gpt-4o"
-  
-  # Error handling
-  config.raise_on_error = false # Don't raise exceptions, return nil instead
-  
-  Rails.logger.info "RubyLLM configured with provider: #{config.provider}"
-end
+# The gem automatically reads OPENAI_API_KEY from ENV
+# No explicit configuration block needed for basic usage
+# For advanced configuration, see RubyLLM documentation
 
+Rails.logger.info "RubyLLM will use OPENAI_API_KEY from environment" if ENV["OPENAI_API_KEY"].present?

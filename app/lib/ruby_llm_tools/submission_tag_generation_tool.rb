@@ -3,31 +3,31 @@
 class SubmissionTagGenerationTool < RubyLLM::Tool
   description "Generate relevant tags for a submission based on its content and type"
   
-  parameter :title, type: :string, description: "The submission title"
-  parameter :description, type: :string, description: "The submission description"
-  parameter :author_note, type: :string, description: "Optional author note"
-  parameter :submission_type, type: :string, description: "The classified submission type"
-  parameter :url, type: :string, description: "The submission URL"
+  param :title, type: "string", desc: "The submission title", required: false
+  param :description, type: "string", desc: "The submission description", required: false
+  param :author_note, type: "string", desc: "Optional author note", required: false
+  param :submission_type, type: "string", desc: "The classified submission type", required: false
+  param :url, type: "string", desc: "The submission URL", required: false
   
-  output_schema do
+  params do
     {
-      type: :object,
+      type: "object",
       properties: {
         tags: {
-          type: :array,
+          type: "array",
           items: {
-            type: :object,
+            type: "object",
             properties: {
-              name: { type: :string, description: "Tag name" },
-              relevance: { type: :number, minimum: 0, maximum: 1, description: "Relevance score" },
-              category: { type: :string, enum: %w[category language framework library version platform other], description: "Tag category" }
+              name: { type: "string", description: "Tag name" },
+              relevance: { type: "number", minimum: 0, maximum: 1, description: "Relevance score" },
+              category: { type: "string", enum: %w[category language framework library version platform other], description: "Tag category" }
             },
-            required: [:name, :relevance]
+            required: ["name", "relevance"]
           },
           description: "Array of generated tags (3-10 tags recommended)"
         }
       },
-      required: [:tags]
+      required: ["tags"]
     }
   end
   
@@ -41,23 +41,26 @@ class SubmissionTagGenerationTool < RubyLLM::Tool
           role: "system",
           content: "You are an expert at generating relevant tags for technical content. " \
                    "Generate 3-10 relevant tags that accurately describe the submission. " \
-                   "Tags should be specific, relevant, and cover different aspects (technologies, topics, categories)."
+                   "Tags should be specific, relevant, and cover different aspects (technologies, topics, categories). " \
+                   "Return your response as JSON with a tags array containing name, relevance, and category for each tag."
         },
         {
           role: "user",
           content: context
         }
       ],
-      response_format: { type: "json_schema", json_schema: output_schema }
+      response_format: { type: "json_schema", json_schema: params_schema_definition.json_schema }
     )
     
-    result = JSON.parse(response.dig("choices", 0, "message", "content"))
+    content = response.dig("choices", 0, "message", "content")
+    result = JSON.parse(content)
     
     {
       tags: result["tags"] || []
     }
   rescue StandardError => e
     Rails.logger.error "Tag generation error: #{e.message}"
+    Rails.logger.error e.backtrace.first(5).join("\n")
     { tags: [] }
   end
   
@@ -75,4 +78,3 @@ class SubmissionTagGenerationTool < RubyLLM::Tool
     "Return a JSON array of tags with name, relevance score, and category."
   end
 end
-

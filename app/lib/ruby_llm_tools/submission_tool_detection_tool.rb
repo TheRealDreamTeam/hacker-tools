@@ -3,30 +3,30 @@
 class SubmissionToolDetectionTool < RubyLLM::Tool
   description "Detect software tools, frameworks, libraries, or technologies mentioned in a submission"
   
-  parameter :title, type: :string, description: "The submission title"
-  parameter :description, type: :string, description: "The submission description"
-  parameter :author_note, type: :string, description: "Optional author note from the user"
-  parameter :url, type: :string, description: "The submission URL"
+  param :title, type: "string", desc: "The submission title", required: false
+  param :description, type: "string", desc: "The submission description", required: false
+  param :author_note, type: "string", desc: "Optional author note from the user", required: false
+  param :url, type: "string", desc: "The submission URL", required: false
   
-  output_schema do
+  params do
     {
-      type: :object,
+      type: "object",
       properties: {
         tools: {
-          type: :array,
+          type: "array",
           items: {
-            type: :object,
+            type: "object",
             properties: {
-              name: { type: :string, description: "The tool name" },
-              confidence: { type: :number, minimum: 0, maximum: 1, description: "Confidence score" },
-              category: { type: :string, enum: %w[language framework library tool service platform other], description: "Tool category" }
+              name: { type: "string", description: "The tool name" },
+              confidence: { type: "number", minimum: 0, maximum: 1, description: "Confidence score" },
+              category: { type: "string", enum: %w[language framework library tool service platform other], description: "Tool category" }
             },
-            required: [:name, :confidence]
+            required: ["name", "confidence"]
           },
           description: "Array of detected tools"
         }
       },
-      required: [:tools]
+      required: ["tools"]
     }
   end
   
@@ -39,23 +39,26 @@ class SubmissionToolDetectionTool < RubyLLM::Tool
         {
           role: "system",
           content: "You are an expert at identifying software tools, frameworks, libraries, and technologies mentioned in content. " \
-                   "Extract all relevant tools mentioned, including programming languages, frameworks, libraries, services, and platforms."
+                   "Extract all relevant tools mentioned, including programming languages, frameworks, libraries, services, and platforms. " \
+                   "Return your response as JSON with a tools array containing name, confidence, and category for each tool."
         },
         {
           role: "user",
           content: context
         }
       ],
-      response_format: { type: "json_schema", json_schema: output_schema }
+      response_format: { type: "json_schema", json_schema: params_schema_definition.json_schema }
     )
     
-    result = JSON.parse(response.dig("choices", 0, "message", "content"))
+    content = response.dig("choices", 0, "message", "content")
+    result = JSON.parse(content)
     
     {
       tools: result["tools"] || []
     }
   rescue StandardError => e
     Rails.logger.error "Tool detection error: #{e.message}"
+    Rails.logger.error e.backtrace.first(5).join("\n")
     { tools: [] }
   end
   
@@ -73,4 +76,3 @@ class SubmissionToolDetectionTool < RubyLLM::Tool
     "Return a JSON array of detected tools with name, confidence, and category."
   end
 end
-

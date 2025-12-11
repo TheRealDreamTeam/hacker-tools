@@ -89,7 +89,8 @@ module SubmissionProcessing
       return if detected_tools.empty?
       
       # Store detected tools in metadata
-      submission.set_metadata_value(:detected_tools, detected_tools)
+      submission.metadata = submission.metadata.merge("detected_tools" => detected_tools)
+      submission.save!
       
       # Find or create tools and link the first high-confidence tool
       primary_tool = nil
@@ -140,7 +141,8 @@ module SubmissionProcessing
       return if generated_tags.empty?
       
       # Store generated tags in metadata
-      submission.set_metadata_value(:generated_tags, generated_tags)
+      submission.metadata = submission.metadata.merge("generated_tags" => generated_tags)
+      submission.save!
       
       # Assign tags with relevance > 0.6
       assigned_count = 0
