@@ -24,8 +24,12 @@ class SubmissionToolDetectionTool < RubyLLM::Tool
       tools: response.content["tools"] || []
     }
   rescue StandardError => e
-    Rails.logger.error "Tool detection error: #{e.message}"
-    Rails.logger.error e.backtrace.first(5).join("\n")
+    if e.message.include?("Missing configuration for OpenAI")
+      Rails.logger.error "Tool detection failed: OPENAI_API_KEY not configured. Set OPENAI_API_KEY in your .env file."
+    else
+      Rails.logger.error "Tool detection error: #{e.message}"
+      Rails.logger.error e.backtrace.first(5).join("\n")
+    end
     { tools: [] }
   end
   

@@ -25,8 +25,12 @@ class SubmissionTagGenerationTool < RubyLLM::Tool
       tags: response.content["tags"] || []
     }
   rescue StandardError => e
-    Rails.logger.error "Tag generation error: #{e.message}"
-    Rails.logger.error e.backtrace.first(5).join("\n")
+    if e.message.include?("Missing configuration for OpenAI")
+      Rails.logger.error "Tag generation failed: OPENAI_API_KEY not configured. Set OPENAI_API_KEY in your .env file."
+    else
+      Rails.logger.error "Tag generation error: #{e.message}"
+      Rails.logger.error e.backtrace.first(5).join("\n")
+    end
     { tags: [] }
   end
   

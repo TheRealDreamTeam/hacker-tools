@@ -31,8 +31,12 @@ class SubmissionTypeClassificationTool < RubyLLM::Tool
       reasoning: response.content["reasoning"]
     }
   rescue StandardError => e
-    Rails.logger.error "Classification tool error: #{e.message}"
-    Rails.logger.error e.backtrace.first(5).join("\n")
+    if e.message.include?("Missing configuration for OpenAI")
+      Rails.logger.error "Classification failed: OPENAI_API_KEY not configured. Falling back to URL-based classification."
+    else
+      Rails.logger.error "Classification tool error: #{e.message}"
+      Rails.logger.error e.backtrace.first(5).join("\n")
+    end
     # Return default classification on error
     {
       submission_type: :article,
