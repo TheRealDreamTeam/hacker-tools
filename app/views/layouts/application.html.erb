@@ -94,12 +94,17 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body data-controller="page-transition" style="visibility: hidden; opacity: 0;">
+  <body data-controller="page-transition" style="visibility: hidden; opacity: 0;" class="d-flex flex-column min-vh-100">
     <%= render "shared/navbar" %>
-    <div id="main-content" class="page-transition-content">
+    <div id="main-content" class="page-transition-content flex-grow-1">
       <%= render "shared/flashes" %>
       <%= yield %>
-      <%= render "shared/footer" %>
     </div>
+    <%= render "shared/footer" %>
+    
+    <%# Global modal container for add to list - outside of Turbo Stream updates %>
+    <% if user_signed_in? %>
+      <%= render "lists/add_to_list_modal" %>
+    <% end %>
   </body>
 </html>

@@ -39,6 +39,12 @@ Rails.application.routes.draw do
     # root "posts#index"
     get "profile" => "profiles#show", as: :profile
 
-    resources :lists
+    resources :lists do
+      post :add_tool, on: :member
+      delete :remove_tool, on: :member
+      collection do
+        post :add_tool_to_multiple
+      end
+    end
   end
 end

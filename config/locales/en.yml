@@ -253,6 +253,13 @@ en:
         unlock_instructions: "Didn't receive unlock instructions?"
         sign_in_with: "Sign in with %{provider}"
 
+  # Lists
+  lists:
+    add_to_lists:
+      title: "Add to lists"
+      select_message: "Select one or more lists:"
+      submit_button: "Add to selected lists"
+
   footer:
     about: "About"
     guidelines: "Guidelines"

@@ -1,0 +1,24 @@
+<div class="container mt-4">
+  <h1>Your Lists</h1>
+
+  <%= link_to "Create new list", new_list_path, class: "btn btn-primary mb-3" %>
+
+  <% if @lists.any? %>
+    <ul class="list-group">
+      <% @lists.each do |list| %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <%= link_to list.list_name, list_path(list) %>
+
+          <div>
+            <%= link_to "Edit", edit_list_path(list), class: "btn btn-sm btn-outline-secondary" %>
+            <%= link_to "Delete", list_path(list), 
+                data: { turbo_method: :delete, confirm: "Are you sure?" }, 
+                class: "btn btn-sm btn-outline-danger" %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p>You have no lists yet.</p>
+  <% end %>
+</div>
