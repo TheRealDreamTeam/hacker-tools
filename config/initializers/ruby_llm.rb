@@ -3,9 +3,9 @@
 # RubyLLM uses environment variables for configuration
 # Set OPENAI_API_KEY in your environment or .env file
 
-# The gem automatically reads OPENAI_API_KEY from ENV
-# No explicit configuration block needed for basic usage
-# For advanced configuration, see RubyLLM documentation
+RubyLLM.configure do |config|
+  config.openai_api_key = ENV["OPENAI_API_KEY"]
+end
 
 if ENV["OPENAI_API_KEY"].present?
   Rails.logger.info "RubyLLM configured with OPENAI_API_KEY"
