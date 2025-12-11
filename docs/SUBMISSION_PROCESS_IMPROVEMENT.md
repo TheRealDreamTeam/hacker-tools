@@ -391,9 +391,14 @@ When a user submits a link, the system should:
 
 **Required RubyLLM Features:**
 - **Chat/Conversations**: For content analysis and classification
-- **Tools**: For structured output (type classification, category assignment)
-- **Schema Validation**: For ensuring structured responses
+- **Structured Output**: Use `RubyLLM::Schema` (from `ruby_llm-schema` gem) for all LLM responses
+- **Embeddings**: For semantic search and content similarity (https://rubyllm.com/embeddings/)
+- **Tools**: For function calling and validation
 - **Async Execution**: For parallel processing of multiple checks
+
+**Model Selection:**
+- Use `gpt-4o` or `gpt-4.1-nano` for structured output tasks (NOT `gpt-4o-mini`)
+- These models work best with `RubyLLM::Schema` for guaranteed structured JSON output
 
 **RubyLLM Tools Needed:**
 1. **Content Safety Tool**: Classify content as safe/unsafe with reason (Stage 2)
@@ -405,9 +410,11 @@ When a user submits a link, the system should:
 **Documentation References:**
 - Main: https://rubyllm.com/
 - Rails Integration: https://rubyllm.com/rails/ - For ActiveRecord persistence, Hotwire streaming, and Rails-specific patterns
+- Chat & Structured Output: https://rubyllm.com/chat/#getting-structured-output
+- Embeddings: https://rubyllm.com/embeddings/ - For semantic search and content similarity
 - Tools: https://rubyllm.com/tools/
 - Async: https://rubyllm.com/async/
-- Schema: Use `RubyLLM::Schema` for structured output
+- Schema Gem: https://github.com/danielfriis/ruby_llm-schema - Use `RubyLLM::Schema.create` for structured output
 
 ### Background Jobs Architecture
 
