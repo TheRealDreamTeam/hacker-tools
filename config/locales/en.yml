@@ -256,9 +256,9 @@ en:
   # Lists
   lists:
     add_to_lists:
-      title: "Add to lists"
-      select_message: "Select one or more lists:"
-      submit_button: "Add to selected lists"
+      title: "Update lists"
+      select_message: "Select lists to add this tool to, or unselect to remove:"
+      submit_button: "Update lists"
 
   footer:
     about: "About"

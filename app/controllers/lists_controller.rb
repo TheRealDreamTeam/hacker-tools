@@ -57,15 +57,29 @@ class ListsController < ApplicationController
     end
 
     # POST /lists/add_tool_to_multiple
+    # Updates tool membership across multiple lists - adds to checked lists, removes from unchecked lists
     def add_tool_to_multiple
       tool = Tool.find(params[:tool_id])
-      list_ids = params[:list_ids] || []
+      submitted_list_ids = (params[:list_ids] || []).map(&:to_i)
+      user_lists = current_user.lists.includes(:tools)
+      
       added_count = 0
+      removed_count = 0
 
-      list_ids.each do |list_id|
-        list = current_user.lists.find(list_id)
-        list.tools << tool unless list.tools.include?(tool)
-        added_count += 1
+      # Process each of the user's lists
+      user_lists.each do |list|
+        has_tool = list.tools.include?(tool)
+        should_have_tool = submitted_list_ids.include?(list.id)
+
+        if should_have_tool && !has_tool
+          # Add tool to list
+          list.tools << tool
+          added_count += 1
+        elsif !should_have_tool && has_tool
+          # Remove tool from list
+          list.tools.delete(tool)
+          removed_count += 1
+        end
       end
 
       # Determine redirect location - prefer referer if available, otherwise use root or tool path
@@ -78,10 +92,15 @@ class ListsController < ApplicationController
                             tool_path(tool)
                           end
 
-      if added_count > 0
-        redirect_to redirect_location, notice: "Tool added to #{added_count} list#{'s' if added_count > 1}."
+      # Build appropriate success message
+      messages = []
+      messages << "Added to #{added_count} list#{'s' if added_count != 1}" if added_count > 0
+      messages << "Removed from #{removed_count} list#{'s' if removed_count != 1}" if removed_count > 0
+
+      if messages.any?
+        redirect_to redirect_location, notice: messages.join(". ") + "."
       else
-        redirect_to redirect_location, alert: "Please select at least one list."
+        redirect_to redirect_location, notice: "Lists updated."
       end
     rescue ActiveRecord::RecordNotFound
       redirect_location = request.referer.present? ? request.referer : (request.path == root_path || request.path == "/" ? root_path : tool_path(tool))
