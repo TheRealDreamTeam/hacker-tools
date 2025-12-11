@@ -3,13 +3,6 @@
     <div>
       <h1 class="h3 mb-2"><%= @tool.tool_name %></h1>
       <p class="text-secondary mb-1 d-flex align-items-center gap-2">
-        <span>
-          <% if @tool.user && !@tool.user.deleted? %>
-            <%= t("tools.show.owner", owner: link_to(display_user_name(@tool.user), profile_path(@tool.user.username), class: "text-decoration-none")).html_safe %>
-          <% else %>
-            <%= t("tools.show.owner", owner: display_user_name(@tool.user)) %>
-          <% end %>
-        </span>
         <%= render "tools/read_state", tool: @tool %>
       </p>
       <% if @tool.tool_url.present? %>
@@ -44,11 +37,7 @@
   <div class="mb-4">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h2 class="h5 mb-0"><%= t("tools.show.tags_title") %></h2>
-    <% if @tool.user == current_user %>
-      <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#add-tag-form">
-        <%= t("tools.actions.add_tag") %>
-      </button>
-    <% end %>
+    <%# TODO: Re-enable tag management when we decide on permissions (admin-only or open editing) %>
   </div>
   <div id="add-tag-form" class="collapse mb-3">
     <div class="card card-body">
@@ -73,16 +62,9 @@
   <% if @tool_tags.any? %>
     <div class="d-flex flex-wrap gap-2">
       <% @tool_tags.each do |tag| %>
-        <span class="badge <%= tag_badge_class(tag.tag_type) %> d-flex align-items-center gap-1">
+        <span class="badge <%= tag_badge_class(tag.tag_type) %>">
           <%= tag.display_name %>
-          <% if @tool.user == current_user %>
-            <%= button_to "×",
-                          remove_tag_tool_path(@tool, tag_id: tag.id),
-                          method: :delete,
-                          class: "btn btn-sm p-0 border-0 bg-transparent text-white",
-                          style: "font-size: 1.2em; line-height: 1;",
-                          title: t("tools.actions.remove_tag") %>
-          <% end %>
+          <%# TODO: Re-enable tag removal when we decide on permissions %>
         </span>
       <% end %>
     </div>
@@ -92,14 +74,9 @@
 </div>
 
 <div class="d-flex gap-2">
-  <% if @tool.user == current_user %>
-    <%= link_to t("actions.edit"), edit_tool_path(@tool), class: "btn btn-outline-primary" %>
-    <%= button_to t("actions.delete"), tool_path(@tool), method: :delete,
-                  data: { turbo_confirm: t("tools.confirmations.destroy") },
-                  class: "btn btn-outline-danger" %>
-    <% end %>
-    <%= link_to t("actions.back"), tools_path, class: "btn btn-secondary" %>
-  </div>
+  <%# TODO: Re-enable edit/delete when we decide on permissions (admin-only or open editing) %>
+  <%= link_to t("actions.back"), tools_path, class: "btn btn-secondary" %>
+</div>
   <hr class="my-5">
   <div class="mb-4">
     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -165,12 +142,7 @@
               <% else %>
                 <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
               <% end %>
-              <% if @tool.user == current_user %>
-                <%= button_to t("comments.actions.toggle_resolve"),
-                            resolve_tool_comment_path(@tool, flag),
-                            method: :patch,
-                            class: "btn btn-sm btn-outline-primary" %>
-              <% end %>
+              <%# TODO: Re-enable flag resolution when we decide on permissions %>
             </div>
           </div>
         <% end %>
@@ -224,12 +196,7 @@
               <% else %>
                 <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
               <% end %>
-              <% if @tool.user == current_user %>
-                <%= button_to t("comments.actions.toggle_resolve"),
-                            resolve_tool_comment_path(@tool, bug),
-                            method: :patch,
-                            class: "btn btn-sm btn-outline-primary" %>
-              <% end %>
+              <%# TODO: Re-enable bug resolution when we decide on permissions %>
             </div>
           </div>
         <% end %>

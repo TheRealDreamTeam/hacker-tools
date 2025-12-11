@@ -1,10 +1,11 @@
 class ToolsController < ApplicationController
   before_action :set_tool, only: %i[show edit update destroy add_tag remove_tag upvote favorite follow]
-  before_action :authorize_owner!, only: %i[edit update destroy add_tag remove_tag]
+  # TODO: Re-enable authorization when we decide on permissions (admin-only or open editing)
+  # before_action :authorize_owner!, only: %i[edit update destroy add_tag remove_tag]
 
   # GET /tools
   def index
-    @tools = Tool.includes(:user, :tags, :user_tools).order(created_at: :desc)
+    @tools = Tool.includes(:tags, :user_tools).order(created_at: :desc)
   end
 
   # GET /tools/:id
@@ -143,12 +144,14 @@ class ToolsController < ApplicationController
     @tool = Tool.find(params[:id])
   end
 
-  # Ensure only the owner can modify or delete.
-  def authorize_owner!
-    return if @tool.user == current_user
-
-    redirect_to tools_path, alert: t("tools.flash.unauthorized")
-  end
+  # TODO: Re-implement authorization when we decide on permissions
+  # Tools are now community-owned, so we need to decide:
+  # - Admin-only editing?
+  # - Open editing for all users?
+  # - Some other permission model?
+  # def authorize_owner!
+  #   # Implementation depends on chosen permission model
+  # end
 
   def tool_params
     params.require(:tool).permit(:tool_url, :author_note)
