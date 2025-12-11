@@ -398,23 +398,57 @@ Before implementing any RubyLLM feature, you MUST:
 - **Official Documentation**: https://rubyllm.com/
 - **Rails Integration**: https://rubyllm.com/rails/ - Use for ActiveRecord persistence, Hotwire streaming, and Rails-specific patterns
 - **Chat & Conversations**: https://rubyllm.com/chat/ - Use for conversation history, message handling
+- **Structured Output**: https://rubyllm.com/chat/#getting-structured-output - Use RubyLLM::Schema for structured output
+- **Embeddings**: https://rubyllm.com/embeddings/ - Use for semantic search, recommendations, and content similarity
 - **Tools**: https://rubyllm.com/tools/ - Use for function calling, validation tools, tool execution
 - **Agentic Workflows**: https://rubyllm.com/async/ - Use for multi-agent systems, parallel execution
 - **Async Execution**: https://rubyllm.com/async/ - Use for concurrent operations, performance optimization
-- **Schema Validation**: Use `RubyLLM::Schema` for structured output validation
+- **Schema Gem**: https://github.com/danielfriis/ruby_llm-schema - Use `RubyLLM::Schema.create` for structured output
 - **Error Handling**: Follow RubyLLM error handling patterns from documentation
 
 **Implementation Requirements**:
 - **MANDATORY**: Check official documentation before implementing ANY RubyLLM feature
 - **MANDATORY**: Use the exact API methods and patterns shown in the documentation
-- Use appropriate models (GPT-4o for structured output, GPT-4o-mini for simple tasks)
+- **MANDATORY**: Always use structured output with `RubyLLM::Schema` (from `ruby_llm-schema` gem: https://github.com/danielfriis/ruby_llm-schema)
+- **Model Selection**: Use `gpt-4o` or `gpt-4.1-nano` for structured output tasks (NOT `gpt-4o-mini`)
+- **Structured Output Pattern**: Always use `RubyLLM::Schema.create` block for output schemas in tools
 - Follow RubyLLM patterns for tools, chat instances, and async execution exactly as documented
-- Use `RubyLLM::Schema` for structured output (see `app/lib/recipe_schema.rb` for example)
+- Use `RubyLLM.embed` for embeddings (see https://rubyllm.com/embeddings/)
 - Implement tools as `RubyLLM::Tool` subclasses following the documentation patterns
 - Use `Async` gem for parallel execution following RubyLLM async documentation
 - Reference `docs/AGENTIC_WORKFLOW_DESIGN.md` for project-specific workflow patterns
 - **DO NOT** invent new patterns - use what's documented
 - **DO NOT** assume API behavior - verify in documentation
+
+**Structured Output with RubyLLM::Schema**:
+- Always use `RubyLLM::Schema.create` block for defining output schemas
+- Use `chat.ask(context)` with schema defined in `params` block
+- The schema ensures structured JSON output from the LLM
+- Works best with `gpt-4o` or `gpt-4.1-nano` models
+- Example pattern:
+  ```ruby
+  params do
+    RubyLLM::Schema.create do
+      {
+        field_name: { type: :string, description: "..." },
+        # ...
+      }
+    end
+  end
+  
+  def execute(...)
+    chat = RubyLLM.chat(model: "gpt-4o")
+    response = chat.ask(context)
+    result = JSON.parse(response.content)
+  end
+  ```
+
+**Embeddings Usage**:
+- Use `RubyLLM.embed(text)` for single text embeddings
+- Use `RubyLLM.embed([text1, text2])` for batch embeddings (more efficient)
+- Store embeddings in PostgreSQL `vector` column (pgvector extension)
+- Use cosine similarity for semantic search
+- See https://rubyllm.com/embeddings/ for complete examples
 
 **When Adding New RubyLLM Features**:
 1. Read the relevant documentation page first
