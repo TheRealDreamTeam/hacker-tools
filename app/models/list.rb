@@ -10,5 +10,6 @@ class List < ApplicationRecord
   has_many :followers, through: :follows, source: :user
 
   validates :list_name, presence: true
+  validates :list_name, uniqueness: { scope: :user_id }
 end
 

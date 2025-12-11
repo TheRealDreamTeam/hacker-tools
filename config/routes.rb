@@ -41,5 +41,13 @@ Rails.application.routes.draw do
     get "u/:username" => "profiles#show", as: :profile, constraints: { username: /[^\/]+/ }
     post "u/:username/follow" => "profiles#follow", as: :follow_user
     delete "u/:username/unfollow" => "profiles#unfollow", as: :unfollow_user
+
+    resources :lists do
+      post :add_tool, on: :member
+      delete :remove_tool, on: :member
+      collection do
+        post :add_tool_to_multiple
+      end
+    end
   end
 end

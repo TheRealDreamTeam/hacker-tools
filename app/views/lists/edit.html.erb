@@ -1,0 +1,41 @@
+<div class="container mt-4">
+  <h1>Edit List</h1>
+
+  <% if @list.errors.any? %>
+    <div class="alert alert-danger">
+      <p><strong>There were some problems:</strong></p>
+      <ul>
+        <% @list.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: @list, local: true do |f| %>
+
+    <div class="mb-3">
+      <%= f.label :list_name, "List name" %>
+      <%= f.text_field :list_name, class: "form-control", required: true %>
+    </div>
+
+    <!-- list_type: fortsatt skjult, bruker eksisterende/verdi i DB -->
+
+    <div class="mb-3">
+      <%= f.label :visibility, "Visibility" %><br>
+
+      <div class="form-check form-check-inline">
+        <%= f.radio_button :visibility, 0, id: "visibility_private", class: "form-check-input" %>
+        <%= f.label :visibility, "Private", for: "visibility_private", class: "form-check-label" %>
+      </div>
+
+      <div class="form-check form-check-inline">
+        <%= f.radio_button :visibility, 1, id: "visibility_public", class: "form-check-input" %>
+        <%= f.label :visibility, "Public", for: "visibility_public", class: "form-check-label" %>
+      </div>
+    </div>
+
+    <%= f.submit "Update list", class: "btn btn-primary" %>
+    <%= link_to "Back", lists_path, class: "btn btn-secondary ms-2" %>
+  <% end %>
+</div>
