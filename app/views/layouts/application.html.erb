@@ -63,7 +63,6 @@
         opacity: 1;
       }
       
-      /* Navbar stays visible during transitions - not affected by content fade */
       /* Navbar is fixed at top - defined in _navbar.scss */
       #navbar {
         opacity: 1 !important;
@@ -74,32 +73,6 @@
       /* Navbar has min-height: 60px + padding: 1rem 0 (16px top + 16px bottom) = ~92px total */
       .page-transition-content {
         padding-top: 92px; /* Account for navbar full height including padding */
-      }
-      
-      /* Main content wrapper - fadein animation only (no fadeout) */
-      .page-transition-content {
-        transition: opacity 300ms ease-in-out, visibility 300ms ease-in-out; /* 300ms fadein */
-      }
-      
-      /* Page transition animations - fadein only */
-      body.page-transition-ready {
-        transition: opacity 300ms ease-in-out, visibility 300ms ease-in-out;
-      }
-      
-      /* Fadein animation - new page starts hidden, then fades in */
-      /* Use !important to ensure this always wins over inline styles during transition */
-      /* CRITICAL: This must apply immediately to prevent flicker on page load */
-      body.page-transition-fadein .page-transition-content {
-        opacity: 0 !important;
-        visibility: hidden !important;
-        transition: none !important; /* Disable transition when hidden to prevent flicker */
-      }
-      
-      /* When fadein class is removed, content fades in smoothly over 300ms */
-      body.page-transition-ready:not(.page-transition-fadein) .page-transition-content {
-        opacity: 1;
-        visibility: visible;
-        transition: opacity 300ms ease-in-out, visibility 300ms ease-in-out; /* Re-enable transition for fadein */
       }
       
       /* Fallback: Show content if JavaScript fails to load (after 1 second) */
