@@ -53,6 +53,11 @@ gem "ruby_llm-schema", "~> 0.2.5"
 gem "cloudinary", "~> 1.25"
 gem "activestorage-cloudinary-service", "~> 0.2"
 gem "rails-i18n" # Locale data for Rails (dates, times, numbers, etc.)
+gem "pg_search" # PostgreSQL full-text search
+gem "pgvector" # PostgreSQL vector extension for embeddings
+gem "nokogiri" # HTML parsing
+gem "faraday" # HTTP client for API requests
+gem "noticed" # Notifications (minimal in Phase 1)
 
 group :development, :test do
   gem "dotenv-rails"

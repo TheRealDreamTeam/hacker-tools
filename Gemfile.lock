@@ -270,6 +270,8 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.10-x86_64-linux-musl)
       racc (~> 1.4)
+    noticed (2.9.3)
+      rails (>= 6.1.0)
     orm_adapter (0.5.0)
     pg (1.6.2)
     pg (1.6.2-aarch64-linux)
@@ -278,6 +280,10 @@ GEM
     pg (1.6.2-x86_64-darwin)
     pg (1.6.2-x86_64-linux)
     pg (1.6.2-x86_64-linux-musl)
+    pg_search (2.3.7)
+      activerecord (>= 6.1)
+      activesupport (>= 6.1)
+    pgvector (0.3.2)
     playwright-ruby-client (1.57.0)
       concurrent-ruby (>= 1.1.6)
       mime-types (>= 3.0)
@@ -457,11 +463,16 @@ DEPENDENCIES
   dotenv-rails
   factory_bot_rails
   faker
+  faraday
   font-awesome-sass (~> 6.1)
   importmap-rails
   jbuilder
   letter_opener
+  nokogiri
+  noticed
   pg (~> 1.1)
+  pg_search
+  pgvector
   puma (>= 5.0)
   rails (~> 7.1.6)
   rails-i18n

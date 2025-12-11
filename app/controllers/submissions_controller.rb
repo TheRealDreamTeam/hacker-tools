@@ -61,8 +61,8 @@ class SubmissionsController < ApplicationController
     @submission = current_user.submissions.new(submission_params)
     
     if @submission.save
-      # TODO: Queue processing pipeline job (Step 2.3)
-      # SubmissionProcessingJob.perform_later(@submission.id)
+      # Queue processing pipeline job
+      SubmissionProcessingJob.perform_later(@submission.id)
       
       respond_to do |format|
         format.html { redirect_to @submission, notice: t("submissions.create.success") }
