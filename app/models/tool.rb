@@ -34,6 +34,41 @@ class Tool < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :most_upvoted, -> { joins(:user_tools).where(user_tools: { upvote: true }).group("tools.id").order("COUNT(user_tools.id) DESC") }
 
+  # Interaction helpers
+  def user_tool_for(user)
+    return nil unless user
+
+    if user_tools.loaded?
+      user_tools.find { |ut| ut.user_id == user.id }
+    else
+      user_tools.find_by(user: user)
+    end
+  end
+
+  def upvoted_by?(user)
+    user_tool_for(user)&.upvote?
+  end
+
+  def favorited_by?(user)
+    user_tool_for(user)&.favorite?
+  end
+
+  def followed_by?(user)
+    user_tool_for(user)&.subscribe?
+  end
+
+  def upvote_count
+    user_tools.where(upvote: true).count
+  end
+
+  def favorite_count
+    user_tools.where(favorite: true).count
+  end
+
+  def subscriber_count
+    user_tools.where(subscribe: true).count
+  end
+
   private
 
   # Validate URL format - must be a valid HTTP/HTTPS URL
