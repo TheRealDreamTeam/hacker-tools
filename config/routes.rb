@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       end
     end
     root to: "pages#home"
+    get "dashboard" => "dashboard#show", as: :dashboard
     resources :tags, except: [:show]
     resources :tools do
       resources :comments, only: [:create, :destroy] do

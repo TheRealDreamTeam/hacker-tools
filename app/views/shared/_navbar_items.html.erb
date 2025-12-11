@@ -2,42 +2,52 @@
 <% unless devise_controller? %>
   <% if user_signed_in? %>
   <li class="nav-item">
-    <%= link_to "Home", root_path,
+    <%= link_to t("navigation.home"), root_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= link_to "Tools", tools_path,
+    <%= link_to t("navigation.tools"), tools_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= link_to "New Tool", new_tool_path,
+    <%= link_to t("navigation.new_tool"), new_tool_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= link_to "Tags", tags_path,
+    <%= link_to t("navigation.tags"), tags_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= link_to "Profile", profile_path,
+    <%= link_to t("navigation.profile"), profile_path,
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
+    <%= link_to t("navigation.dashboard"), dashboard_path,
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
+    <%= link_to t("navigation.account"), account_settings_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
     <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false }, local: true, class: "d-inline" do |f| %>
-      <%= f.submit "Sign out", class: "btn btn-link nav-link text-decoration-none border-0 bg-transparent p-0 shadow-none" %>
+      <%= f.submit t("navigation.logout"), class: "btn btn-link nav-link text-decoration-none border-0 bg-transparent p-0 shadow-none" %>
     <% end %>
   </li>
   <% else %>
   <li class="nav-item">
-    <%= link_to "Sign in", new_user_session_path,
+    <%= link_to t("navigation.login"), new_user_session_path,
         class: "nav-link" %>
   </li>
   <li class="nav-item">
-    <%= link_to "Sign up", new_user_registration_path,
+    <%= link_to t("navigation.sign_up"), new_user_registration_path,
         class: "nav-link" %>
   </li>
   <% end %>

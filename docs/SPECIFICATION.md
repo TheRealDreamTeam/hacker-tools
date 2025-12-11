@@ -270,6 +270,7 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Account soft deletion with confirmation modal
 - **Routes**:
   - `GET /profile` → `profiles#show` (profile display page)
+  - `GET /dashboard` → `dashboard#show` (private dashboard)
   - `GET /account_settings` → `account_settings#show` (account settings)
   - `PATCH /account_settings/update_avatar` → `account_settings#update_avatar`
   - `PATCH /account_settings/update_bio` → `account_settings#update_bio`
@@ -279,9 +280,11 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - `DELETE /account_settings` → `account_settings#destroy` (soft delete account)
 - **Controllers**:
   - `ProfilesController` - Simple controller for profile display
+  - `DashboardController` - Private, read-only dashboard slices for the current user
   - `AccountSettingsController` - Custom controller for account management (independent from Devise)
 - **Views**:
-  - Profile page (`profiles/show.html.erb`) - Read-only profile display with link to account settings
+  - Profile page (`profiles/show.html.erb`) - Read-only profile display (no edit link)
+  - Dashboard (`dashboard/show.html.erb`) - Overview cards (counts) and recent slices for tools, lists, discussions, favorites, subscriptions
   - Account settings (`account_settings/show.html.erb`) - Split into 5 sections:
     1. Avatar update (with delete button)
     2. Bio update
@@ -300,7 +303,8 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Deleted users cannot log in (blocked via authentication)
   - Username/email become available for new registrations immediately
 - **UI/UX**:
-  - Profile page shows avatar (or gray placeholder with initial)
+  - Profile page shows avatar (or gray placeholder with initial) and no edit CTA (settings moved to nav)
+  - Dashboard is a private view; public profile to be added later
   - Account settings organized in card-based sections
   - Each section has its own submit button
   - Confirmation modal for destructive actions (avatar deletion, account deletion)
@@ -316,6 +320,10 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Main navbar (`shared/_navbar.html.erb`)
   - Navbar items partial (`shared/_navbar_items.html.erb`)
   - Offcanvas menu for mobile devices
+- **Links**:
+  - Home, Tools, New Tool, Tags, Profile (private), Dashboard (private), Account (account settings), Auth links
+- **Behavior**:
+  - Dashboard and Account links are distinct from Profile; Profile stays read-only
 - **Styling**:
   - Navbar has no rounded corners (as per design system)
   - Navbar links have hover animations (translateY and background color change)

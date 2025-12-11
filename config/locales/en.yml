@@ -71,10 +71,17 @@ en:
   # Navigation and common actions
   navigation:
     home: "Home"
+    tools: "Tools"
+    new_tool: "New Tool"
+    tags: "Tags"
+    profile: "Profile"
+    dashboard: "Dashboard"
+    account: "Account"
     about: "About"
     contact: "Contact"
     messages: "Messages"
     login: "Login"
+    sign_up: "Sign up"
     logout: "Log out"
     toggle_navigation: "Toggle navigation"
     dropdown_menu: "dropdown menu"
@@ -137,6 +144,42 @@ en:
       title: "Profile"
       no_bio: "No bio yet. Edit your account to add one."
       edit_account: "Edit Account"
+
+  dashboard:
+    title: "Dashboard"
+    subtitle: "Your private view of activity across tools, lists, and discussions."
+    metrics:
+      tools: "Tools"
+      lists: "Lists"
+      comments: "Comments"
+      favorites: "Favorites"
+      subscriptions: "Subscriptions"
+    sections:
+      shared:
+        by_user: "by %{username}"
+      tools:
+        title: "My Tools"
+        view_all: "View all"
+        empty: "No tools yet."
+      lists:
+        title: "My Lists"
+        view_all: "View all"
+        empty: "No lists yet."
+        tools_count: "%{count} tools"
+      discussions:
+        title: "My Discussions"
+        link: "Recent tools"
+        empty: "No comments yet."
+      favorites:
+        title: "Favorites"
+        link: "Browse"
+        empty: "No favorites yet."
+        badge: "Favorited"
+      subscriptions:
+        title: "Subscriptions"
+        link: "Browse"
+        empty: "No subscriptions yet."
+        badge: "Subscribed"
   
   # Account Settings (custom, independent from Devise)
   account_settings:

@@ -1,0 +1,183 @@
+<div class="container my-4">
+  <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+    <div>
+      <h1 class="h3 mb-1"><%= t("dashboard.title") %></h1>
+      <p class="text-muted mb-0"><%= t("dashboard.subtitle") %></p>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-md-4 col-xl-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <p class="text-muted mb-1"><%= t("dashboard.metrics.tools") %></p>
+          <p class="h4 mb-0"><%= @user.tools.count %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4 col-xl-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <p class="text-muted mb-1"><%= t("dashboard.metrics.lists") %></p>
+          <p class="h4 mb-0"><%= @user.lists.count %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4 col-xl-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <p class="text-muted mb-1"><%= t("dashboard.metrics.comments") %></p>
+          <p class="h4 mb-0"><%= @user.comments.count %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4 col-xl-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <p class="text-muted mb-1"><%= t("dashboard.metrics.favorites") %></p>
+          <p class="h4 mb-0"><%= @user.favorited_tools.count %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-4 col-xl-2">
+      <div class="card h-100">
+        <div class="card-body">
+          <p class="text-muted mb-1"><%= t("dashboard.metrics.subscriptions") %></p>
+          <p class="h4 mb-0"><%= @user.subscribed_tools.count %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-12 col-xl-6">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="fw-semibold"><%= t("dashboard.sections.tools.title") %></span>
+          <%= link_to t("dashboard.sections.tools.view_all"), tools_path, class: "small" %>
+        </div>
+        <div class="card-body">
+          <% if @recent_tools.any? %>
+            <ul class="list-group list-group-flush">
+              <% @recent_tools.each do |tool| %>
+                <li class="list-group-item px-0 d-flex justify-content-between align-items-start">
+                  <div>
+                    <div class="fw-semibold"><%= link_to tool.tool_name, tool_path(tool) %></div>
+                    <div class="text-muted small"><%= l(tool.created_at, format: :short) %></div>
+                  </div>
+                  <span class="badge bg-light text-dark"><%= tool.visibility.humanize %></span>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-muted mb-0"><%= t("dashboard.sections.tools.empty") %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-6">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="fw-semibold"><%= t("dashboard.sections.lists.title") %></span>
+        </div>
+        <div class="card-body">
+          <% if @recent_lists.any? %>
+            <ul class="list-group list-group-flush">
+              <% @recent_lists.each do |list| %>
+                <li class="list-group-item px-0 d-flex justify-content-between align-items-start">
+                  <div>
+                    <div class="fw-semibold"><%= list.list_name %></div>
+                    <div class="text-muted small"><%= l(list.created_at, format: :short) %></div>
+                  </div>
+                  <span class="badge bg-primary-subtle text-primary"><%= t("dashboard.sections.lists.tools_count", count: list.tools.count) %></span>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-muted mb-0"><%= t("dashboard.sections.lists.empty") %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-6">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="fw-semibold"><%= t("dashboard.sections.discussions.title") %></span>
+          <%= link_to t("dashboard.sections.discussions.link"), tools_path, class: "small" %>
+        </div>
+        <div class="card-body">
+          <% if @recent_comments.any? %>
+            <ul class="list-group list-group-flush">
+              <% @recent_comments.each do |comment| %>
+                <li class="list-group-item px-0">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="fw-semibold"><%= link_to comment.tool.tool_name, tool_path(comment.tool) %></div>
+                    <div class="text-muted small"><%= l(comment.created_at, format: :short) %></div>
+                  </div>
+                  <div class="text-muted small"><%= truncate(comment.comment, length: 120) %></div>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-muted mb-0"><%= t("dashboard.sections.discussions.empty") %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-6">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="fw-semibold"><%= t("dashboard.sections.favorites.title") %></span>
+          <%= link_to t("dashboard.sections.favorites.link"), tools_path, class: "small" %>
+        </div>
+        <div class="card-body">
+          <% if @favorited_tools.any? %>
+            <ul class="list-group list-group-flush">
+              <% @favorited_tools.each do |tool| %>
+                <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="fw-semibold"><%= link_to tool.tool_name, tool_path(tool) %></div>
+                    <div class="text-muted small"><%= t("dashboard.sections.shared.by_user", username: tool.user.username) %></div>
+                  </div>
+                  <span class="badge bg-warning-subtle text-warning"><%= t("dashboard.sections.favorites.badge") %></span>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-muted mb-0"><%= t("dashboard.sections.favorites.empty") %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-6">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span class="fw-semibold"><%= t("dashboard.sections.subscriptions.title") %></span>
+          <%= link_to t("dashboard.sections.subscriptions.link"), tools_path, class: "small" %>
+        </div>
+        <div class="card-body">
+          <% if @subscribed_tools.any? %>
+            <ul class="list-group list-group-flush">
+              <% @subscribed_tools.each do |tool| %>
+                <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="fw-semibold"><%= link_to tool.tool_name, tool_path(tool) %></div>
+                    <div class="text-muted small"><%= t("dashboard.sections.shared.by_user", username: tool.user.username) %></div>
+                  </div>
+                  <span class="badge bg-info-subtle text-info"><%= t("dashboard.sections.subscriptions.badge") %></span>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-muted mb-0"><%= t("dashboard.sections.subscriptions.empty") %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
