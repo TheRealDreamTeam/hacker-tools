@@ -58,6 +58,7 @@ en:
       updated: "Submission updated successfully."
       destroyed: "Submission deleted."
       unauthorized: "You are not allowed to modify this submission."
+      validation_error: "Please fix the errors below and try again."
       add_tag:
         success: "Tag '%{tag}' added successfully."
         already_exists: "Tag '%{tag}' is already associated with this submission."
