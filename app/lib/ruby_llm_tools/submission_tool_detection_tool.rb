@@ -10,9 +10,9 @@ class SubmissionToolDetectionTool < RubyLLM::Tool
   param :author_note, type: "string", desc: "Optional author note from the user", required: false
   param :url, type: "string", desc: "The submission URL", required: false
   
-  # Define output schema using RubyLLM::Schema (recommended approach)
-  params do
-    RubyLLM::Schema.create do
+  # Define output schema using RubyLLM::Schema
+  def self.output_schema
+    @output_schema ||= RubyLLM::Schema.create do
       {
         tools: {
           type: :array,
@@ -40,7 +40,15 @@ class SubmissionToolDetectionTool < RubyLLM::Tool
     
     # Use gpt-4o or gpt-4.1-nano for structured output (not mini)
     chat = RubyLLM.chat(model: "gpt-4o")
-    response = chat.ask(context)
+    
+    # Use the schema for structured output
+    response = chat.ask(
+      context,
+      response_format: {
+        type: "json_schema",
+        json_schema: self.class.output_schema.to_json_schema
+      }
+    )
     
     # RubyLLM::Schema ensures structured output
     result = JSON.parse(response.content)

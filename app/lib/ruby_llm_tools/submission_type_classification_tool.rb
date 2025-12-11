@@ -11,10 +11,10 @@ class SubmissionTypeClassificationTool < RubyLLM::Tool
   param :description, type: "string", desc: "The submission description (extracted or provided)", required: false
   param :author_note, type: "string", desc: "Optional author note from the user", required: false
   
-  # Define output schema using RubyLLM::Schema (recommended approach)
+  # Define output schema using RubyLLM::Schema
   # Documentation: https://rubyllm.com/chat/#using-rubyllm-schema-recommended
-  params do
-    RubyLLM::Schema.create do
+  def self.output_schema
+    @output_schema ||= RubyLLM::Schema.create do
       {
         submission_type: {
           type: :string,
@@ -43,7 +43,15 @@ class SubmissionTypeClassificationTool < RubyLLM::Tool
     # Use RubyLLM to classify with structured output
     # Use gpt-4o or gpt-4.1-nano for structured output (not mini)
     chat = RubyLLM.chat(model: "gpt-4o")
-    response = chat.ask(context)
+    
+    # Use the schema for structured output
+    response = chat.ask(
+      context,
+      response_format: {
+        type: "json_schema",
+        json_schema: self.class.output_schema.to_json_schema
+      }
+    )
     
     # Parse and return structured response
     # RubyLLM::Schema ensures structured output, so we can safely parse
