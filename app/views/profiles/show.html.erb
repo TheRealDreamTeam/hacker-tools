@@ -71,7 +71,7 @@
       <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab">
-            <%= t("profiles.show.tabs.posts") %> (<%= @public_tools.count %>)
+            <%= t("profiles.show.tabs.submissions") %> (<%= @public_submissions.count %>)
           </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -92,24 +92,34 @@
       </ul>
 
       <div class="tab-content" id="profileTabContent">
-        <!-- Posts Tab -->
+        <!-- Submissions Tab -->
         <div class="tab-pane fade show active" id="posts" role="tabpanel">
-          <% if @public_tools.any? %>
+          <% if @public_submissions.any? %>
             <div class="list-group">
-              <% @public_tools.each do |tool| %>
+              <% @public_submissions.each do |submission| %>
                 <div class="list-group-item">
                   <div class="d-flex justify-content-between align-items-start">
                     <div class="flex-grow-1">
                       <h5 class="mb-1">
-                        <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
+                        <%= link_to submission.submission_name.presence || submission.submission_url, submission_path(submission), class: "text-decoration-none" %>
                       </h5>
-                      <% if tool.tool_description.present? %>
-                        <p class="mb-1 text-muted"><%= truncate(tool.tool_description, length: 150) %></p>
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary" style="font-size: 0.75rem;">
+                          <%= t("submissions.types.#{submission.submission_type}") %>
+                        </span>
+                        <% if submission.tool.present? %>
+                          <span class="text-muted small">
+                            <%= t("submissions.about_tool", tool: link_to(submission.tool.tool_name, tool_path(submission.tool), class: "text-decoration-none")).html_safe %>
+                          </span>
+                        <% end %>
+                      </div>
+                      <% if submission.submission_description.presence || submission.author_note.present? %>
+                        <p class="mb-1 text-muted"><%= truncate(submission.submission_description.presence || submission.author_note, length: 150) %></p>
                       <% end %>
                       <small class="text-muted">
-                        <%= l(tool.created_at, format: :short) %>
-                        <% if tool.tags.any? %>
-                          • <%= tool.tags.limit(3).pluck(:tag_name).join(", ") %>
+                        <%= l(submission.created_at, format: :short) %>
+                        <% if submission.tags.any? %>
+                          • <%= submission.tags.limit(3).pluck(:tag_name).join(", ") %>
                         <% end %>
                       </small>
                     </div>
@@ -118,7 +128,7 @@
               <% end %>
             </div>
           <% else %>
-            <p class="text-muted"><%= t("profiles.show.tabs.no_posts") %></p>
+            <p class="text-muted"><%= t("profiles.show.tabs.no_submissions") %></p>
           <% end %>
         </div>
 
@@ -131,7 +141,11 @@
                   <div class="d-flex justify-content-between align-items-start">
                     <div class="flex-grow-1">
                       <h6 class="mb-1">
-                        <%= link_to comment.tool.tool_name, tool_path(comment.tool), class: "text-decoration-none" %>
+                        <% if comment.commentable_type == "Tool" %>
+                          <%= link_to comment.commentable.tool_name, tool_path(comment.commentable), class: "text-decoration-none" %>
+                        <% elsif comment.commentable_type == "Submission" %>
+                          <%= link_to comment.commentable.submission_name.presence || comment.commentable.submission_url, submission_path(comment.commentable), class: "text-decoration-none" %>
+                        <% end %>
                       </h6>
                       <p class="mb-1"><%= truncate(comment.comment, length: 200) %></p>
                       <small class="text-muted">

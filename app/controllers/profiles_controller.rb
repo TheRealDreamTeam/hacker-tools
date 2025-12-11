@@ -8,21 +8,24 @@ class ProfilesController < ApplicationController
   # Route: /u/:username
   def show
     # Load public data for the profile
-    # Only show public tools, comments on public tools, and upvotes on public tools
-    @public_tools = @user.tools.public_tools.includes(:tags, :user).order(created_at: :desc).limit(20)
-    
-    # Comments on public tools only
-    @public_comments = @user.comments
-      .joins(:tool)
-      .where(tools: { visibility: Tool.visibilities[:public] })
-      .includes(:tool, :user)
+    # Show user's submissions (completed ones are public by default)
+    @public_submissions = @user.submissions
+      .completed
+      .includes(:tool, :tags, :user)
       .order(created_at: :desc)
       .limit(20)
     
-    # Upvoted tools that are public
+    # Comments on submissions and tools (polymorphic)
+    @public_comments = @user.comments
+      .where(commentable_type: ["Submission", "Tool"])
+      .includes(:commentable, :user)
+      .order(created_at: :desc)
+      .limit(20)
+    
+    # Upvoted tools that are public (tools are community-owned, so all are public)
     @public_upvoted_tools = @user.upvoted_tools
       .public_tools
-      .includes(:user, :tags)
+      .includes(:tags)
       .order(created_at: :desc)
       .limit(20)
     
