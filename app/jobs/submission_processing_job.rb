@@ -45,9 +45,8 @@ class SubmissionProcessingJob < ApplicationJob
       # Phase 4: Embedding generation
       SubmissionProcessing::EmbeddingGenerationJob.perform_now(submission_id)
       
-      # Phase 5: Relationship discovery (stub for now)
-      # TODO: Implement relationship discovery in future
-      # SubmissionProcessing::RelationshipDiscoveryJob.perform_now(submission_id)
+      # Phase 5: Relationship discovery (stub - Phase 2)
+      SubmissionProcessing::RelationshipDiscoveryJob.perform_now(submission_id)
       
       # Mark as completed
       submission.update!(
