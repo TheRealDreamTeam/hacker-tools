@@ -370,10 +370,13 @@ When a user submits a link, the system should:
 #### 8. Embedding Generation
 **Job**: `SubmissionEmbeddingGenerationJob`
 - Generate vector embeddings for submission content
-- Use OpenAI embeddings API (text-embedding-3-small or text-embedding-3-large)
+- Use `RubyLLM.embed` (see https://rubyllm.com/embeddings/)
+- Default model: `text-embedding-3-small` (1536 dimensions) or `text-embedding-3-large` (3072 dimensions)
 - Input: Combined text from title, description, author_note, scraped content, tags
-- Store embeddings in `embedding` column (PostgreSQL vector) or Redis
+- Store embeddings in `embedding` column (PostgreSQL vector type with pgvector extension)
+- Use batch embedding for multiple texts: `RubyLLM.embed([text1, text2])` (more efficient)
 - **Critical for semantic search and RAG**
+- Calculate cosine similarity for finding similar submissions
 
 #### 9. Related Content Discovery
 **Job**: `SubmissionRelationshipDiscoveryJob`

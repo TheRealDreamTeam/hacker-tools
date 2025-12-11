@@ -1,5 +1,7 @@
 # RubyLLM Tool for generating relevant tags for submissions
 # Documentation: https://rubyllm.com/tools/
+# Structured Output: https://rubyllm.com/chat/#getting-structured-output
+# Uses ruby_llm-schema gem: https://github.com/danielfriis/ruby_llm-schema
 class SubmissionTagGenerationTool < RubyLLM::Tool
   description "Generate relevant tags for a submission based on its content and type"
   
@@ -9,51 +11,40 @@ class SubmissionTagGenerationTool < RubyLLM::Tool
   param :submission_type, type: "string", desc: "The classified submission type", required: false
   param :url, type: "string", desc: "The submission URL", required: false
   
+  # Define output schema using RubyLLM::Schema (recommended approach)
   params do
-    {
-      type: "object",
-      properties: {
+    RubyLLM::Schema.create do
+      {
         tags: {
-          type: "array",
+          type: :array,
           items: {
-            type: "object",
+            type: :object,
             properties: {
-              name: { type: "string", description: "Tag name" },
-              relevance: { type: "number", minimum: 0, maximum: 1, description: "Relevance score" },
-              category: { type: "string", enum: %w[category language framework library version platform other], description: "Tag category" }
+              name: { type: :string, description: "Tag name" },
+              relevance: { type: :number, minimum: 0, maximum: 1, description: "Relevance score" },
+              category: { 
+                type: :string, 
+                enum: %w[category language framework library version platform other], 
+                description: "Tag category" 
+              }
             },
-            required: ["name", "relevance"]
+            required: [:name, :relevance]
           },
           description: "Array of generated tags (3-10 tags recommended)"
         }
-      },
-      required: ["tags"]
-    }
+      }
+    end
   end
   
   def execute(title: nil, description: nil, author_note: nil, submission_type: nil, url: nil)
     context = build_context(title, description, author_note, submission_type, url)
     
-    response = RubyLLM.chat(
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: "You are an expert at generating relevant tags for technical content. " \
-                   "Generate 3-10 relevant tags that accurately describe the submission. " \
-                   "Tags should be specific, relevant, and cover different aspects (technologies, topics, categories). " \
-                   "Return your response as JSON with a tags array containing name, relevance, and category for each tag."
-        },
-        {
-          role: "user",
-          content: context
-        }
-      ],
-      response_format: { type: "json_schema", json_schema: self.class.params_schema_definition.json_schema }
-    )
+    # Use gpt-4o or gpt-4.1-nano for structured output (not mini)
+    chat = RubyLLM.chat(model: "gpt-4o")
+    response = chat.ask(context)
     
-    content = response.dig("choices", 0, "message", "content")
-    result = JSON.parse(content)
+    # RubyLLM::Schema ensures structured output
+    result = JSON.parse(response.content)
     
     {
       tags: result["tags"] || []
@@ -74,7 +65,10 @@ class SubmissionTagGenerationTool < RubyLLM::Tool
     parts << "Author Note: #{author_note}" if author_note.present?
     parts << "URL: #{url}" if url.present?
     
-    "Generate relevant tags for this submission:\n\n#{parts.join("\n")}\n\n" \
+    "You are an expert at generating relevant tags for technical content. " \
+    "Generate 3-10 relevant tags that accurately describe the submission. " \
+    "Tags should be specific, relevant, and cover different aspects (technologies, topics, categories).\n\n" \
+    "Content to tag:\n#{parts.join("\n")}\n\n" \
     "Return a JSON array of tags with name, relevance score, and category."
   end
 end
