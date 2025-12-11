@@ -30,6 +30,15 @@ Rails.application.routes.draw do
       post :favorite, on: :member, to: "tools#favorite"
       post :follow, on: :member, to: "tools#follow"
     end
+    resources :submissions do
+      resources :comments, only: [:create, :destroy] do
+        patch :resolve, on: :member
+        post :upvote, on: :member
+      end
+      post :add_tag, on: :member
+      delete :remove_tag, on: :member
+      post :follow, on: :member, to: "submissions#follow"
+    end
     # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
     # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
