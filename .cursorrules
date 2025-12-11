@@ -384,6 +384,7 @@ Before implementing any RubyLLM feature, you MUST:
 
 ### Official Documentation Pages
 - **Main Documentation**: https://rubyllm.com/
+- **Rails Integration**: https://rubyllm.com/rails/ - For ActiveRecord persistence, Hotwire streaming, `acts_as_chat`, `acts_as_message`, and Rails-specific patterns
 - **Chat & Conversations**: https://rubyllm.com/chat/ - For conversation history, message handling, `add_message`, `ask`
 - **Tools**: https://rubyllm.com/tools/ - For function calling, tool creation, tool execution, `RubyLLM::Tool`
 - **Agentic Workflows**: https://rubyllm.com/agentic-workflows/ - For multi-agent systems, parallel execution, model routing
@@ -395,6 +396,7 @@ Before implementing any RubyLLM feature, you MUST:
 **CRITICAL**: When implementing RubyLLM features, you MUST reference and follow the official RubyLLM documentation:
 
 - **Official Documentation**: https://rubyllm.com/
+- **Rails Integration**: https://rubyllm.com/rails/ - Use for ActiveRecord persistence, Hotwire streaming, and Rails-specific patterns
 - **Chat & Conversations**: https://rubyllm.com/chat/ - Use for conversation history, message handling
 - **Tools**: https://rubyllm.com/tools/ - Use for function calling, validation tools, tool execution
 - **Agentic Workflows**: https://rubyllm.com/async/ - Use for multi-agent systems, parallel execution
