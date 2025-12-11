@@ -1,0 +1,278 @@
+<div class="p-2">
+  <div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+      <h1 class="h3 mb-2">
+        <%= @submission.submission_name.presence || @submission.submission_url %>
+      </h1>
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge bg-primary">
+          <%= t("submissions.types.#{@submission.submission_type}") %>
+        </span>
+        <% if @submission.status != "completed" %>
+          <span class="badge bg-warning text-dark">
+            <%= t("submissions.statuses.#{@submission.status}") %>
+          </span>
+        <% end %>
+      </div>
+      <p class="text-secondary mb-1 d-flex align-items-center gap-2">
+        <span>
+          <%= t("submissions.by_user", user: link_to(display_user_name(@submission.user), profile_path(@submission.user.username), class: "text-decoration-none")).html_safe %>
+        </span>
+      </p>
+      <% if @submission.submission_url.present? %>
+        <p class="mb-0">
+          <%= link_to @submission.submission_url, @submission.submission_url, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none" %>
+        </p>
+      <% end %>
+      <% if @submission.tool.present? %>
+        <p class="mb-0 text-secondary">
+          <%= t("submissions.about_tool", tool: link_to(@submission.tool.tool_name, tool_path(@submission.tool), class: "text-decoration-none")).html_safe %>
+        </p>
+      <% end %>
+    </div>
+    <div class="d-flex gap-2">
+      <% if @submission.icon.attached? %>
+        <%= image_tag @submission.icon, class: "rounded", style: "height: 64px; width: 64px; object-fit: cover;" %>
+      <% end %>
+    </div>
+  </div>
+  
+  <div class="mb-3">
+    <%= render "interaction_buttons", submission: @submission %>
+  </div>
+  
+  <div class="mb-4">
+    <h2 class="h5"><%= t("submissions.show.description") %></h2>
+    <p><%= simple_format(@submission.submission_description.presence || @submission.author_note) %></p>
+  </div>
+  
+  <% if @submission.author_note.present? && @submission.submission_description.present? %>
+    <div class="mb-4">
+      <h2 class="h5"><%= t("submissions.show.author_note") %></h2>
+      <p><%= simple_format(@submission.author_note) %></p>
+    </div>
+  <% end %>
+  
+  <% if @submission.picture.attached? %>
+    <div class="mb-4">
+      <h2 class="h5"><%= t("submissions.show.picture") %></h2>
+      <%= image_tag @submission.picture, class: "img-fluid rounded" %>
+    </div>
+  <% end %>
+  
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h2 class="h5 mb-0"><%= t("submissions.show.tags_title") %></h2>
+      <% if @submission.user == current_user %>
+        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#add-tag-form">
+          <%= t("submissions.actions.add_tag") %>
+        </button>
+      <% end %>
+    </div>
+    <div id="add-tag-form" class="collapse mb-3">
+      <div class="card card-body">
+        <h3 class="h6 mb-3"><%= t("submissions.show.select_tag") %></h3>
+        <% @available_tags.group_by(&:tag_type).each do |tag_type, tags| %>
+          <div class="mb-3">
+            <strong class="text-muted"><%= t("tags.tag_types.#{tag_type}") %>:</strong>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+              <% tags.each do |tag| %>
+                <% unless @submission_tags.include?(tag) %>
+                  <%= button_to tag.display_name,
+                                add_tag_submission_path(@submission, tag_id: tag.id),
+                                method: :post,
+                                class: "btn btn-sm btn-outline-secondary" %>
+                <% end %>
+            <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <% if @submission_tags.any? %>
+      <div class="d-flex flex-wrap gap-2">
+        <% @submission_tags.each do |tag| %>
+          <span class="badge <%= tag_badge_class(tag.tag_type) %> d-flex align-items-center gap-1">
+            <%= tag.display_name %>
+            <% if @submission.user == current_user %>
+              <%= button_to "×",
+                            remove_tag_submission_path(@submission, tag_id: tag.id),
+                            method: :delete,
+                            class: "btn btn-sm p-0 border-0 bg-transparent text-white",
+                            style: "font-size: 1.2em; line-height: 1;",
+                            title: t("submissions.actions.remove_tag") %>
+            <% end %>
+          </span>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-muted mb-0"><%= t("submissions.show.no_tags") %></p>
+    <% end %>
+  </div>
+
+  <div class="d-flex gap-2 mb-4">
+    <% if @submission.user == current_user %>
+      <%= link_to t("actions.edit"), edit_submission_path(@submission), class: "btn btn-outline-primary" %>
+      <%= render "shared/confirmation_modal",
+          id: "delete-submission-modal",
+          title: t("submissions.confirmations.destroy_title"),
+          message: t("submissions.confirmations.destroy_message"),
+          confirm_text: t("actions.delete"),
+          confirm_class: "btn-outline-danger",
+          form_action: submission_path(@submission),
+          form_method: :delete %>
+      <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delete-submission-modal">
+        <%= t("actions.delete") %>
+      </button>
+    <% end %>
+    <%= link_to t("actions.back"), submissions_path, class: "btn btn-secondary" %>
+  </div>
+  
+  <hr class="my-5">
+  
+  <!-- Comments Section -->
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h2 class="h5 mb-0"><%= t("submissions.show.comments_title") %></h2>
+      <span class="badge bg-secondary"><%= @comments.size %></span>
+    </div>
+    <div class="mb-2">
+      <div class="btn-group btn-group-sm" role="group">
+        <%= link_to t("comments.sort.recent"), submission_path(@submission, sort_by: "recent"), class: "btn btn-outline-secondary #{@sort_by == 'recent' ? 'active' : ''}" %>
+        <%= link_to t("comments.sort.most_upvoted"), submission_path(@submission, sort_by: "most_upvoted"), class: "btn btn-outline-secondary #{@sort_by == 'most_upvoted' ? 'active' : ''}" %>
+        <%= link_to t("comments.sort.trending"), submission_path(@submission, sort_by: "trending"), class: "btn btn-outline-secondary #{@sort_by == 'trending' ? 'active' : ''}" %>
+      </div>
+    </div>
+    <div class="mb-3">
+      <%= render "comments/form", commentable: @submission, comment: @new_comment, submit_label: t("comments.actions.post_comment"), placeholder: t("comments.form.comment_placeholder") %>
+    </div>
+    <% @comments.each do |comment| %>
+      <%= render "comments/comment", comment: comment, depth: 0, allow_replies: true %>
+    <% end %>
+  </div>
+  
+  <hr class="my-4">
+  
+  <!-- Flags Section -->
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h2 class="h6 mb-0"><%= t("submissions.show.flags_title") %></h2>
+      <button class="btn btn-sm btn-outline-warning" data-bs-toggle="collapse" data-bs-target="#flag-form"><%= t("comments.actions.add_flag") %></button>
+    </div>
+    <div class="mb-2">
+      <div class="btn-group btn-group-sm" role="group">
+        <%= link_to t("comments.sort.recent"), submission_path(@submission, sort_by_flags: "recent"), class: "btn btn-outline-secondary #{@sort_by_flags == 'recent' ? 'active' : ''}" %>
+        <%= link_to t("comments.sort.most_upvoted"), submission_path(@submission, sort_by_flags: "most_upvoted"), class: "btn btn-outline-secondary #{@sort_by_flags == 'most_upvoted' ? 'active' : ''}" %>
+        <%= link_to t("comments.sort.trending"), submission_path(@submission, sort_by_flags: "trending"), class: "btn btn-outline-secondary #{@sort_by_flags == 'trending' ? 'active' : ''}" %>
+      </div>
+    </div>
+    <div id="flag-form" class="collapse mb-3">
+      <div class="card card-body">
+        <%= render "comments/form",
+                 commentable: @submission,
+                 comment: @new_flag,
+                 submit_label: t("comments.actions.submit_flag"),
+                 placeholder: t("comments.form.flag_placeholder"),
+                 show_cancel: true,
+                 collapse_target: "flag-form" %>
+      </div>
+    </div>
+    <% if @flags.any? %>
+      <div class="list-group">
+        <% @flags.each do |flag| %>
+          <div class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <p class="mb-1 fw-semibold"><%= display_user_name(flag.user) %></p>
+              <p class="mb-2"><%= simple_format(flag.comment) %></p>
+              <p class="text-secondary small mb-0"><%= l(flag.created_at, format: :short) %></p>
+            </div>
+            <div class="d-flex flex-column align-items-end gap-2">
+              <%= button_to upvote_submission_comment_path(@submission, flag),
+                          method: :post,
+                          class: "btn btn-sm #{flag.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'}",
+                          title: flag.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
+                <span>↑</span> <span><%= flag.upvote_count %></span>
+              <% end %>
+              <% if flag.solved? %>
+                <span class="badge bg-success"><%= t("comments.labels.resolved") %></span>
+              <% else %>
+                <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
+              <% end %>
+              <% if @submission.user == current_user %>
+                <%= button_to t("comments.actions.toggle_resolve"),
+                            resolve_submission_comment_path(@submission, flag),
+                            method: :patch,
+                            class: "btn btn-sm btn-outline-primary" %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="alert alert-light border"><%= t("comments.empty.flags") %></div>
+    <% end %>
+  </div>
+  
+  <hr class="my-4">
+  
+  <!-- Bugs Section -->
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h2 class="h6 mb-0"><%= t("submissions.show.bugs_title") %></h2>
+      <button class="btn btn-sm btn-outline-danger" data-bs-toggle="collapse" data-bs-target="#bug-form"><%= t("comments.actions.add_bug") %></button>
+    </div>
+    <div class="mb-2">
+      <div class="btn-group btn-group-sm" role="group">
+        <%= link_to t("comments.sort.recent"), submission_path(@submission, sort_by_bugs: "recent"), class: "btn btn-outline-secondary #{@sort_by_bugs == 'recent' ? 'active' : ''}" %>
+        <%= link_to t("comments.sort.most_upvoted"), submission_path(@submission, sort_by_bugs: "most_upvoted"), class: "btn btn-outline-secondary #{@sort_by_bugs == 'most_upvoted' ? 'active' : ''}" %>
+        <%= link_to t("comments.sort.trending"), submission_path(@submission, sort_by_bugs: "trending"), class: "btn btn-outline-secondary #{@sort_by_bugs == 'trending' ? 'active' : ''}" %>
+      </div>
+    </div>
+    <div id="bug-form" class="collapse mb-3">
+      <div class="card card-body">
+        <%= render "comments/form",
+                 commentable: @submission,
+                 comment: @new_bug,
+                 submit_label: t("comments.actions.submit_bug"),
+                 placeholder: t("comments.form.bug_placeholder"),
+                 show_cancel: true,
+                 collapse_target: "bug-form" %>
+      </div>
+    </div>
+    <% if @bugs.any? %>
+      <div class="list-group">
+        <% @bugs.each do |bug| %>
+          <div class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+              <p class="mb-1 fw-semibold"><%= display_user_name(bug.user) %></p>
+              <p class="mb-2"><%= simple_format(bug.comment) %></p>
+              <p class="text-secondary small mb-0"><%= l(bug.created_at, format: :short) %></p>
+            </div>
+            <div class="d-flex flex-column align-items-end gap-2">
+              <%= button_to upvote_submission_comment_path(@submission, bug),
+                          method: :post,
+                          class: "btn btn-sm #{bug.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'}",
+                          title: bug.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
+                <span>↑</span> <span><%= bug.upvote_count %></span>
+              <% end %>
+              <% if bug.solved? %>
+                <span class="badge bg-success"><%= t("comments.labels.resolved") %></span>
+              <% else %>
+                <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
+              <% end %>
+              <% if @submission.user == current_user %>
+                <%= button_to t("comments.actions.toggle_resolve"),
+                            resolve_submission_comment_path(@submission, bug),
+                            method: :patch,
+                            class: "btn btn-sm btn-outline-primary" %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="alert alert-light border"><%= t("comments.empty.bugs") %></div>
+    <% end %>
+  </div>
+</div>
+

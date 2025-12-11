@@ -1,0 +1,21 @@
+<div class="p-2">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 m-0"><%= t("submissions.index.title") %></h1>
+    <% if user_signed_in? %>
+      <%= link_to t("submissions.index.new_submission"), new_submission_path, class: "btn btn-primary" %>
+    <% end %>
+  </div>
+  
+  <% if @submissions.any? %>
+    <div class="row row-cols-1 row-cols-md-2 g-3">
+      <% @submissions.each do |submission| %>
+        <div class="col">
+          <%= render "submission_card", submission: submission %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info"><%= t("submissions.index.empty_state") %></div>
+  <% end %>
+</div>
+

@@ -1,0 +1,60 @@
+<div class="card h-100 shadow-sm">
+  <div class="card-body">
+    <div class="d-flex align-items-start justify-content-between mb-2">
+      <div class="flex-grow-1">
+        <h2 class="h5 mb-1">
+          <%= link_to submission.submission_name.presence || submission.submission_url, 
+                      submission_path(submission), 
+                      class: "text-decoration-none" %>
+        </h2>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-primary" style="font-size: 0.75rem;">
+            <%= t("submissions.types.#{submission.submission_type}") %>
+          </span>
+          <% if submission.status != "completed" %>
+            <span class="badge bg-warning text-dark" style="font-size: 0.75rem;">
+              <%= t("submissions.statuses.#{submission.status}") %>
+            </span>
+          <% end %>
+        </div>
+      </div>
+      <% if submission.icon.attached? %>
+        <%= image_tag submission.icon, class: "rounded", style: "height: 48px; width: 48px; object-fit: cover;" %>
+      <% end %>
+    </div>
+    
+    <p class="text-muted mb-2">
+      <%= truncate(submission.submission_description.presence || submission.author_note, length: 140) %>
+    </p>
+    
+    <% if submission.tool.present? %>
+      <p class="small mb-2 text-secondary">
+        <%= t("submissions.about_tool", tool: link_to(submission.tool.tool_name, tool_path(submission.tool), class: "text-decoration-none")).html_safe %>
+      </p>
+    <% end %>
+    
+    <% if submission.tags.any? %>
+      <div class="mb-2 d-flex flex-wrap gap-1">
+        <% submission.tags.limit(5).each do |tag| %>
+          <span class="badge <%= tag_badge_class(tag.tag_type) %>" style="font-size: 0.75rem;">
+            <%= tag.display_name %>
+          </span>
+        <% end %>
+        <% if submission.tags.count > 5 %>
+          <span class="badge bg-secondary" style="font-size: 0.75rem;">
+            +<%= submission.tags.count - 5 %>
+          </span>
+        <% end %>
+      </div>
+    <% end %>
+    
+    <p class="small mb-2 text-secondary">
+      <%= t("submissions.by_user", user: link_to(display_user_name(submission.user), profile_path(submission.user.username), class: "text-decoration-none")).html_safe %>
+    </p>
+    
+    <div>
+      <%= render "submissions/interaction_buttons", submission: submission %>
+    </div>
+  </div>
+</div>
+

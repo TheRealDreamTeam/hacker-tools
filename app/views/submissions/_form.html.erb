@@ -1,0 +1,28 @@
+<%= simple_form_for(@submission) do |f| %>
+  <div class="row g-3">
+    <div class="col-12">
+      <%= f.input :submission_url, label: t("submissions.form.submission_url"), required: true,
+                  hint: t("submissions.form.submission_url_hint") %>
+    </div>
+
+    <div class="col-12">
+      <%= f.input :author_note, as: :text, label: t("submissions.form.author_note"),
+                  input_html: { rows: 3 },
+                  hint: t("submissions.form.author_note_hint") %>
+    </div>
+
+    <div class="col-12">
+      <%= f.association :tool, collection: Tool.order(:tool_name), 
+                        label: t("submissions.form.tool"),
+                        hint: t("submissions.form.tool_hint"),
+                        prompt: t("submissions.form.tool_prompt"),
+                        input_html: { class: "form-select" } %>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex gap-2">
+    <%= f.button :submit, class: "btn btn-primary" %>
+    <%= link_to t("actions.cancel"), submissions_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>
+

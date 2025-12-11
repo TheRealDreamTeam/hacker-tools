@@ -1,0 +1,8 @@
+<div class="p-2">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 m-0"><%= t("submissions.new.title") %></h1>
+    <%= link_to t("actions.back"), submissions_path, class: "btn btn-secondary" %>
+  </div>
+  <%= render "form", submission: @submission %>
+</div>
+
