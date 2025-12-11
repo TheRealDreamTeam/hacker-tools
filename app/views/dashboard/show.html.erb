@@ -259,8 +259,12 @@
                   <% @followed_lists.each do |list| %>
                     <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
                       <div>
-                        <div class="fw-semibold"><%= list.list_name %></div>
-                        <div class="text-muted small"><%= t("dashboard.sections.shared.by_user", username: list.user.username) %></div>
+                        <div class="fw-semibold">
+                          <%= link_to list.list_name, list_path(list), class: "text-decoration-none" %>
+                        </div>
+                        <div class="text-muted small">
+                          <%= t("dashboard.sections.shared.by_user", username: link_to(list.user.username, profile_path(list.user.username), class: "text-decoration-none")).html_safe %>
+                        </div>
                       </div>
                       <span class="badge bg-info-subtle text-info"><%= t("dashboard.sections.follows.badge") %></span>
                     </li>

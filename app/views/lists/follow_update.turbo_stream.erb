@@ -1,0 +1,28 @@
+<%# Update the follow button - replace the entire container to ensure structure consistency %>
+<%= turbo_stream.replace dom_id(@list, 'follow') do %>
+  <div id="<%= dom_id(@list, 'follow') %>" class="follow-button-container ms-3">
+    <% if current_user.follows?(@list) %>
+      <%= button_to unfollow_list_path(@list),
+          method: :delete,
+          class: "btn btn-outline-secondary btn-sm",
+          data: { turbo: true } do %>
+        <%= t("lists.follow.unfollow") %>
+      <% end %>
+    <% else %>
+      <%= button_to follow_list_path(@list),
+          method: :post,
+          class: "btn btn-primary btn-sm",
+          data: { turbo: true } do %>
+        <%= t("lists.follow.follow") %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
+<%# Update the follower count in the list card %>
+<%= turbo_stream.update "#{dom_id(@list, 'follow')}-count" do %>
+  <% if @list.follower_count > 0 %>
+    • <%= t("profiles.show.followers") %>: <%= @list.follower_count %>
+  <% end %>
+<% end %>
+

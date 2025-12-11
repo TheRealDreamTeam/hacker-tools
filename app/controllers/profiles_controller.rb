@@ -26,6 +26,13 @@ class ProfilesController < ApplicationController
       .order(created_at: :desc)
       .limit(20)
     
+    # Public lists owned by this user
+    @public_lists = @user.lists
+      .public_lists
+      .includes(:user, :tools)
+      .order(created_at: :desc)
+      .limit(20)
+    
     # Followers/Following counts - Following only includes users followed
     @followers_count = @user.followers.count
     @following_count = @user.followed_users.count
@@ -33,6 +40,16 @@ class ProfilesController < ApplicationController
     # Check if current user is following this profile user (if signed in)
     @is_following = user_signed_in? && current_user.follows?(@user)
     @is_own_profile = user_signed_in? && current_user == @user
+    
+    # Preload follow states for lists (if signed in) to avoid N+1 queries
+    if user_signed_in? && @public_lists.any?
+      followed_list_ids = current_user.follows
+        .where(followable_type: "List", followable_id: @public_lists.map(&:id))
+        .pluck(:followable_id)
+      @followed_list_ids = Set.new(followed_list_ids)
+    else
+      @followed_list_ids = Set.new
+    end
   end
 
   # POST /u/:username/follow

@@ -84,6 +84,11 @@
             <%= t("profiles.show.tabs.upvotes") %> (<%= @public_upvoted_tools.count %>)
           </button>
         </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="lists-tab" data-bs-toggle="tab" data-bs-target="#lists" type="button" role="tab">
+            <%= t("profiles.show.tabs.lists") %> (<%= @public_lists.count %>)
+          </button>
+        </li>
       </ul>
 
       <div class="tab-content" id="profileTabContent">
@@ -172,6 +177,19 @@
             </div>
           <% else %>
             <p class="text-muted"><%= t("profiles.show.tabs.no_upvotes") %></p>
+          <% end %>
+        </div>
+
+        <!-- Lists Tab -->
+        <div class="tab-pane fade" id="lists" role="tabpanel">
+          <% if @public_lists.any? %>
+            <div class="list-group">
+              <% @public_lists.each do |list| %>
+                <%= render "profiles/list_card", list: list %>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-muted"><%= t("profiles.show.tabs.no_lists") %></p>
           <% end %>
         </div>
       </div>

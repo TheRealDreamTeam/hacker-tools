@@ -3,13 +3,21 @@
 
   <p>
     <strong>Visibility:</strong>
-    <%= @list.visibility == 0 ? "Private" : "Public" %>
+    <%= @list.visibility_private? ? "Private" : "Public" %>
+    <% unless user_signed_in? && @list.user == current_user %>
+      • <%= t("lists.show.by_user", username: link_to(@list.user.username, profile_path(@list.user.username), class: "text-decoration-none")).html_safe %>
+    <% end %>
   </p>
 
   <div class="mb-3">
+    <% if user_signed_in? && @list.user == current_user %>
     <%= link_to "Back to lists", lists_path, class: "btn btn-secondary" %>
     <%= link_to "Edit", edit_list_path(@list), class: "btn btn-primary ms-2" %>
     <%= link_to "Add tool", tools_path, class: "btn btn-outline-primary ms-2" %>
+    <% else %>
+      <%= link_to "Back", :back, class: "btn btn-secondary" %>
+      <%= link_to t("profiles.show.tabs.by_user", username: @list.user.username), profile_path(@list.user.username), class: "btn btn-outline-secondary ms-2" %>
+    <% end %>
   </div>
 
   <h2 class="h5 mb-3">Tools in this list</h2>
@@ -18,9 +26,11 @@
       <% @list.tools.each do |tool| %>
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <%= link_to tool.tool_name, tool_path(tool) %>
+          <% if user_signed_in? && @list.user == current_user %>
           <%= button_to "Remove", remove_tool_list_path(@list, tool_id: tool.id), 
                         method: :delete, 
                         class: "btn btn-sm btn-outline-danger" %>
+          <% end %>
         </li>
       <% end %>
     </ul>

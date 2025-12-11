@@ -45,6 +45,8 @@ Rails.application.routes.draw do
     resources :lists do
       post :add_tool, on: :member
       delete :remove_tool, on: :member
+      post :follow, on: :member, to: "lists#follow"
+      delete :unfollow, on: :member, to: "lists#unfollow"
       collection do
         post :add_tool_to_multiple
       end

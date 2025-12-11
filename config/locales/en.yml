@@ -152,10 +152,13 @@ en:
         posts: "Posts"
         comments: "Comments"
         upvotes: "Upvotes"
+        lists: "Lists"
         no_posts: "No public tools yet."
         no_comments: "No comments yet."
         no_upvotes: "No upvoted tools yet."
+        no_lists: "No public lists yet."
         by_user: "by %{username}"
+        tools_count: "%{count} tools"
     follow:
       follow: "Follow"
       unfollow: "Unfollow"
@@ -331,6 +334,17 @@ en:
       title: "Update lists"
       select_message: "Select lists to add this tool to, or unselect to remove:"
       submit_button: "Update lists"
+    show:
+      not_found: "List not found"
+      access_denied: "You don't have permission to view this list"
+      by_user: "by %{username}"
+    follow:
+      follow: "Follow"
+      unfollow: "Unfollow"
+      followed: "You are now following %{list_name}"
+      unfollowed: "You are no longer following %{list_name}"
+      cannot_follow_own: "You cannot follow your own list"
+      list_not_found: "List not found"
 
   footer:
     about: "About"

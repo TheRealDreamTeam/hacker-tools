@@ -97,9 +97,19 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ### List
 - **Purpose**: Curated collection of tools for a user.
-- **Attributes**: `list_name` (string, required), `list_type` (integer enum), `visibility` (integer enum)
-- **Associations**: `belongs_to :user`; `has_many :tools, through: :list_tools`
-- **Validations**: Presence on name; enums on type/visibility.
+- **Attributes**: `list_name` (string, required), `list_type` (integer enum), `visibility` (integer enum: private/public)
+- **Associations**: 
+  - `belongs_to :user`
+  - `has_many :tools, through: :list_tools`
+  - `has_many :follows, as: :followable` (polymorphic)
+  - `has_many :followers, through: :follows, source: :user`
+- **Validations**: Presence on name; uniqueness of name scoped to user; enums on type/visibility.
+- **Scopes**: 
+  - `public_lists` - Returns only public lists (visibility = public)
+  - `recent` - Orders by creation date descending
+- **Helper Methods**:
+  - `follower_count` - Returns count of users following this list
+  - `followed_by?(user)` - Checks if a user is following this list
 
 ### Comment
 - **Purpose**: Threaded discussion on a tool.
@@ -139,7 +149,10 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Purpose**: Unified following system for users, tools, lists, and tags.
 - **Attributes**: `user_id`, `followable_type`, `followable_id`
 - **Associations**: `belongs_to :user`; `belongs_to :followable, polymorphic: true`
-- **Validations**: Uniqueness on `[user_id, followable_type, followable_id]`
+- **Validations**: 
+  - Uniqueness on `[user_id, followable_type, followable_id]`
+  - `cannot_follow_self` - Prevents users from following themselves (when followable_type is "User")
+  - `cannot_follow_own_list` - Prevents users from following their own lists (when followable_type is "List")
 - **Behavior**: Replaces tool subscriptions; used for following users/tools/lists/tags.
 
 ### CommentUpvote (join)
@@ -269,6 +282,8 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Description**: User profile page and account settings management
 - **Features**:
   - Profile display page showing username, avatar, and bio
+  - Tabbed interface showing public tools, comments, upvotes, and lists
+  - Public lists display with follow/unfollow functionality
   - Account settings with separate sections for different updates
   - Avatar management (upload, delete) - no password required
   - Bio management - no password required
@@ -276,7 +291,9 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Password changes - password required
   - Account soft deletion with confirmation modal
 - **Routes**:
-  - `GET /profile` → `profiles#show` (profile display page)
+  - `GET /u/:username` → `profiles#show` (public profile display page)
+  - `POST /u/:username/follow` → `profiles#follow` (follow user)
+  - `DELETE /u/:username/unfollow` → `profiles#unfollow` (unfollow user)
   - `GET /dashboard` → `dashboard#show` (private dashboard)
   - `GET /account_settings` → `account_settings#show` (account settings)
   - `PATCH /account_settings/update_avatar` → `account_settings#update_avatar`
@@ -290,7 +307,12 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - `DashboardController` - Private, read-only dashboard slices for the current user
   - `AccountSettingsController` - Custom controller for account management (independent from Devise)
 - **Views**:
-  - Profile page (`profiles/show.html.erb`) - Read-only profile display (no edit link)
+  - Profile page (`profiles/show.html.erb`) - Read-only profile display with tabbed interface:
+    - Posts tab: Public tools created by the user
+    - Comments tab: Comments made by the user on public tools
+    - Upvotes tab: Public tools upvoted by the user
+    - Lists tab: Public lists created by the user with follow/unfollow buttons
+  - List card partial (`profiles/_list_card.html.erb`) - Displays list name, tool count, creation date, follower count, and follow button
   - Dashboard (`dashboard/show.html.erb`) - Overview cards (counts) and recent slices for tools, lists, discussions, favorites, follows
   - Account settings (`account_settings/show.html.erb`) - Split into 5 sections:
     1. Avatar update (with delete button)
@@ -309,6 +331,16 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Signs out user after deletion
   - Deleted users cannot log in (blocked via authentication)
   - Username/email become available for new registrations immediately
+- **Lists Management**:
+  - Lists can be created, edited, and deleted by their owners
+  - Lists have visibility settings (private/public)
+  - Public lists are displayed on user profile pages
+  - Users can follow/unfollow public lists (except their own)
+  - Follow/unfollow actions use Turbo Streams for real-time updates
+  - Routes:
+    - `POST /lists/:id/follow` → `lists#follow` (follow a public list)
+    - `DELETE /lists/:id/unfollow` → `lists#unfollow` (unfollow a list)
+  - Turbo Stream template (`lists/follow_update.turbo_stream.erb`) updates follow button and follower count in real time
 - **UI/UX**:
   - Profile page shows avatar (or gray placeholder with initial) and no edit CTA (settings moved to nav)
   - Dashboard is a private view; public profile to be added later
@@ -317,6 +349,8 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Confirmation modal for destructive actions (avatar deletion, account deletion)
   - Consistent styling with design system (12px rounded corners, proper spacing)
   - Deleted users display as "Deleted Account" throughout the application
+  - List cards on profile page show list name, tool count, creation date, follower count, and follow button
+  - Follow buttons only appear for signed-in users viewing lists they don't own
 
 ## UI Components
 
