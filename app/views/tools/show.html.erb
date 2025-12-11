@@ -3,7 +3,13 @@
     <div>
       <h1 class="h3 mb-2"><%= @tool.tool_name %></h1>
       <p class="text-secondary mb-1 d-flex align-items-center gap-2">
-        <span><%= t("tools.show.owner", owner: display_user_name(@tool.user)) %></span>
+        <span>
+          <% if @tool.user && !@tool.user.deleted? %>
+            <%= t("tools.show.owner", owner: link_to(display_user_name(@tool.user), profile_path(@tool.user.username), class: "text-decoration-none")).html_safe %>
+          <% else %>
+            <%= t("tools.show.owner", owner: display_user_name(@tool.user)) %>
+          <% end %>
+        </span>
         <%= render "tools/read_state", tool: @tool %>
       </p>
       <% if @tool.tool_url.present? %>

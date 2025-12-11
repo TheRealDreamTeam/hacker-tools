@@ -144,6 +144,24 @@ en:
       title: "Profile"
       no_bio: "No bio yet. Edit your account to add one."
       edit_account: "Edit Account"
+      joined: "Joined"
+      followers: "Followers"
+      following: "Following"
+      user_not_found: "User not found"
+      tabs:
+        posts: "Posts"
+        comments: "Comments"
+        upvotes: "Upvotes"
+        no_posts: "No public tools yet."
+        no_comments: "No comments yet."
+        no_upvotes: "No upvoted tools yet."
+        by_user: "by %{username}"
+    follow:
+      follow: "Follow"
+      unfollow: "Unfollow"
+      followed: "You are now following %{username}"
+      unfollowed: "You are no longer following %{username}"
+      cannot_follow_self: "You cannot follow yourself"
 
   dashboard:
     title: "Dashboard"
@@ -180,6 +198,17 @@ en:
         link: "Browse"
         empty: "No follows yet."
         badge: "Following"
+        tabs:
+          tools: "Tools"
+          lists: "Lists"
+          tags: "Tags"
+          users: "Users"
+        empty_tools: "No followed tools yet."
+        empty_lists: "No followed lists yet."
+        empty_tags: "No followed tags yet."
+        empty_users: "No followed users yet."
+        no_description: "No description"
+        no_bio: "No bio"
   
   # Account Settings (custom, independent from Devise)
   account_settings:

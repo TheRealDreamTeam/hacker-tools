@@ -104,6 +104,18 @@ You are deeply familiar with and apply best practices for:
 - Implement proper loading states in Stimulus controllers
 - Handle race conditions (multiple users updating simultaneously)
 - Use `broadcast_replace`, `broadcast_append`, `broadcast_remove` appropriately
+- **CRITICAL: Turbo Stream update vs replace**: 
+  - Use `turbo_stream.update` when updating only the content inside an element (e.g., text, numbers, innerHTML)
+  - Use `turbo_stream.replace` when replacing the entire element structure (e.g., form elements, buttons with `button_to`)
+  - **Why**: `replace` replaces the entire element, which can break structure and cause subsequent updates to fail if the replacement doesn't exactly match the original structure. `update` only changes innerHTML, preserving the element and its attributes, making it more reliable for simple content updates
+  - **Example**: For updating a count number, use `update` on the element containing the number, not `replace` on a parent container
+  - **Best Practice**: When in doubt, use `update` for simple content changes; reserve `replace` for structural changes
+  - **CRITICAL: Structure Consistency for `replace`**: When using `turbo_stream.replace`, the replacement structure MUST exactly match the original:
+    - Include the same wrapper elements (divs, containers) with the same IDs and classes
+    - The element being replaced must have the same ID in both the initial view and the Turbo Stream template
+    - Preserve all wrapper divs, classes, and attributes to ensure subsequent updates work correctly
+    - **Example**: If initial view has `<div id="follow-button" class="container">...</div>`, the Turbo Stream template must also include `<div id="follow-button" class="container">...</div>` in the replace block
+    - **Failure pattern**: If the structure differs, the first update may work but subsequent updates will fail because the DOM structure no longer matches what Turbo expects
 
 ### Important Considerations
 - Provide complete SEO-friendly metadata on pages (title/description, canonical URLs) and Open Graph/Twitter card tags for shareability.

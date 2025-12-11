@@ -38,6 +38,8 @@ Rails.application.routes.draw do
 
     # Defines the root path route ("/")
     # root "posts#index"
-    get "profile" => "profiles#show", as: :profile
+    get "u/:username" => "profiles#show", as: :profile, constraints: { username: /[^\/]+/ }
+    post "u/:username/follow" => "profiles#follow", as: :follow_user
+    delete "u/:username/unfollow" => "profiles#unfollow", as: :unfollow_user
   end
 end

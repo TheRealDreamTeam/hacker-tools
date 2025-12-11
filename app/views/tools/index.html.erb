@@ -33,7 +33,11 @@
                 </div>
               <% end %>
               <p class="small mb-2 text-secondary">
-                <%= t("tools.index.owner", owner: display_user_name(tool.user)) %>
+                <% if tool.user && !tool.user.deleted? %>
+                  <%= t("tools.index.owner", owner: link_to(display_user_name(tool.user), profile_path(tool.user.username), class: "text-decoration-none")).html_safe %>
+                <% else %>
+                  <%= t("tools.index.owner", owner: display_user_name(tool.user)) %>
+                <% end %>
               </p>
               <div>
                 <%= render "tools/interaction_buttons", tool: tool %>

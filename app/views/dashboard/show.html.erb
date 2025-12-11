@@ -43,7 +43,7 @@
       <div class="card h-100">
         <div class="card-body">
           <p class="text-muted mb-1"><%= t("dashboard.metrics.follows") %></p>
-          <p class="h4 mb-0"><%= @user.followed_tools.count %></p>
+          <p class="h4 mb-0"><%= @user.follows.count %></p>
         </div>
       </div>
     </div>
@@ -160,21 +160,161 @@
           <%= link_to t("dashboard.sections.follows.link"), tools_path, class: "small" %>
         </div>
         <div class="card-body">
-          <% if @followed_tools.any? %>
-            <ul class="list-group list-group-flush">
-              <% @followed_tools.each do |tool| %>
-                <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
-                  <div>
-                    <div class="fw-semibold"><%= link_to tool.tool_name, tool_path(tool) %></div>
-                    <div class="text-muted small"><%= t("dashboard.sections.shared.by_user", username: tool.user.username) %></div>
-                  </div>
-                  <span class="badge bg-info-subtle text-info"><%= t("dashboard.sections.follows.badge") %></span>
-                </li>
+          <%# Determine which tab should be active: first tab with content, or first tab if all empty %>
+          <% active_tab = if @followed_tools.any?
+                           "tools"
+                         elsif @followed_lists.any?
+                           "lists"
+                         elsif @followed_tags.any?
+                           "tags"
+                         elsif @followed_users.any?
+                           "users"
+                         else
+                           "tools" # Default to tools tab if all are empty
+                         end %>
+          
+          <!-- Bootstrap tabs for different follow types -->
+          <ul class="nav nav-tabs mb-3" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link <%= 'active' if active_tab == 'tools' %>" 
+                      id="tools-tab" 
+                      data-bs-toggle="tab" 
+                      data-bs-target="#tools-pane" 
+                      type="button" 
+                      role="tab" 
+                      aria-controls="tools-pane" 
+                      aria-selected="<%= active_tab == 'tools' %>">
+                <%= t("dashboard.sections.follows.tabs.tools") %>
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link <%= 'active' if active_tab == 'lists' %>" 
+                      id="lists-tab" 
+                      data-bs-toggle="tab" 
+                      data-bs-target="#lists-pane" 
+                      type="button" 
+                      role="tab" 
+                      aria-controls="lists-pane" 
+                      aria-selected="<%= active_tab == 'lists' %>">
+                <%= t("dashboard.sections.follows.tabs.lists") %>
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link <%= 'active' if active_tab == 'tags' %>" 
+                      id="tags-tab" 
+                      data-bs-toggle="tab" 
+                      data-bs-target="#tags-pane" 
+                      type="button" 
+                      role="tab" 
+                      aria-controls="tags-pane" 
+                      aria-selected="<%= active_tab == 'tags' %>">
+                <%= t("dashboard.sections.follows.tabs.tags") %>
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link <%= 'active' if active_tab == 'users' %>" 
+                      id="users-tab" 
+                      data-bs-toggle="tab" 
+                      data-bs-target="#users-pane" 
+                      type="button" 
+                      role="tab" 
+                      aria-controls="users-pane" 
+                      aria-selected="<%= active_tab == 'users' %>">
+                <%= t("dashboard.sections.follows.tabs.users") %>
+              </button>
+            </li>
+          </ul>
+
+          <!-- Tab panes -->
+          <div class="tab-content">
+            <!-- Tools Tab -->
+            <div class="tab-pane fade <%= 'show active' if active_tab == 'tools' %>" 
+                 id="tools-pane" 
+                 role="tabpanel" 
+                 aria-labelledby="tools-tab">
+              <% if @followed_tools.any? %>
+                <ul class="list-group list-group-flush">
+                  <% @followed_tools.each do |tool| %>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <div>
+                        <div class="fw-semibold"><%= link_to tool.tool_name, tool_path(tool) %></div>
+                        <div class="text-muted small"><%= t("dashboard.sections.shared.by_user", username: tool.user.username) %></div>
+                      </div>
+                      <span class="badge bg-info-subtle text-info"><%= t("dashboard.sections.follows.badge") %></span>
+                    </li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <p class="text-muted mb-0"><%= t("dashboard.sections.follows.empty_tools") %></p>
               <% end %>
-            </ul>
-          <% else %>
-            <p class="text-muted mb-0"><%= t("dashboard.sections.follows.empty") %></p>
-          <% end %>
+            </div>
+
+            <!-- Lists Tab -->
+            <div class="tab-pane fade <%= 'show active' if active_tab == 'lists' %>" 
+                 id="lists-pane" 
+                 role="tabpanel" 
+                 aria-labelledby="lists-tab">
+              <% if @followed_lists.any? %>
+                <ul class="list-group list-group-flush">
+                  <% @followed_lists.each do |list| %>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <div>
+                        <div class="fw-semibold"><%= list.list_name %></div>
+                        <div class="text-muted small"><%= t("dashboard.sections.shared.by_user", username: list.user.username) %></div>
+                      </div>
+                      <span class="badge bg-info-subtle text-info"><%= t("dashboard.sections.follows.badge") %></span>
+                    </li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <p class="text-muted mb-0"><%= t("dashboard.sections.follows.empty_lists") %></p>
+              <% end %>
+            </div>
+
+            <!-- Tags Tab -->
+            <div class="tab-pane fade <%= 'show active' if active_tab == 'tags' %>" 
+                 id="tags-pane" 
+                 role="tabpanel" 
+                 aria-labelledby="tags-tab">
+              <% if @followed_tags.any? %>
+                <ul class="list-group list-group-flush">
+                  <% @followed_tags.each do |tag| %>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <div>
+                        <div class="fw-semibold"><%= tag.tag_name %></div>
+                        <div class="text-muted small"><%= tag.tag_description.presence || t("dashboard.sections.follows.no_description") %></div>
+                      </div>
+                      <span class="badge bg-info-subtle text-info"><%= t("dashboard.sections.follows.badge") %></span>
+                    </li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <p class="text-muted mb-0"><%= t("dashboard.sections.follows.empty_tags") %></p>
+              <% end %>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="tab-pane fade <%= 'show active' if active_tab == 'users' %>" 
+                 id="users-pane" 
+                 role="tabpanel" 
+                 aria-labelledby="users-tab">
+              <% if @followed_users.any? %>
+                <ul class="list-group list-group-flush">
+                  <% @followed_users.each do |user| %>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                      <div>
+                        <div class="fw-semibold"><%= link_to user.username, profile_path(user.username) %></div>
+                        <div class="text-muted small"><%= user.user_bio.presence || t("dashboard.sections.follows.no_bio") %></div>
+                      </div>
+                      <span class="badge bg-info-subtle text-info"><%= t("dashboard.sections.follows.badge") %></span>
+                    </li>
+                  <% end %>
+                </ul>
+              <% else %>
+                <p class="text-muted mb-0"><%= t("dashboard.sections.follows.empty_users") %></p>
+              <% end %>
+            </div>
+          </div>
         </div>
       </div>
     </div>
