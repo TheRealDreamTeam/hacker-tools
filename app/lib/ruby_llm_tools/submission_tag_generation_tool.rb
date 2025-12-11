@@ -49,7 +49,7 @@ class SubmissionTagGenerationTool < RubyLLM::Tool
           content: context
         }
       ],
-      response_format: { type: "json_schema", json_schema: params_schema_definition.json_schema }
+      response_format: { type: "json_schema", json_schema: self.class.params_schema_definition.json_schema }
     )
     
     content = response.dig("choices", 0, "message", "content")
