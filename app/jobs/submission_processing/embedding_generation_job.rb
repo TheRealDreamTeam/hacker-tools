@@ -49,7 +49,8 @@ module SubmissionProcessing
     end
 
     # Build comprehensive text from submission content for embedding
-    # Combines: title, description, author_note, tags, and extracted content
+    # Combines: title, description, tags, and extracted content
+    # Note: author_note is excluded as it's user commentary, not content
     def build_embedding_text(submission)
       parts = []
 
@@ -58,9 +59,6 @@ module SubmissionProcessing
 
       # Add description if present
       parts << submission.submission_description if submission.submission_description.present?
-
-      # Add author note if present
-      parts << submission.author_note if submission.author_note.present?
 
       # Add tags as text
       if submission.tags.any?
