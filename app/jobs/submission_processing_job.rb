@@ -42,9 +42,8 @@ class SubmissionProcessingJob < ApplicationJob
       # Phase 3: Classification, Tool detection, Tag generation
       SubmissionProcessing::ContentEnrichmentJob.perform_now(submission_id)
       
-      # Phase 4: Embedding generation (stub for now)
-      # TODO: Implement embedding generation in future
-      # SubmissionProcessing::EmbeddingGenerationJob.perform_now(submission_id)
+      # Phase 4: Embedding generation
+      SubmissionProcessing::EmbeddingGenerationJob.perform_now(submission_id)
       
       # Phase 5: Relationship discovery (stub for now)
       # TODO: Implement relationship discovery in future
