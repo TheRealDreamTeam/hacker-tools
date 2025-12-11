@@ -10,51 +10,18 @@ class SubmissionToolDetectionTool < RubyLLM::Tool
   param :author_note, type: "string", desc: "Optional author note from the user", required: false
   param :url, type: "string", desc: "The submission URL", required: false
   
-  # Define output schema using RubyLLM::Schema
-  def self.output_schema
-    @output_schema ||= RubyLLM::Schema.create do
-      {
-        tools: {
-          type: :array,
-          items: {
-            type: :object,
-            properties: {
-              name: { type: :string, description: "The tool name" },
-              confidence: { type: :number, minimum: 0, maximum: 1, description: "Confidence score" },
-              category: { 
-                type: :string, 
-                enum: %w[language framework library tool service platform other], 
-                description: "Tool category" 
-              }
-            },
-            required: [:name, :confidence]
-          },
-          description: "Array of detected tools"
-        }
-      }
-    end
-  end
-  
   def execute(title: nil, description: nil, author_note: nil, url: nil)
     context = build_context(title, description, author_note, url)
     
     # Use gpt-4o or gpt-4.1-nano for structured output (not mini)
     chat = RubyLLM.chat(model: "gpt-4o")
     
-    # Use the schema for structured output
-    response = chat.ask(
-      context,
-      response_format: {
-        type: "json_schema",
-        json_schema: self.class.output_schema.to_json_schema
-      }
-    )
+    # Use the schema for structured output - response.content is automatically a Hash
+    response = chat.with_schema(SubmissionToolDetectionSchema).ask(context)
     
-    # RubyLLM::Schema ensures structured output
-    result = JSON.parse(response.content)
-    
+    # RubyLLM::Schema ensures structured output, response.content is already a Hash
     {
-      tools: result["tools"] || []
+      tools: response.content["tools"] || []
     }
   rescue StandardError => e
     Rails.logger.error "Tool detection error: #{e.message}"

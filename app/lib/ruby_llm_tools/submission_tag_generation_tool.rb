@@ -11,51 +11,18 @@ class SubmissionTagGenerationTool < RubyLLM::Tool
   param :submission_type, type: "string", desc: "The classified submission type", required: false
   param :url, type: "string", desc: "The submission URL", required: false
   
-  # Define output schema using RubyLLM::Schema
-  def self.output_schema
-    @output_schema ||= RubyLLM::Schema.create do
-      {
-        tags: {
-          type: :array,
-          items: {
-            type: :object,
-            properties: {
-              name: { type: :string, description: "Tag name" },
-              relevance: { type: :number, minimum: 0, maximum: 1, description: "Relevance score" },
-              category: { 
-                type: :string, 
-                enum: %w[category language framework library version platform other], 
-                description: "Tag category" 
-              }
-            },
-            required: [:name, :relevance]
-          },
-          description: "Array of generated tags (3-10 tags recommended)"
-        }
-      }
-    end
-  end
-  
   def execute(title: nil, description: nil, author_note: nil, submission_type: nil, url: nil)
     context = build_context(title, description, author_note, submission_type, url)
     
     # Use gpt-4o or gpt-4.1-nano for structured output (not mini)
     chat = RubyLLM.chat(model: "gpt-4o")
     
-    # Use the schema for structured output
-    response = chat.ask(
-      context,
-      response_format: {
-        type: "json_schema",
-        json_schema: self.class.output_schema.to_json_schema
-      }
-    )
+    # Use the schema for structured output - response.content is automatically a Hash
+    response = chat.with_schema(SubmissionTagGenerationSchema).ask(context)
     
-    # RubyLLM::Schema ensures structured output
-    result = JSON.parse(response.content)
-    
+    # RubyLLM::Schema ensures structured output, response.content is already a Hash
     {
-      tags: result["tags"] || []
+      tags: response.content["tags"] || []
     }
   rescue StandardError => e
     Rails.logger.error "Tag generation error: #{e.message}"

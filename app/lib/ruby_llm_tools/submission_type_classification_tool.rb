@@ -11,30 +11,6 @@ class SubmissionTypeClassificationTool < RubyLLM::Tool
   param :description, type: "string", desc: "The submission description (extracted or provided)", required: false
   param :author_note, type: "string", desc: "Optional author note from the user", required: false
   
-  # Define output schema using RubyLLM::Schema
-  # Documentation: https://rubyllm.com/chat/#using-rubyllm-schema-recommended
-  def self.output_schema
-    @output_schema ||= RubyLLM::Schema.create do
-      {
-        submission_type: {
-          type: :string,
-          enum: %w[article guide documentation github_repo social_post code_snippet website video podcast other],
-          description: "The classified submission type"
-        },
-        confidence: {
-          type: :number,
-          minimum: 0,
-          maximum: 1,
-          description: "Confidence score between 0 and 1"
-        },
-        reasoning: {
-          type: :string,
-          description: "Brief explanation of the classification"
-        }
-      }
-    end
-  end
-  
   # Execute the tool
   def execute(url: nil, title: nil, description: nil, author_note: nil)
     # Build context for the LLM
@@ -44,23 +20,15 @@ class SubmissionTypeClassificationTool < RubyLLM::Tool
     # Use gpt-4o or gpt-4.1-nano for structured output (not mini)
     chat = RubyLLM.chat(model: "gpt-4o")
     
-    # Use the schema for structured output
-    response = chat.ask(
-      context,
-      response_format: {
-        type: "json_schema",
-        json_schema: self.class.output_schema.to_json_schema
-      }
-    )
+    # Use the schema for structured output - response.content is automatically a Hash
+    response = chat.with_schema(SubmissionTypeClassificationSchema).ask(context)
     
     # Parse and return structured response
-    # RubyLLM::Schema ensures structured output, so we can safely parse
-    result = JSON.parse(response.content)
-    
+    # RubyLLM::Schema ensures structured output, response.content is already a Hash
     {
-      submission_type: result["submission_type"]&.to_sym,
-      confidence: result["confidence"]&.to_f,
-      reasoning: result["reasoning"]
+      submission_type: response.content["submission_type"]&.to_sym,
+      confidence: response.content["confidence"]&.to_f,
+      reasoning: response.content["reasoning"]
     }
   rescue StandardError => e
     Rails.logger.error "Classification tool error: #{e.message}"

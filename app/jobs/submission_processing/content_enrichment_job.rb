@@ -3,7 +3,7 @@ module SubmissionProcessing
   class ContentEnrichmentJob < ApplicationJob
     queue_as :default
 
-    # Load RubyLLM tools explicitly (Rails autoloading may not find them in background jobs)
+    # Load RubyLLM tools and schemas explicitly (Rails autoloading may not find them in background jobs)
     Dir[Rails.root.join("app/lib/ruby_llm_tools/*.rb")].each { |f| require f }
 
     # Public method that can be called directly (for orchestrator)
