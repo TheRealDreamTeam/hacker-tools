@@ -100,6 +100,7 @@ en:
       unauthorized: "You are not authorized to perform this action."
       upvoted: "Upvoted!"
       upvote_removed: "Upvote removed."
+      invalid_parent: "Invalid parent object for comment."
     empty:
       flags: "No flags yet."
       bugs: "No bugs reported yet."

@@ -7,7 +7,6 @@ class SubmissionsController < ApplicationController
   def index
     @submissions = Submission.includes(:user, :tool, :tags)
                              .order(created_at: :desc)
-                             .page(params[:page])
     
     # Filter by submission type if provided
     @submissions = @submissions.by_type(params[:type]) if params[:type].present?
