@@ -89,25 +89,27 @@
         <% end %>
       </div>
     </div>
-    <% if @submission_tags.any? %>
-      <div class="d-flex flex-wrap gap-2">
-        <% @submission_tags.each do |tag| %>
-          <span class="badge <%= tag_badge_class(tag.tag_type) %> d-flex align-items-center gap-1">
-            <%= tag.display_name %>
-            <% if @submission.user == current_user %>
-              <%= button_to "×",
-                            remove_tag_submission_path(@submission, tag_id: tag.id),
-                            method: :delete,
-                            class: "btn btn-sm p-0 border-0 bg-transparent text-white",
-                            style: "font-size: 1.2em; line-height: 1;",
-                            title: t("submissions.actions.remove_tag") %>
-            <% end %>
-          </span>
-        <% end %>
-      </div>
-    <% else %>
-      <p class="text-muted mb-0"><%= t("submissions.show.no_tags") %></p>
-    <% end %>
+    <div id="submission-tags">
+      <% if @submission_tags.any? %>
+        <div class="d-flex flex-wrap gap-2">
+          <% @submission_tags.each do |tag| %>
+            <span class="badge <%= tag_badge_class(tag.tag_type) %> d-flex align-items-center gap-1">
+              <%= tag.display_name %>
+              <% if @submission.user == current_user %>
+                <%= button_to "×",
+                              remove_tag_submission_path(@submission, tag_id: tag.id),
+                              method: :delete,
+                              class: "btn btn-sm p-0 border-0 bg-transparent text-white",
+                              style: "font-size: 1.2em; line-height: 1;",
+                              title: t("submissions.actions.remove_tag") %>
+              <% end %>
+            </span>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted mb-0"><%= t("submissions.show.no_tags") %></p>
+      <% end %>
+    </div>
   </div>
 
   <div class="d-flex gap-2 mb-4">

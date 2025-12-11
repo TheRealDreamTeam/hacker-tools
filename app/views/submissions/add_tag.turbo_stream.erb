@@ -1,0 +1,4 @@
+<%= turbo_stream.replace "submission-tags-#{@submission.id}" do %>
+  <%= render "submissions/tags", submission: @submission %>
+<% end %>
+
