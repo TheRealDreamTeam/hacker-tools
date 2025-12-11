@@ -26,7 +26,7 @@ class Tool < ApplicationRecord
   before_validation :set_tool_name_from_url
 
   validates :tool_name, presence: true
-  validates :tool_url, presence: true
+  # tool_url is optional - tools can exist without a URL (e.g., Elasticsearch could have multiple valid URLs)
   validate :tool_url_format
   validates :visibility, presence: true
 

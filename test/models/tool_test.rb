@@ -8,6 +8,12 @@ class ToolTest < ActiveSupport::TestCase
     assert_includes tool.errors[:tool_name], "can't be blank"
   end
 
+  test "should allow tool without tool_url" do
+    tool = Tool.new(tool_name: "Elasticsearch", tool_description: "Search engine")
+    assert tool.valid?
+    assert_nil tool.tool_url
+  end
+
   # Note: Tools are now community-owned, not user-owned
   # Users submit content (submissions) about tools, but don't own the tools themselves
 
