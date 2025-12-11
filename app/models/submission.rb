@@ -93,6 +93,11 @@ class Submission < ApplicationRecord
     duplicate_of_id.present?
   end
   
+  # Get follower count
+  def follower_count
+    follows.count
+  end
+  
   # Get metadata value
   def metadata_value(key)
     metadata[key.to_s]
