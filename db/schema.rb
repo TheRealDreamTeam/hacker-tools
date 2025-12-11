@@ -14,6 +14,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_233230) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
+  enable_extension "vector"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -121,32 +122,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_233230) do
     t.index ["tag_id"], name: "index_submission_tags_on_tag_id"
   end
 
-  create_table "submissions", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "tool_id"
-    t.integer "submission_type", default: 0, null: false
-    t.integer "status", default: 0, null: false
-    t.string "submission_url"
-    t.string "normalized_url"
-    t.text "author_note"
-    t.string "submission_name"
-    t.text "submission_description"
-    t.jsonb "metadata", default: {}, null: false
-    t.bigint "duplicate_of_id"
-    t.datetime "processed_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["duplicate_of_id"], name: "index_submissions_on_duplicate_of_id"
-    t.index ["metadata"], name: "index_submissions_on_metadata", using: :gin
-    t.index ["normalized_url", "user_id"], name: "index_submissions_on_normalized_url_and_user_id", unique: true, where: "(normalized_url IS NOT NULL)"
-    t.index ["processed_at"], name: "index_submissions_on_processed_at"
-    t.index ["status", "submission_type"], name: "index_submissions_on_status_and_submission_type"
-    t.index ["status"], name: "index_submissions_on_status"
-    t.index ["submission_type"], name: "index_submissions_on_submission_type"
-    t.index ["tool_id"], name: "index_submissions_on_tool_id"
-    t.index ["user_id", "status"], name: "index_submissions_on_user_id_and_status"
-    t.index ["user_id"], name: "index_submissions_on_user_id"
-  end
+# Could not dump table "submissions" because of following StandardError
+#   Unknown type 'vector(1536)' for column 'embedding'
 
   create_table "tags", force: :cascade do |t|
     t.string "tag_name", null: false
