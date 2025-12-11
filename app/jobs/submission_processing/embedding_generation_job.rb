@@ -43,10 +43,15 @@ module SubmissionProcessing
       # Generate embedding using RubyLLM
       # Use text-embedding-3-small (1536 dimensions) by default
       # Can be changed to text-embedding-3-large (3072 dimensions) if needed
-      embedding = RubyLLM.embed(text_to_embed, model: "text-embedding-3-small")
+      embedding_result = RubyLLM.embed(text_to_embed, model: "text-embedding-3-small")
+
+      # Extract the vector array from RubyLLM::Embedding object
+      # RubyLLM.embed returns a RubyLLM::Embedding object with a vectors method
+      # pgvector expects an array of floats
+      embedding_array = embedding_result.vectors
 
       # Store embedding in the vector column
-      submission.update!(embedding: embedding)
+      submission.update!(embedding: embedding_array)
 
       Rails.logger.info "Embedding generated and stored for submission #{submission_id}"
     rescue StandardError => e
