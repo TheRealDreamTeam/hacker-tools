@@ -50,20 +50,21 @@ class AccountSettingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should preserve associated data after soft delete" do
-    tool = create(:tool, user: @user)
-    comment = create(:comment, user: @user, tool: tool)
+    submission = create(:submission, user: @user)
+    tool = create(:tool)
+    comment = create(:comment, user: @user, commentable: tool)
     list = create(:list, user: @user)
     
     delete account_settings_path, params: { user: { password: "password123" } }
     
-    tool.reload
+    submission.reload
     comment.reload
     list.reload
     
-    assert_equal @user.id, tool.user_id
+    assert_equal @user.id, submission.user_id
     assert_equal @user.id, comment.user_id
     assert_equal @user.id, list.user_id
-    assert tool.user.deleted?
+    assert submission.user.deleted?
     assert comment.user.deleted?
     assert list.user.deleted?
   end

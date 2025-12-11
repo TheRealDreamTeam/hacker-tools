@@ -43,15 +43,18 @@ class UserTest < ActiveSupport::TestCase
   end
 
   # Associations
-  test "should have many tools" do
+  test "should have many submissions" do
     user = create(:user)
-    tool1 = create(:tool, user: user)
-    tool2 = create(:tool, user: user)
+    submission1 = create(:submission, user: user)
+    submission2 = create(:submission, user: user)
 
-    assert_equal 2, user.tools.count
-    assert_includes user.tools, tool1
-    assert_includes user.tools, tool2
+    assert_equal 2, user.submissions.count
+    assert_includes user.submissions, submission1
+    assert_includes user.submissions, submission2
   end
+
+  # Note: Tools are now community-owned, not user-owned
+  # Users submit content (submissions) about tools, but don't own the tools themselves
 
   test "should have many lists" do
     user = create(:user)
@@ -66,8 +69,8 @@ class UserTest < ActiveSupport::TestCase
   test "should have many comments" do
     user = create(:user)
     tool = create(:tool)
-    comment1 = create(:comment, user: user, tool: tool)
-    comment2 = create(:comment, user: user, tool: tool)
+    comment1 = create(:comment, user: user, commentable: tool)
+    comment2 = create(:comment, user: user, commentable: tool)
 
     assert_equal 2, user.comments.count
     assert_includes user.comments, comment1
@@ -86,7 +89,7 @@ class UserTest < ActiveSupport::TestCase
   test "should have many comment_upvotes" do
     user = create(:user)
     tool = create(:tool)
-    comment = create(:comment, tool: tool)
+    comment = create(:comment, commentable: tool)
     upvote = create(:comment_upvote, user: user, comment: comment)
 
     assert_equal 1, user.comment_upvotes.count
@@ -156,11 +159,11 @@ class UserTest < ActiveSupport::TestCase
   end
 
   # Dependent destroy
-  test "should destroy associated tools when user is destroyed" do
+  test "should destroy associated submissions when user is destroyed" do
     user = create(:user)
-    tool = create(:tool, user: user)
+    submission = create(:submission, user: user)
 
-    assert_difference "Tool.count", -1 do
+    assert_difference "Submission.count", -1 do
       user.destroy
     end
   end
@@ -177,7 +180,7 @@ class UserTest < ActiveSupport::TestCase
   test "should destroy associated comments when user is destroyed" do
     user = create(:user)
     tool = create(:tool)
-    comment = create(:comment, user: user, tool: tool)
+    comment = create(:comment, user: user, commentable: tool)
 
     assert_difference "Comment.count", -1 do
       user.destroy
@@ -282,34 +285,36 @@ class UserTest < ActiveSupport::TestCase
 
   test "soft_delete! should preserve associated data" do
     user = create(:user)
-    tool = create(:tool, user: user)
-    comment = create(:comment, user: user, tool: tool)
+    submission = create(:submission, user: user)
+    tool = create(:tool)
+    comment = create(:comment, user: user, commentable: tool)
     list = create(:list, user: user)
     
     user.soft_delete!
     
-    tool.reload
+    submission.reload
     comment.reload
     list.reload
     
-    assert_equal user.id, tool.user_id
+    assert_equal user.id, submission.user_id
     assert_equal user.id, comment.user_id
     assert_equal user.id, list.user_id
   end
 
   test "associations should work with deleted users" do
     user = create(:user)
-    tool = create(:tool, user: user)
-    comment = create(:comment, user: user, tool: tool)
+    submission = create(:submission, user: user)
+    tool = create(:tool)
+    comment = create(:comment, user: user, commentable: tool)
     
     user.soft_delete!
     
-    tool.reload
+    submission.reload
     comment.reload
     
-    assert_equal user, tool.user
+    assert_equal user, submission.user
     assert_equal user, comment.user
-    assert tool.user.deleted?
+    assert submission.user.deleted?
     assert comment.user.deleted?
   end
 

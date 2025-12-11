@@ -18,7 +18,8 @@ class User < ApplicationRecord
   has_one_attached :avatar
 
   # Associations
-  has_many :tools, dependent: :destroy # Legacy - tools are now community-owned
+  # Note: Tools are now community-owned, not user-owned
+  # Users submit content (submissions) about tools, but don't own the tools themselves
   has_many :submissions, dependent: :destroy # User-submitted content about tools
   has_many :lists, dependent: :destroy
   has_many :comments, dependent: :destroy

@@ -3,33 +3,33 @@ require "test_helper"
 class ToolTest < ActiveSupport::TestCase
   # Validations
   test "should require tool_name" do
-    user = create(:user)
-    tool = Tool.new(user: user)
+    tool = Tool.new
     assert_not tool.valid?
     assert_includes tool.errors[:tool_name], "can't be blank"
   end
 
-  test "should require user" do
-    tool = Tool.new(tool_name: "Test Tool")
-    assert_not tool.valid?
-    assert_includes tool.errors[:user], "must exist"
-  end
-
-  # Associations
-  test "should belong to user" do
-    user = create(:user)
-    tool = create(:tool, user: user)
-    assert_equal user, tool.user
-  end
+  # Note: Tools are now community-owned, not user-owned
+  # Users submit content (submissions) about tools, but don't own the tools themselves
 
   test "should have many comments" do
     tool = create(:tool)
-    comment1 = create(:comment, tool: tool)
-    comment2 = create(:comment, tool: tool)
+    comment1 = create(:comment, commentable: tool)
+    comment2 = create(:comment, commentable: tool)
 
     assert_equal 2, tool.comments.count
     assert_includes tool.comments, comment1
     assert_includes tool.comments, comment2
+  end
+
+  test "should have many submissions" do
+    tool = create(:tool)
+    user = create(:user)
+    submission1 = create(:submission, user: user, tool: tool)
+    submission2 = create(:submission, user: user, tool: tool)
+
+    assert_equal 2, tool.submissions.count
+    assert_includes tool.submissions, submission1
+    assert_includes tool.submissions, submission2
   end
 
   test "should have many tool_tags" do
@@ -130,9 +130,8 @@ class ToolTest < ActiveSupport::TestCase
 
   # Scopes
   test "public_tools scope should return only public tools" do
-    user = create(:user)
-    public_tool = create(:tool, user: user, visibility: 0)
-    private_tool = create(:tool, user: user, visibility: 1)
+    public_tool = create(:tool, visibility: 0)
+    private_tool = create(:tool, visibility: 1)
 
     # Actually call the scope and iterate to ensure it's executed
     public_tools = Tool.public_tools.to_a
@@ -141,10 +140,9 @@ class ToolTest < ActiveSupport::TestCase
   end
 
   test "recent scope should order by created_at desc" do
-    user = create(:user)
-    tool1 = create(:tool, user: user, created_at: 2.days.ago)
-    tool2 = create(:tool, user: user, created_at: 1.day.ago)
-    tool3 = create(:tool, user: user, created_at: Time.current)
+    tool1 = create(:tool, created_at: 2.days.ago)
+    tool2 = create(:tool, created_at: 1.day.ago)
+    tool3 = create(:tool, created_at: Time.current)
 
     # Actually call the scope and iterate to ensure it's executed
     recent_tools = Tool.recent.to_a
@@ -153,10 +151,9 @@ class ToolTest < ActiveSupport::TestCase
   end
 
   test "most_upvoted scope should order by upvote count" do
-    user = create(:user)
-    tool1 = create(:tool, user: user)
-    tool2 = create(:tool, user: user)
-    tool3 = create(:tool, user: user)
+    tool1 = create(:tool)
+    tool2 = create(:tool)
+    tool3 = create(:tool)
 
     user1 = create(:user)
     user2 = create(:user)
@@ -184,7 +181,7 @@ class ToolTest < ActiveSupport::TestCase
   # Dependent destroy
   test "should destroy associated comments when tool is destroyed" do
     tool = create(:tool)
-    comment = create(:comment, tool: tool)
+    comment = create(:comment, commentable: tool)
 
     assert_difference "Comment.count", -1 do
       tool.destroy
