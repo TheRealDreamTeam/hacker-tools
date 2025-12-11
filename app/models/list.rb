@@ -4,6 +4,10 @@ class List < ApplicationRecord
   # Many-to-many with tools
   has_many :list_tools, dependent: :destroy
   has_many :tools, through: :list_tools
+  
+  # Many-to-many with submissions
+  has_many :list_submissions, dependent: :destroy
+  has_many :submissions, through: :list_submissions
 
   # Followable
   has_many :follows, as: :followable, dependent: :destroy

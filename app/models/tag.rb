@@ -6,6 +6,10 @@ class Tag < ApplicationRecord
   # Many-to-many with tools
   has_many :tool_tags, dependent: :destroy
   has_many :tools, through: :tool_tags
+  
+  # Many-to-many with submissions
+  has_many :submission_tags, dependent: :destroy
+  has_many :submissions, through: :submission_tags
 
   # Followable
   has_many :follows, as: :followable, dependent: :destroy

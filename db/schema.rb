@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_11_000000) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_11_212441) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -53,7 +53,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_000000) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.bigint "tool_id", null: false
     t.bigint "user_id", null: false
     t.text "comment", null: false
     t.integer "comment_type", default: 0, null: false
@@ -62,8 +61,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_000000) do
     t.boolean "solved", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "commentable_type", null: false
+    t.bigint "commentable_id", null: false
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
     t.index ["parent_id"], name: "index_comments_on_parent_id"
-    t.index ["tool_id"], name: "index_comments_on_tool_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
@@ -77,6 +78,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_000000) do
     t.index ["followable_type", "followable_id"], name: "index_follows_on_followable_type_and_followable_id"
     t.index ["user_id", "followable_type", "followable_id"], name: "index_follows_on_user_id_and_followable_type_and_followable_id", unique: true
     t.index ["user_id"], name: "index_follows_on_user_id"
+  end
+
+  create_table "list_submissions", force: :cascade do |t|
+    t.bigint "list_id", null: false
+    t.bigint "submission_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["list_id", "submission_id"], name: "index_list_submissions_on_list_id_and_submission_id", unique: true
+    t.index ["list_id"], name: "index_list_submissions_on_list_id"
+    t.index ["submission_id"], name: "index_list_submissions_on_submission_id"
   end
 
   create_table "list_tools", force: :cascade do |t|
@@ -97,6 +108,43 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_lists_on_user_id"
+  end
+
+  create_table "submission_tags", force: :cascade do |t|
+    t.bigint "submission_id", null: false
+    t.bigint "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["submission_id", "tag_id"], name: "index_submission_tags_on_submission_id_and_tag_id", unique: true
+    t.index ["submission_id"], name: "index_submission_tags_on_submission_id"
+    t.index ["tag_id"], name: "index_submission_tags_on_tag_id"
+  end
+
+  create_table "submissions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "tool_id"
+    t.integer "submission_type", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.string "submission_url"
+    t.string "normalized_url"
+    t.text "author_note"
+    t.string "submission_name"
+    t.text "submission_description"
+    t.jsonb "metadata", default: {}, null: false
+    t.bigint "duplicate_of_id"
+    t.datetime "processed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["duplicate_of_id"], name: "index_submissions_on_duplicate_of_id"
+    t.index ["metadata"], name: "index_submissions_on_metadata", using: :gin
+    t.index ["normalized_url"], name: "index_submissions_on_normalized_url", unique: true, where: "(normalized_url IS NOT NULL)"
+    t.index ["processed_at"], name: "index_submissions_on_processed_at"
+    t.index ["status", "submission_type"], name: "index_submissions_on_status_and_submission_type"
+    t.index ["status"], name: "index_submissions_on_status"
+    t.index ["submission_type"], name: "index_submissions_on_submission_type"
+    t.index ["tool_id"], name: "index_submissions_on_tool_id"
+    t.index ["user_id", "status"], name: "index_submissions_on_user_id_and_status"
+    t.index ["user_id"], name: "index_submissions_on_user_id"
   end
 
   create_table "tags", force: :cascade do |t|
@@ -121,7 +169,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_000000) do
   end
 
   create_table "tools", force: :cascade do |t|
-    t.bigint "user_id", null: false
     t.string "tool_name", null: false
     t.text "tool_description"
     t.string "tool_url"
@@ -130,7 +177,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tool_name"], name: "index_tools_on_tool_name"
-    t.index ["user_id"], name: "index_tools_on_user_id"
   end
 
   create_table "user_tools", force: :cascade do |t|
@@ -166,16 +212,21 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_000000) do
   add_foreign_key "comment_upvotes", "comments"
   add_foreign_key "comment_upvotes", "users"
   add_foreign_key "comments", "comments", column: "parent_id"
-  add_foreign_key "comments", "tools"
   add_foreign_key "comments", "users"
   add_foreign_key "follows", "users"
+  add_foreign_key "list_submissions", "lists"
+  add_foreign_key "list_submissions", "submissions"
   add_foreign_key "list_tools", "lists"
   add_foreign_key "list_tools", "tools"
   add_foreign_key "lists", "users"
+  add_foreign_key "submission_tags", "submissions"
+  add_foreign_key "submission_tags", "tags"
+  add_foreign_key "submissions", "submissions", column: "duplicate_of_id"
+  add_foreign_key "submissions", "tools"
+  add_foreign_key "submissions", "users"
   add_foreign_key "tags", "tags", column: "parent_id"
   add_foreign_key "tool_tags", "tags"
   add_foreign_key "tool_tags", "tools"
-  add_foreign_key "tools", "users"
   add_foreign_key "user_tools", "tools"
   add_foreign_key "user_tools", "users"
 end

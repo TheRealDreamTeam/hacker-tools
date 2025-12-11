@@ -1,13 +1,13 @@
 class Tool < ApplicationRecord
-  # Owned by a user; attachments hold icon/picture assets via Active Storage.
-  belongs_to :user
-
+  # Tools are community-owned top-level entities (ideas/topics like "React", "Git")
+  # Users don't own tools - they submit content (submissions) about tools
   # Active Storage attachments
   has_one_attached :icon
   has_one_attached :picture
 
   # Associations
-  has_many :comments, dependent: :destroy
+  has_many :submissions, dependent: :destroy # User-submitted content about this tool
+  has_many :comments, as: :commentable, dependent: :destroy
   has_many :tool_tags, dependent: :destroy
   has_many :tags, through: :tool_tags
   has_many :list_tools, dependent: :destroy
