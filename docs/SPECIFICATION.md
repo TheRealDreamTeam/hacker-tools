@@ -329,6 +329,12 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Platform**: Heroku
 - **App Name**: hacker-tools
 - **Environment Variables**: [List required env vars]
+- **PostgreSQL Extensions**:
+  - **pg_trgm**: Enabled for fuzzy text search
+  - **pgvector**: Available on Heroku Postgres (Standard, Premium, Private, Shield, and Essential plans with PostgreSQL 15+)
+    - Not a separate addon - built into Heroku Postgres
+    - Enabled automatically via migrations
+    - If extension is unavailable, migrations skip gracefully and embeddings are not generated
 
 ## Authentication (Devise)
 
