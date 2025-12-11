@@ -1,10 +1,10 @@
 class ToolsController < ApplicationController
-  before_action :set_tool, only: %i[show edit update destroy add_tag remove_tag]
+  before_action :set_tool, only: %i[show edit update destroy add_tag remove_tag upvote favorite follow]
   before_action :authorize_owner!, only: %i[edit update destroy add_tag remove_tag]
 
   # GET /tools
   def index
-    @tools = Tool.includes(:user, :tags).order(created_at: :desc)
+    @tools = Tool.includes(:user, :tags, :user_tools).order(created_at: :desc)
   end
 
   # GET /tools/:id
@@ -12,6 +12,9 @@ class ToolsController < ApplicationController
     @sort_by = params[:sort_by] || "recent"
     @sort_by_flags = params[:sort_by_flags] || "recent"
     @sort_by_bugs = params[:sort_by_bugs] || "recent"
+
+    # Track read interaction
+    touch_read_interaction
 
     # Load comments with upvote counts and user upvote status
     comments_base = @tool.comments.comment_type_comment.top_level.includes(:user, :comment_upvotes, replies: [:user, :comment_upvotes])
@@ -93,6 +96,21 @@ class ToolsController < ApplicationController
     redirect_to tool_path(@tool), alert: t("tools.flash.tag_not_found")
   end
 
+  # POST /tools/:id/upvote
+  def upvote
+    toggle_interaction_flag(:upvote, :tool_upvote)
+  end
+
+  # POST /tools/:id/favorite
+  def favorite
+    toggle_interaction_flag(:favorite, :tool_favorite)
+  end
+
+  # POST /tools/:id/follow
+  def follow
+    toggle_interaction_flag(:subscribe, :tool_follow)
+  end
+
   private
 
   def set_tool
@@ -120,6 +138,32 @@ class ToolsController < ApplicationController
       collection.trending
     else # "recent" or default
       collection.recent
+    end
+  end
+
+  def touch_read_interaction
+    return unless current_user
+
+    user_tool = ensure_user_tool
+    user_tool.read_at ||= Time.current
+    user_tool.save if user_tool.changed?
+  end
+
+  def ensure_user_tool
+    @user_tool ||= @tool.user_tools.find_or_create_by(user: current_user)
+  end
+
+  def toggle_interaction_flag(flag, i18n_key)
+    return redirect_to new_user_session_path unless current_user
+
+    user_tool = ensure_user_tool
+    new_value = !user_tool.public_send(flag)
+    user_tool.read_at ||= Time.current
+    user_tool.update(flag => new_value, read_at: user_tool.read_at)
+
+    respond_to do |format|
+      format.turbo_stream { render "tools/interaction_update" }
+      format.html { redirect_back fallback_location: tool_path(@tool), notice: t("tools.flash.#{i18n_key}") }
     end
   end
 end

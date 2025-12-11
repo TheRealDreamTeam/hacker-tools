@@ -2,7 +2,10 @@
   <div class="d-flex justify-content-between align-items-start mb-3">
     <div>
       <h1 class="h3 mb-2"><%= @tool.tool_name %></h1>
-      <p class="text-secondary mb-1"><%= t("tools.show.owner", owner: display_user_name(@tool.user)) %></p>
+      <p class="text-secondary mb-1 d-flex align-items-center gap-2">
+        <span><%= t("tools.show.owner", owner: display_user_name(@tool.user)) %></span>
+        <%= render "tools/read_state", tool: @tool %>
+      </p>
       <% if @tool.tool_url.present? %>
         <p class="mb-0">
           <%= link_to @tool.tool_url, @tool.tool_url, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none" %>
@@ -14,6 +17,9 @@
         <%= image_tag @tool.icon, class: "rounded", style: "height: 64px; width: 64px; object-fit: cover;" %>
       <% end %>
     </div>
+  </div>
+  <div class="mb-3">
+    <%= render "tools/interaction_buttons", tool: @tool %>
   </div>
   <div class="mb-4">
     <h2 class="h5"><%= t("tools.show.description") %></h2>
