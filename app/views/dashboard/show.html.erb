@@ -79,7 +79,7 @@
     <div class="col-12 col-xl-6">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <span class="fw-semibold"><%= t("dashboard.sections.lists.title") %></span>
+          <%= link_to t("dashboard.sections.lists.title"), lists_path, class: "fw-semibold text-decoration-none" %>
         </div>
         <div class="card-body">
           <% if @recent_lists.any? %>
@@ -87,7 +87,7 @@
               <% @recent_lists.each do |list| %>
                 <li class="list-group-item px-0 d-flex justify-content-between align-items-start">
                   <div>
-                    <div class="fw-semibold"><%= list.list_name %></div>
+                    <div class="fw-semibold"><%= link_to list.list_name, list_path(list), class: "text-decoration-none" %></div>
                     <div class="text-muted small"><%= l(list.created_at, format: :short) %></div>
                   </div>
                   <span class="badge bg-primary-subtle text-primary"><%= t("dashboard.sections.lists.tools_count", count: list.tools.count) %></span>
