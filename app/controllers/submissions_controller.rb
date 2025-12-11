@@ -112,6 +112,9 @@ class SubmissionsController < ApplicationController
       flash[:alert] = t("submissions.add_tag.already_exists", tag: tag.tag_name)
     end
     
+    # Reload tags association for turbo_stream
+    @submission.tags.reload
+    
     respond_to do |format|
       format.html { redirect_to @submission }
       format.turbo_stream { render :add_tag }
@@ -128,6 +131,9 @@ class SubmissionsController < ApplicationController
     else
       flash[:alert] = t("submissions.remove_tag.not_found", tag: tag.tag_name)
     end
+    
+    # Reload tags association for turbo_stream
+    @submission.tags.reload
     
     respond_to do |format|
       format.html { redirect_to @submission }
