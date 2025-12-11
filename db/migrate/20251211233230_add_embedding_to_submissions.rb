@@ -2,21 +2,42 @@
 # Embeddings are used for semantic search and content similarity
 # Default dimension: 1536 (text-embedding-3-small) or 3072 (text-embedding-3-large)
 class AddEmbeddingToSubmissions < ActiveRecord::Migration[7.1]
-  def change
-    # Add vector column for embeddings
+  def up
+    # Check if vector extension is enabled
+    unless extension_enabled?("vector")
+      Rails.logger.warn "pgvector extension not enabled - skipping embedding column. Enable pgvector extension first."
+      return
+    end
+
+    # Add vector column for embeddings using raw SQL
     # Using 1536 dimensions (text-embedding-3-small) as default
     # Can be changed to 3072 for text-embedding-3-large if needed
-    add_column :submissions, :embedding, :vector, limit: 1536, null: true
+    execute <<-SQL
+      ALTER TABLE submissions
+      ADD COLUMN embedding vector(1536);
+    SQL
 
     # Add index for vector similarity search (using cosine distance)
     # This enables fast semantic search queries
-    add_index :submissions, :embedding, using: :ivfflat, opclass: :vector_cosine_ops, name: "index_submissions_on_embedding_vector"
+    # Note: IVFFlat index requires data to exist, so we'll create it after embeddings are generated
+    # For now, we'll create a basic index - can be upgraded to IVFFlat later
+    execute <<-SQL
+      CREATE INDEX index_submissions_on_embedding_vector
+      ON submissions
+      USING ivfflat (embedding vector_cosine_ops)
+      WITH (lists = 100);
+    SQL
   rescue ActiveRecord::StatementInvalid => e
     # If pgvector extension is not available, log warning and skip
-    if e.message.include?("vector") || e.message.include?("extension")
+    if e.message.include?("vector") || e.message.include?("extension") || e.message.include?("does not exist")
       Rails.logger.warn "pgvector extension not available - skipping embedding column. Run migration after installing pgvector."
     else
       raise
     end
+  end
+
+  def down
+    remove_index :submissions, name: "index_submissions_on_embedding_vector" if index_exists?(:submissions, :embedding, name: "index_submissions_on_embedding_vector")
+    remove_column :submissions, :embedding if column_exists?(:submissions, :embedding)
   end
 end
