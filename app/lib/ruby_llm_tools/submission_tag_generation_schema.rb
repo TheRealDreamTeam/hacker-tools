@@ -8,10 +8,10 @@ class SubmissionTagGenerationSchema < RubyLLM::Schema
     object do
       string :name, description: "Tag name"
       number :relevance, description: "Relevance score", minimum: 0, maximum: 1
+      # Category is optional - omit from required array to make it optional
       string :category,
-        description: "Tag category",
-        enum: %w[category language framework library version platform other],
-        required: false
+        description: "Tag category (optional)",
+        enum: %w[category language framework library version platform other]
     end
   end
 end

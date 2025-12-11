@@ -11,7 +11,6 @@ end
 
 if api_key.present?
   Rails.logger.info "RubyLLM configured with OPENAI_API_KEY (length: #{api_key.length})"
-  Rails.logger.info "RubyLLM config openai_api_key present: #{RubyLLM.configuration.openai_api_key.present?}"
 else
   Rails.logger.warn "⚠️  OPENAI_API_KEY not set! Tag generation, tool detection, and classification will fail."
   Rails.logger.warn "   Set OPENAI_API_KEY in your .env file or environment to enable RubyLLM features."

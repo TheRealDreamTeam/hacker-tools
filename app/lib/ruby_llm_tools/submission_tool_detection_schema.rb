@@ -8,10 +8,10 @@ class SubmissionToolDetectionSchema < RubyLLM::Schema
     object do
       string :name, description: "The tool name"
       number :confidence, description: "Confidence score", minimum: 0, maximum: 1
+      # Category is optional - omit from required array to make it optional
       string :category, 
-        description: "Tool category",
-        enum: %w[language framework library tool service platform other],
-        required: false
+        description: "Tool category (optional)",
+        enum: %w[language framework library tool service platform other]
     end
   end
 end
