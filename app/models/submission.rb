@@ -106,7 +106,9 @@ class Submission < ApplicationRecord
   private
   
   # Normalize URL for duplicate detection
-  # Removes trailing slashes, query params, fragments, www prefix, converts to lowercase
+  # Smart normalization that preserves content-identifying query params and path segments
+  # Removes: www prefix, fragments, tracking/analytics params (utm_*, ref, source, etc.)
+  # Keeps: path segments, content-identifying query params (id, v, status, etc.)
   def normalize_url
     return if submission_url.blank?
     
@@ -117,10 +119,25 @@ class Submission < ApplicationRecord
       
       # Remove www prefix from host
       uri.host = uri.host&.sub(/\Awww\./, "")
-      # Remove fragment
+      
+      # Remove fragment (hash anchors are not content identifiers)
       uri.fragment = nil
-      # Remove query params (or keep specific ones if needed)
-      uri.query = nil
+      
+      # Smart query param filtering: remove tracking params, keep content identifiers
+      if uri.query.present?
+        query_params = URI.decode_www_form(uri.query).to_h
+        # Remove common tracking/analytics params
+        tracking_params = %w[utm_source utm_medium utm_campaign utm_term utm_content ref source medium campaign fbclid gclid]
+        filtered_params = query_params.reject { |key, _| tracking_params.include?(key.downcase) }
+        
+        # Rebuild query string if there are remaining params
+        if filtered_params.any?
+          uri.query = URI.encode_www_form(filtered_params)
+        else
+          uri.query = nil
+        end
+      end
+      
       # Convert to lowercase and remove trailing slash
       normalized = uri.to_s.downcase.chomp("/")
       self.normalized_url = normalized
