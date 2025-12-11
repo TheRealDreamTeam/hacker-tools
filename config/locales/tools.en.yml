@@ -47,6 +47,8 @@ en:
       updated: "Tool updated successfully."
       destroyed: "Tool deleted."
       unauthorized: "You are not allowed to modify this tool."
+      validation_error: "Please fix the errors below and try again."
+      validation_errors: "%{errors}"
       tag_added: "Tag added successfully."
       tag_removed: "Tag removed successfully."
       tag_not_found: "Tag not found."

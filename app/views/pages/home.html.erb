@@ -1,8 +1,8 @@
-<!-- Divider beneath navbar to visually separate navigation from content -->
-<div class="border-bottom"></div>
-
 <!-- Full-width layout with side banners -->
-<div class="container-fluid px-0">
+<div class="container-fluid px-0" data-controller="home-page" 
+     data-home-page-signed-in-value="<%= user_signed_in? %>"
+     data-home-page-guest-message-value="<%= j t('pages.home.card.upvote_guest_alert') %>"
+     data-home-page-upvotes-text-value="<%= j t('pages.home.card.upvotes', count: '%{count}') %>">
   <div class="row g-0">
     <!-- Left Ad Banner (columns 1-2) - extended inward toward main content -->
     <div class="col-lg-2 d-none d-lg-block side-banner ps-5 pe-5">
@@ -74,7 +74,7 @@
                                 class: "form-control form-control-lg",
                                 placeholder: t("pages.home.search_placeholder"),
                                 aria: { label: t("pages.home.search_placeholder") },
-                                oninput: "debounceSearch(this)" %>
+                                data: { action: "input->home-page#debounceSearch" } %>
         </div>
         <div class="col-12 col-md-3 d-grid">
           <%= form.submit t("actions.search"), class: "btn btn-primary btn-lg" %>
@@ -141,135 +141,3 @@
   </div>
 </div>
 
-<%= javascript_tag do %>
-  // Simple client-side toggle to switch between category panels without reload.
-  const attachCategoryToggle = () => {
-    const buttons = Array.from(document.querySelectorAll(".category-toggle"));
-    const panels = Array.from(document.querySelectorAll("[data-category-panel]"));
-
-    if (!buttons.length || !panels.length) return;
-
-    const showCategory = (category) => {
-      buttons.forEach((btn) => {
-        const isActive = btn.dataset.category === category;
-        btn.classList.toggle("active", isActive);
-        btn.setAttribute("aria-pressed", isActive);
-      });
-
-      panels.forEach((panel) => {
-        const isTarget = panel.dataset.categoryPanel === category;
-        panel.classList.toggle("d-none", !isTarget);
-      });
-    };
-
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const category = btn.dataset.category;
-        showCategory(category);
-        // Update hidden field in search form
-        const categoryInput = document.querySelector('input[name="category"]');
-        if (categoryInput) {
-          categoryInput.value = category;
-        }
-        // Submit form to update results
-        const form = btn.closest('.container').querySelector('form');
-        if (form) {
-          form.requestSubmit();
-        }
-      });
-    });
-  };
-
-  // Debounce function for search input
-  let searchTimeout;
-  function debounceSearch(input) {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      input.form.requestSubmit();
-    }, 300); // Wait 300ms after user stops typing
-  }
-
-  document.addEventListener("turbo:load", attachCategoryToggle);
-  document.addEventListener("DOMContentLoaded", attachCategoryToggle);
-
-  const attachUpvoteHandlers = () => {
-    const signedIn = <%= user_signed_in? ? 'true' : 'false' %>;
-    const guestMessage = "<%= j t('pages.home.card.upvote_guest_alert') %>";
-
-    document.querySelectorAll(".upvote-button").forEach((button) => {
-      const countSpan = button.querySelector("[data-upvote-count]");
-      button.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        if (!signedIn) {
-          alert(guestMessage);
-          return;
-        }
-
-        const current = parseInt(button.dataset.count || "0", 10);
-        const next = current + 1;
-        button.dataset.count = next;
-        if (countSpan) {
-          countSpan.textContent = `<%= t("pages.home.card.upvotes", count: "%{count}") %>`.replace("%{count}", next);
-        }
-      });
-    });
-  };
-
-  // Reattach handlers after Turbo Stream updates
-  const reattachHandlers = () => {
-    attachCategoryToggle();
-    attachUpvoteHandlers();
-  };
-
-  document.addEventListener("turbo:load", reattachHandlers);
-  document.addEventListener("DOMContentLoaded", reattachHandlers);
-  document.addEventListener("turbo:frame-load", reattachHandlers);
-<% end %>
-
-<style>
-  /* Modest but noticeable hover for cards */
-  .card-hover {
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-  .card-hover:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0.65rem 1.5rem rgba(0,0,0,0.08);
-  }
-
-  /* Side banner styling - sticky from navbar to bottom of viewport */
-  .side-banner {
-    position: sticky;
-    top: 2rem; /* Add space between navbar and banner */
-    height: calc(100vh - 56px - 2rem); /* Subtract navbar height and top spacing */
-    max-height: calc(100vh - 56px - 2rem);
-    overflow-y: auto;
-    padding-top: 1rem; /* Additional padding for visual spacing */
-  }
-
-  @media (max-width: 991.98px) {
-    .side-banner {
-      display: none !important;
-    }
-  }
-
-  /* Make article cards look like list items on mobile - narrow and compact */
-  @media (max-width: 767.98px) {
-    .article-card {
-      max-width: 280px;
-      margin: 0 auto 0.75rem auto; /* Center and reduce spacing */
-    }
-    .article-card .card-body {
-      min-height: 60px !important; /* Much shorter - list-like height */
-      padding: 0.75rem 1rem !important; /* Compact padding */
-    }
-    .article-card h6 {
-      font-size: 0.875rem; /* Smaller text */
-      font-weight: 500;
-    }
-    .article-card .row {
-      margin-bottom: 0.5rem !important; /* Reduce gap between cards */
-    }
-  }
-</style>

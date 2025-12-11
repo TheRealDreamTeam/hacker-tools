@@ -2,7 +2,8 @@
   <h2><%= t("devise.passwords.edit.title") %></h2>
 
   <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-    <%= f.error_notification %>
+    <%# Removed f.error_notification - using field-level errors (invalid-feedback) instead for better UX %>
+    <%# f.full_error for reset_password_token is kept as it's a hidden field with system-level errors %>
 
     <%= f.input :reset_password_token, as: :hidden %>
     <%= f.full_error :reset_password_token %>

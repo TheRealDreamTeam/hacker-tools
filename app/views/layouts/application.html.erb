@@ -61,8 +61,20 @@
       body.fouc-ready {
         visibility: visible;
         opacity: 1;
-        transition: opacity 0.2s ease-out;
       }
+      
+      /* Navbar is fixed at top - defined in _navbar.scss */
+      #navbar {
+        opacity: 1 !important;
+        visibility: visible !important;
+      }
+      
+      /* Add padding-top to content to account for fixed navbar */
+      /* Navbar has min-height: 60px + padding: 1rem 0 (16px top + 16px bottom) = ~92px total */
+      .page-transition-content {
+        padding-top: 92px; /* Account for navbar full height including padding */
+      }
+      
       /* Fallback: Show content if JavaScript fails to load (after 1 second) */
       body:not(.fouc-ready) {
         animation: fouc-fallback 0.1s 1s forwards;
@@ -79,10 +91,12 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body data-controller="page-transition">
+  <body data-controller="page-transition" style="visibility: hidden; opacity: 0;">
     <%= render "shared/navbar" %>
-    <%= render "shared/flashes" %>
-    <%= yield %>
-    <%= render "shared/footer" %>
+    <div id="main-content" class="page-transition-content">
+      <%= render "shared/flashes" %>
+      <%= yield %>
+      <%= render "shared/footer" %>
+    </div>
   </body>
 </html>

@@ -27,3 +27,49 @@
     margin-bottom: 0;
   }
 }
+
+// Modest but noticeable hover for cards
+.card-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.65rem 1.5rem rgba(0, 0, 0, 0.08);
+  }
+}
+
+// Side banner styling - sticky from navbar to bottom of viewport
+.side-banner {
+  position: sticky;
+  top: 2rem; // Add space between navbar and banner
+  height: calc(100vh - 56px - 2rem); // Subtract navbar height and top spacing
+  max-height: calc(100vh - 56px - 2rem);
+  overflow-y: auto;
+  padding-top: 1rem; // Additional padding for visual spacing
+
+  @media (max-width: 991.98px) {
+    display: none !important;
+  }
+}
+
+// Make article cards look like list items on mobile - narrow and compact
+@media (max-width: 767.98px) {
+  .article-card {
+    max-width: 280px;
+    margin: 0 auto 0.75rem auto; // Center and reduce spacing
+    
+    .card-body {
+      min-height: 60px !important; // Much shorter - list-like height
+      padding: 0.75rem 1rem !important; // Compact padding
+    }
+    
+    h6 {
+      font-size: 0.875rem; // Smaller text
+      font-weight: 500;
+    }
+    
+    .row {
+      margin-bottom: 0.5rem !important; // Reduce gap between cards
+    }
+  }
+}

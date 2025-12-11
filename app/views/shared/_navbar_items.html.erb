@@ -1,37 +1,44 @@
-<% if user_signed_in? %>
-<li class="nav-item">
-  <%= link_to "Home", root_path,
-      class: "nav-link",
-      data: { turbo_prefetch: false } %>
-</li>
-<li class="nav-item">
-  <%= link_to "Tools", tools_path,
-      class: "nav-link",
-      data: { turbo_prefetch: false } %>
-</li>
-<li class="nav-item">
-  <%= link_to "New Tool", new_tool_path,
-      class: "nav-link",
-      data: { turbo_prefetch: false } %>
-</li>
-<li class="nav-item">
-  <%= link_to "Tags", tags_path,
-      class: "nav-link",
-      data: { turbo_prefetch: false } %>
-</li>
-<li class="nav-item">
-  <%= link_to "Profile", profile_path,
-      class: "nav-link",
-      data: { turbo_prefetch: false } %>
-</li>
-<li class="nav-item">
-  <%= link_to "Sign out", destroy_user_session_path,
-      class: "nav-link",
-      data: { turbo_method: :delete } %>
-</li>
-<% else %>
-<li class="nav-item">
-  <%= link_to "Sign in", new_user_session_path,
-      class: "nav-link" %>
-</li>
+<%# Hide navbar items on Devise views (sign in, sign up, password reset, etc.) %>
+<% unless devise_controller? %>
+  <% if user_signed_in? %>
+  <li class="nav-item">
+    <%= link_to "Home", root_path,
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
+    <%= link_to "Tools", tools_path,
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
+    <%= link_to "New Tool", new_tool_path,
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
+    <%= link_to "Tags", tags_path,
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
+    <%= link_to "Profile", profile_path,
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
+    <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false }, local: true, class: "d-inline" do |f| %>
+      <%= f.submit "Sign out", class: "btn btn-link nav-link text-decoration-none border-0 bg-transparent p-0 shadow-none" %>
+    <% end %>
+  </li>
+  <% else %>
+  <li class="nav-item">
+    <%= link_to "Sign in", new_user_session_path,
+        class: "nav-link" %>
+  </li>
+  <li class="nav-item">
+    <%= link_to "Sign up", new_user_registration_path,
+        class: "nav-link" %>
+  </li>
+  <% end %>
 <% end %>

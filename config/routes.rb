@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   # This allows URLs like /en/users or /es/users
   # The locale is optional and defaults to the configured default locale
   scope "(:locale)", locale: /#{I18n.available_locales.join("|")}/ do
-    devise_for :users
+    devise_for :users, controllers: { sessions: 'users/sessions', registrations: 'users/registrations' }
     
     # Custom account settings routes
     resource :account_settings, only: [:show] do

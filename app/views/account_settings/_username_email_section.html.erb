@@ -4,27 +4,40 @@
     <div class="card-body d-flex flex-column flex-grow-1">
       <%= form_with model: user, url: update_username_email_account_settings_path, method: :patch, data: { turbo: true }, local: false, html: { class: "d-flex flex-column flex-grow-1" } do |f| %>
         <div class="flex-grow-1">
-          <% if user.errors[:username].any? || user.errors[:email].any? || user.errors[:current_password].any? %>
-            <div class="alert alert-danger">
-              <% (user.errors[:username] + user.errors[:email] + user.errors[:current_password]).each do |error| %>
-                <div><%= error %></div>
-              <% end %>
-            </div>
-          <% end %> 
-
           <div class="mb-3">
             <%= f.label :username, t("forms.username"), class: "form-label" %>
-            <%= f.text_field :username, class: "form-control", required: true %>
+            <%= f.text_field :username, class: "form-control #{'is-invalid' if user.errors[:username].any?}", required: true %>
+            <% if user.errors[:username].any? %>
+              <div class="invalid-feedback">
+                <% user.errors[:username].each do |error| %>
+                  <div><%= error %></div>
+                <% end %>
+              </div>
+            <% end %>
           </div>
 
           <div class="mb-3">
             <%= f.label :email, t("forms.email"), class: "form-label" %>
-            <%= f.email_field :email, class: "form-control", required: true %>
+            <%= f.email_field :email, class: "form-control #{'is-invalid' if user.errors[:email].any?}", required: true %>
+            <% if user.errors[:email].any? %>
+              <div class="invalid-feedback">
+                <% user.errors[:email].each do |error| %>
+                  <div><%= error %></div>
+                <% end %>
+              </div>
+            <% end %>
           </div>
 
           <div class="mb-3">
             <%= f.label :current_password, t("account_settings.username_email.current_password"), class: "form-label" %>
-            <%= f.password_field :current_password, class: "form-control", autocomplete: "current-password", required: true %>
+            <%= f.password_field :current_password, class: "form-control #{'is-invalid' if user.errors[:current_password].any?}", autocomplete: "current-password", required: true %>
+            <% if user.errors[:current_password].any? %>
+              <div class="invalid-feedback">
+                <% user.errors[:current_password].each do |error| %>
+                  <div><%= error %></div>
+                <% end %>
+              </div>
+            <% end %>
             <div class="form-text"><%= t("account_settings.username_email.current_password_hint") %></div>
           </div>
         </div>

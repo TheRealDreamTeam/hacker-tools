@@ -26,6 +26,7 @@ class Tool < ApplicationRecord
 
   validates :tool_name, presence: true
   validates :tool_url, presence: true
+  validate :tool_url_format
   validates :visibility, presence: true
 
   # Scopes for filtering
@@ -35,6 +36,18 @@ class Tool < ApplicationRecord
 
   private
 
+  # Validate URL format - must be a valid HTTP/HTTPS URL
+  def tool_url_format
+    return if tool_url.blank?
+
+    uri = URI.parse(tool_url)
+    unless uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
+      errors.add(:tool_url, "must be a valid URL (e.g., https://example.com)")
+    end
+  rescue URI::InvalidURIError
+    errors.add(:tool_url, "must be a valid URL (e.g., https://example.com)")
+  end
+
   # Derive a placeholder tool name from the URL host so users only provide URL/author note.
   def set_tool_name_from_url
     return if tool_name.present? || tool_url.blank?
@@ -42,7 +55,7 @@ class Tool < ApplicationRecord
     uri_host = URI.parse(tool_url).host
     self.tool_name = uri_host&.sub(/\Awww\./, "") if uri_host.present?
   rescue URI::InvalidURIError
-    # Keep tool_name nil; validation will surface an error to the user if URL is invalid.
+    # URL format validation will catch this and provide a clear error message
   end
 end
 

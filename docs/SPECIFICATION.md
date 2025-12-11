@@ -56,18 +56,31 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 ### User (Devise)
 - **Purpose**: Authenticated account that owns tools/lists and participates in discussions.
 - **Attributes**:
-  - `email` (string, required, unique)
+  - `email` (string, required, unique among active users)
   - `encrypted_password` (string, required)
-  - `username` (string, required, unique)
+  - `username` (string, required, unique among active users)
   - `user_type` (integer, enum)
-  - `user_status` (integer, enum)
+  - `user_status` (integer, enum: `active: 0`, `deleted: 1`)
   - `user_bio` (text)
 - **Active Storage**: `avatar` attachment
 - **Associations**:
   - `has_many :tools`, `has_many :lists`, `has_many :comments`
   - `has_many :user_tools`, `has_many :tool_interactions, through: :user_tools`
   - `has_many :comment_upvotes`
-- **Validations**: Presence/uniqueness on email/username; Devise password rules.
+- **Validations**: 
+  - Presence on username/email
+  - Uniqueness on username/email among active users only (allows reuse after deletion)
+  - Devise password rules
+- **Scopes**:
+  - `User.active` - Returns only active users (excludes deleted)
+  - `User.deleted` - Returns only deleted users
+  - Note: No default scope - associations work with deleted users to preserve historical data
+- **Soft Delete**:
+  - Account deletion uses soft delete (marks `user_status` as `deleted`)
+  - Username and email are anonymized (`deleted_user_#{id}`, `deleted_#{id}@deleted.local`)
+  - Deleted users cannot authenticate (blocked via `active_for_authentication?`)
+  - Historical data (comments, tools) is preserved with deleted user references
+  - Username/email become immediately available for reuse
 
 ### Tool
 - **Purpose**: A published tool with metadata, owned by a user.
@@ -220,6 +233,7 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Email confirmation
   - Account unlock
   - Remember me functionality
+  - Soft-deleted users are blocked from authentication
 - **Views**: All Devise views styled with consistent design system
   - Sign in (`devise/sessions/new.html.erb`)
   - Sign up (`devise/registrations/new.html.erb`)
@@ -246,17 +260,22 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Bio management - no password required
   - Username and email updates - password required
   - Password changes - password required
-  - Account deletion with confirmation modal
+  - Account soft deletion with confirmation modal
 - **Routes**:
   - `GET /profile` → `profiles#show` (profile display page)
-  - `GET /users/edit` → `users/registrations#edit` (account settings)
-  - `DELETE /users/delete_avatar` → `users/registrations#delete_avatar` (delete avatar)
+  - `GET /account_settings` → `account_settings#show` (account settings)
+  - `PATCH /account_settings/update_avatar` → `account_settings#update_avatar`
+  - `PATCH /account_settings/update_bio` → `account_settings#update_bio`
+  - `PATCH /account_settings/update_username_email` → `account_settings#update_username_email`
+  - `PATCH /account_settings/update_password` → `account_settings#update_password`
+  - `DELETE /account_settings/delete_avatar` → `account_settings#delete_avatar`
+  - `DELETE /account_settings` → `account_settings#destroy` (soft delete account)
 - **Controllers**:
   - `ProfilesController` - Simple controller for profile display
-  - `Users::RegistrationsController` - Custom Devise controller extending default registrations
+  - `AccountSettingsController` - Custom controller for account management (independent from Devise)
 - **Views**:
   - Profile page (`profiles/show.html.erb`) - Read-only profile display with link to account settings
-  - Account settings (`devise/registrations/edit.html.erb`) - Split into 5 sections:
+  - Account settings (`account_settings/show.html.erb`) - Split into 5 sections:
     1. Avatar update (with delete button)
     2. Bio update
     3. Username and email update
@@ -265,13 +284,21 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Security**:
   - Avatar and bio updates don't require password (less sensitive)
   - Username, email, and password changes require current password
-  - Account deletion requires confirmation via modal
+  - Account deletion requires password confirmation via modal
+- **Account Deletion (Soft Delete)**:
+  - Uses soft delete: marks user as deleted instead of removing record
+  - Anonymizes username and email to free them for immediate reuse
+  - Preserves historical data (comments, tools, lists) with deleted user references
+  - Signs out user after deletion
+  - Deleted users cannot log in (blocked via authentication)
+  - Username/email become available for new registrations immediately
 - **UI/UX**:
   - Profile page shows avatar (or gray placeholder with initial)
   - Account settings organized in card-based sections
   - Each section has its own submit button
   - Confirmation modal for destructive actions (avatar deletion, account deletion)
   - Consistent styling with design system (12px rounded corners, proper spacing)
+  - Deleted users display as "Deleted Account" throughout the application
 
 ## UI Components
 

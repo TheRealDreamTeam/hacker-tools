@@ -56,19 +56,26 @@
     form_method: :delete %>
 
 <%# Confirmation Modal for Account Deletion %>
-<div class="modal fade" id="delete-account-modal" tabindex="-1" aria-labelledby="delete-account-modal-label" aria-hidden="true">
+<div class="modal fade" id="delete-account-modal" tabindex="-1" aria-labelledby="delete-account-modal-label" aria-hidden="true" data-controller="delete-account-modal">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content" id="delete-account-modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="delete-account-modal-label"><%= t("account_settings.destroy.modal_title") %></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t("navigation.close") %>"></button>
       </div>
       <%= form_with model: @user, url: account_settings_path, method: :delete, data: { turbo: false }, local: true do |f| %>
-        <div class="modal-body">
+        <div class="modal-body" id="delete-account-modal-body">
           <p><%= t("account_settings.destroy.modal_message") %></p>
           <div class="mt-3">
             <%= f.label :password, t("account_settings.destroy.password_label"), class: "form-label" %>
-            <%= f.password_field :password, class: "form-control", placeholder: t("account_settings.destroy.password_placeholder"), required: true, autocomplete: "current-password" %>
+            <%= f.password_field :password, class: "form-control #{'is-invalid' if @user.errors[:delete_account_password].any?}", placeholder: t("account_settings.destroy.password_placeholder"), required: true, autocomplete: "current-password" %>
+            <% if @user.errors[:delete_account_password].any? %>
+              <div class="invalid-feedback">
+                <% @user.errors[:delete_account_password].each do |error| %>
+                  <div><%= error %></div>
+                <% end %>
+              </div>
+            <% end %>
           </div>
         </div>
         <div class="modal-footer">

@@ -2,8 +2,21 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :set_locale
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :set_no_cache_for_authenticated_pages
 
   private
+
+  # Prevent browser caching of authenticated pages so back button after sign-out
+  # does not show sensitive account content. This disables storing pages visited
+  # while signed in; after logout, the browser back stack will refetch and
+  # redirect, instead of showing cached HTML.
+  def set_no_cache_for_authenticated_pages
+    return unless user_signed_in?
+
+    response.headers["Cache-Control"] = "no-store, no-cache, max-age=0, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+  end
 
   # Set locale from params, user preference, or default
   # Locale can be set via ?locale=en in URL params
@@ -22,6 +35,24 @@ class ApplicationController < ActionController::Base
   # This ensures locale persists across navigation
   def default_url_options
     { locale: I18n.locale }
+  end
+
+  # Redirect to homepage after sign in
+  # Returns path that will be used by Devise for redirect
+  def after_sign_in_path_for(resource)
+    root_path
+  end
+
+  # Redirect to homepage after sign up
+  # Returns path that will be used by Devise for redirect
+  def after_sign_up_path_for(resource)
+    root_path
+  end
+
+  # Redirect to homepage after sign out
+  # Returns path that will be used by Devise for redirect
+  def after_sign_out_path_for(resource_or_scope)
+    root_path
   end
 
   # Permit additional Devise parameters such as username to satisfy DB null constraints.

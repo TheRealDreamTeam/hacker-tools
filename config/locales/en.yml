@@ -127,6 +127,10 @@ en:
     too_long: "is too long"
     taken: "has already been taken"
   
+  # Users
+  users:
+    deleted_account: "Deleted Account"
+  
   # Profile page
   profiles:
     show:
@@ -179,7 +183,7 @@ en:
       confirm_button: "Yes, Delete My Account"
       password_label: "Password"
       password_placeholder: "Enter your password to confirm"
-      invalid_password: "is incorrect"
+      invalid_password: "The password you entered is incorrect"
       success: "Your account has been deleted successfully"
   
   # Devise views
