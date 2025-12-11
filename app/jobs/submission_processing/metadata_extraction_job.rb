@@ -3,7 +3,14 @@ module SubmissionProcessing
   class MetadataExtractionJob < ApplicationJob
     queue_as :default
 
+    # Public method that can be called directly (for orchestrator)
     def perform(submission_id)
+      extract_metadata(submission_id)
+    end
+
+    private
+
+    def extract_metadata(submission_id)
       submission = Submission.find(submission_id)
       
       # Skip if no URL

@@ -4,7 +4,14 @@ module SubmissionProcessing
   class DuplicateCheckJob < ApplicationJob
     queue_as :default
 
+    # Public method that can be called directly (for orchestrator)
     def perform(submission_id)
+      check_duplicate(submission_id)
+    end
+
+    private
+
+    def check_duplicate(submission_id)
       submission = Submission.find(submission_id)
       
       # Skip if no URL (future text-only posts)

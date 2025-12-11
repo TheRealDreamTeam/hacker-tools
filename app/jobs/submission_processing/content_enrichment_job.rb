@@ -3,7 +3,14 @@ module SubmissionProcessing
   class ContentEnrichmentJob < ApplicationJob
     queue_as :default
 
+    # Public method that can be called directly (for orchestrator)
     def perform(submission_id)
+      enrich_content(submission_id)
+    end
+
+    private
+
+    def enrich_content(submission_id)
       submission = Submission.find(submission_id)
       
       Rails.logger.info "Starting content enrichment for submission #{submission_id}"

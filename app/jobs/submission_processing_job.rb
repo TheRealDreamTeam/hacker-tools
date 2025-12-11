@@ -23,7 +23,8 @@ class SubmissionProcessingJob < ApplicationJob
     begin
       # Phase 1: Duplicate check and Safety check (parallel)
       # TODO: Add safety check job in future
-      duplicate_result = SubmissionProcessing::DuplicateCheckJob.perform_now(submission_id)
+      duplicate_check = SubmissionProcessing::DuplicateCheckJob.new
+      duplicate_result = duplicate_check.perform(submission_id)
       
       if duplicate_result[:duplicate]
         submission.update!(
