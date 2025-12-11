@@ -253,6 +253,13 @@ en:
         unlock_instructions: "Didn't receive unlock instructions?"
         sign_in_with: "Sign in with %{provider}"
 
+  # Lists
+  lists:
+    add_to_lists:
+      title: "Update lists"
+      select_message: "Select lists to add this tool to, or unselect to remove:"
+      submit_button: "Update lists"
+
   footer:
     about: "About"
     guidelines: "Guidelines"

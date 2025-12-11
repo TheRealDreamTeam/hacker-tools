@@ -41,4 +41,21 @@
       <%= tool.subscriber_count %>
     </span>
   </div>
+
+  <% if user_signed_in? && current_user.lists.any? %>
+    <div class="interaction-item d-flex flex-column align-items-center gap-1">
+      <button type="button" 
+              class="btn btn-outline-secondary btn-sm" 
+              data-controller="add-to-list-button"
+              data-action="click->add-to-list-button#open"
+              data-add-to-list-button-tool-id-value="<%= tool.id %>"
+              data-add-to-list-button-tool-name-value="<%= tool.tool_name %>"
+              data-add-to-list-button-lists-value="<%= current_user.lists.map { |l| { id: l.id, name: l.list_name, has_tool: l.tools.include?(tool) } }.to_json %>">
+        <i class="bi bi-list-ul"></i>
+      </button>
+      <span class="interaction-count">
+        <%= tool.lists.where(user: current_user).count %>
+      </span>
+    </div>
+  <% end %>
 </div>
