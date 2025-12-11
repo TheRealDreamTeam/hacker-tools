@@ -2,7 +2,7 @@
 
 This document serves as the human-readable specification for the Hacker Tools application. It is maintained alongside development and updated as features are built.
 
-**Last Updated**: 2025-12-11
+**Last Updated**: 2025-12-11 (Submission System - Phase 1, Week 1 Complete)
 
 ## Overview
 
@@ -16,20 +16,47 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ## Core Features
 
-### Tool Catalog
-- **Status**: In Progress
-- **Description**: Users publish tools with descriptions, links, and media. Visibility controls allow private/unlisted/public sharing.
+### Submission System
+- **Status**: Complete (Phase 1, Week 1)
+- **Description**: Users submit content (articles, guides, repos, etc.) about tools. Tools are community-owned entities, submissions are user-contributed content.
 - **User Stories**:
-  - As a user, I want to create a tool entry with description, icon, and link so others can discover it.
-  - As a visitor, I want to browse and filter tools by tags and lists so I can find relevant items quickly.
+  - As a user, I want to submit content about a tool so others can discover it.
+  - As a user, I want to see my submissions in my dashboard.
+  - As a visitor, I want to browse and filter submissions by type, status, and tool.
+  - As a user, I want to tag my submissions for better organization.
+  - As a user, I want to follow submissions to track updates.
+- **Technical Implementation**:
+  - Models: `Submission`, `SubmissionTag`, `ListSubmission`
+  - Ownership: `Submission` belongs to `User`; `Tool` is community-owned (no user ownership)
+  - Submission types: article, guide, documentation, github_repo, etc.
+  - Status workflow: pending → processing → completed/failed/rejected
+  - Routes: `resources :submissions` with nested comments and member routes for tags/follow
+  - URL normalization for duplicate detection (preserves content-identifying query params)
+  - Polymorphic comments (can comment on both Tools and Submissions)
+- **UI/UX Considerations**:
+  - Submission index with filtering (by type, status, tool)
+  - Submission show page with comments, flags, bugs, tags
+  - Tag management (add/remove tags - owner only)
+  - Follow/unfollow functionality
+  - Turbo Streams for real-time updates
+- **Dependencies**:
+  - Devise-authenticated users to create/edit submissions
+  - Processing pipeline (Step 2.1+) for automatic enrichment
+
+### Tool Catalog
+- **Status**: Updated - Community-Owned
+- **Description**: Tools are community-owned top-level entities. Users submit content about tools, they don't own tools.
+- **User Stories**:
+  - As a visitor, I want to browse tools and see submissions about them.
+  - As a visitor, I want to filter tools by tags and lists.
 - **Technical Implementation**:
   - Models: `Tool`, `Tag`, `ToolTag`, `List`, `ListTool`
-  - Ownership: `Tool` belongs to `User`
+  - Ownership: Tools are community-owned (no user ownership)
   - Visibility/list types modeled as enums on `Tool` and `List`
   - Tagging and list inclusion via join tables
   - Routes: `resources :tools` (index, show, new, create, edit, update, destroy)
   - Active Storage attachments for tool `icon` and `picture`
-  - Creation flow: user supplies URL + author note; name/description/picture can be LLM-generated from URL
+  - Polymorphic comments (can comment on both Tools and Submissions)
 - **UI/UX Considerations**:
   - Use Bootstrap grid/cards; responsive at mobile breakpoints
   - Turbo Streams for live updates when tools are added/edited
@@ -60,7 +87,7 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 ## Data Models
 
 ### User (Devise)
-- **Purpose**: Authenticated account that owns tools/lists and participates in discussions.
+- **Purpose**: Authenticated account that submits content, creates lists, and participates in discussions.
 - **Attributes**:
   - `email` (string, required, unique among active users)
   - `encrypted_password` (string, required)
@@ -70,9 +97,11 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - `user_bio` (text)
 - **Active Storage**: `avatar` attachment
 - **Associations**:
-  - `has_many :tools`, `has_many :lists`, `has_many :comments`
+  - `has_many :submissions` (user-contributed content about tools)
+  - `has_many :lists`, `has_many :comments`
   - `has_many :user_tools`, `has_many :tool_interactions, through: :user_tools`
   - `has_many :comment_upvotes`
+- **Status**: Updated - Removed `has_many :tools`; users no longer own tools, they submit content about tools
 - **Validations**: 
   - Presence on username/email
   - Uniqueness on username/email among active users only (allows reuse after deletion)
@@ -89,11 +118,12 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Username/email become immediately available for reuse
 
 ### Tool
-- **Purpose**: A published tool with metadata, owned by a user.
+- **Purpose**: Community-owned top-level entity representing any software-related concept, technology, service, or platform. Tools are shared community resources, not user-owned.
 - **Attributes**: `tool_name` (string, required), `tool_description` (text), `tool_url` (string), `author_note` (text), `visibility` (integer enum)
 - **Active Storage**: `icon`, `picture` attachments
-- **Associations**: `belongs_to :user`; `has_many :comments`; `has_many :tags, through: :tool_tags`; `has_many :lists, through: :list_tools`; `has_many :user_tools`
+- **Associations**: `has_many :submissions`; `has_many :comments, as: :commentable` (polymorphic); `has_many :tags, through: :tool_tags`; `has_many :lists, through: :list_tools`; `has_many :user_tools`
 - **Validations**: Presence on name; visibility enum.
+- **Status**: Updated - Removed user ownership; tools are now community-owned entities
 
 ### List
 - **Purpose**: Curated collection of tools for a user.
@@ -112,10 +142,11 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - `followed_by?(user)` - Checks if a user is following this list
 
 ### Comment
-- **Purpose**: Threaded discussion on a tool.
+- **Purpose**: Threaded discussion on tools or submissions (polymorphic).
 - **Attributes**: `comment` (text, required), `comment_type` (integer enum: comment/flag/bug), `parent_id` (self-referential), `solved` (boolean)
-- **Associations**: `belongs_to :tool`; `belongs_to :user`; `belongs_to :parent, class_name: "Comment", optional: true`; `has_many :replies, class_name: "Comment"`
+- **Associations**: `belongs_to :commentable, polymorphic: true` (can be Tool or Submission); `belongs_to :user`; `belongs_to :parent, class_name: "Comment", optional: true`; `has_many :replies, class_name: "Comment"`
 - **Validations**: Presence on body; presence on type.
+- **Status**: Updated - Now polymorphic to support comments on both Tools and Submissions
 
 ### Tag
 - **Purpose**: Hierarchical classification system for tools with parent-child relationships.
@@ -154,6 +185,55 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - `cannot_follow_self` - Prevents users from following themselves (when followable_type is "User")
   - `cannot_follow_own_list` - Prevents users from following their own lists (when followable_type is "List")
 - **Behavior**: Replaces tool subscriptions; used for following users/tools/lists/tags.
+
+### Submission
+- **Purpose**: User-contributed content about tools. Can be articles, guides, documentation, GitHub repos, etc.
+- **Attributes**: 
+  - `submission_url` (string, nullable - for future text-only posts)
+  - `normalized_url` (string, nullable, unique scoped to user_id)
+  - `submission_type` (integer enum: article, guide, documentation, github_repo, etc.)
+  - `status` (integer enum: pending, processing, completed, failed, rejected)
+  - `author_note` (text - free text description from user)
+  - `submission_name` (string - extracted/derived name)
+  - `submission_description` (text - extracted description)
+  - `metadata` (jsonb - flexible data storage)
+  - `duplicate_of_id` (references submissions - for duplicate detection)
+  - `processed_at` (datetime - when processing completed)
+- **Associations**: 
+  - `belongs_to :user` (user who submitted the content)
+  - `belongs_to :tool, optional: true` (tool this submission is about)
+  - `has_many :submission_tags`; `has_many :tags, through: :submission_tags`
+  - `has_many :list_submissions`; `has_many :lists, through: :list_submissions`
+  - `has_many :comments, as: :commentable` (polymorphic)
+  - `has_many :follows, as: :followable` (polymorphic)
+  - `has_many :followers, through: :follows, source: :user`
+- **Validations**: 
+  - Presence of user
+  - URL format validation (when submission_url present)
+  - Uniqueness of normalized_url scoped to user_id
+- **Scopes**: 
+  - `pending`, `completed`, `processing`, `failed`, `rejected` (by status)
+  - `recent` (ordered by created_at desc)
+  - `by_type(type)` (filter by submission_type)
+  - `for_tool(tool)` (filter by tool)
+- **Helper Methods**: 
+  - `follower_count` - Returns count of users following this submission
+  - `duplicate?` - Checks if submission is marked as duplicate
+  - `metadata_value(key)` - Retrieves value from metadata JSONB
+  - `set_metadata_value(key, value)` - Sets value in metadata JSONB
+- **Status**: Complete - Full CRUD with tag management, follow functionality, and polymorphic comments
+
+### SubmissionTag (join)
+- **Purpose**: Many-to-many between submissions and tags.
+- **Attributes**: `submission_id`, `tag_id`
+- **Associations**: `belongs_to :submission`; `belongs_to :tag`
+- **Validations**: Uniqueness on `[submission_id, tag_id]`.
+
+### ListSubmission (join)
+- **Purpose**: Submissions included in a list.
+- **Attributes**: `list_id`, `submission_id`
+- **Associations**: `belongs_to :list`; `belongs_to :submission`
+- **Validations**: Uniqueness on `[list_id, submission_id]`.
 
 ### CommentUpvote (join)
 - **Purpose**: User upvotes on comments.
