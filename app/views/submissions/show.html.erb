@@ -1,4 +1,10 @@
+<%# Subscribe to Turbo Stream updates for real-time processing status %>
+<%= turbo_stream_from "submission_#{@submission.id}" %>
+
 <div class="p-2">
+  <%# Processing status container (updated via Turbo Streams) %>
+  <div id="submission-processing-status-container"></div>
+  
   <div class="d-flex justify-content-between align-items-start mb-3">
     <div>
       <h1 class="h3 mb-2">
