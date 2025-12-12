@@ -1,5 +1,5 @@
-<% state_upvote   = interaction_button_state(submission, current_user, :upvote) %>
-<% state_follow   = interaction_button_state(submission, current_user, :follow) %>
+<% state_upvote   = submission_interaction_button_state(submission, current_user, :upvote) %>
+<% state_follow   = submission_interaction_button_state(submission, current_user, :follow) %>
 
 <div id="<%= dom_id(submission, 'interactions') %>" class="interaction-buttons d-flex align-items-start gap-3 flex-wrap">
   <div class="interaction-item d-flex flex-column align-items-center gap-1">

@@ -1,6 +1,7 @@
 module SubmissionsHelper
   # Determine Bootstrap icon and button style for interaction buttons.
-  def interaction_button_state(submission, current_user, type)
+  # This method is specifically for Submission objects (not Tool objects)
+  def submission_interaction_button_state(submission, current_user, type)
     user_submission = submission.user_submission_for(current_user)
     active =
       case type
