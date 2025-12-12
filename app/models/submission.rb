@@ -22,10 +22,9 @@ class Submission < ApplicationRecord
   has_many :follows, as: :followable, dependent: :destroy
   has_many :followers, through: :follows, source: :user
   
-  # User interactions (upvotes, favorites, read tracking)
+  # User interactions (upvotes, read tracking)
   has_many :user_submissions, dependent: :destroy
   has_many :upvoters, -> { where(user_submissions: { upvote: true }) }, through: :user_submissions, source: :user
-  has_many :favoriters, -> { where(user_submissions: { favorite: true }) }, through: :user_submissions, source: :user
   
   # Active Storage attachments (for future use - images, etc.)
   has_one_attached :icon
@@ -167,16 +166,8 @@ class Submission < ApplicationRecord
     user_submission_for(user)&.upvote?
   end
 
-  def favorited_by?(user)
-    user_submission_for(user)&.favorite?
-  end
-
   def upvote_count
     user_submissions.where(upvote: true).count
-  end
-  
-  def favorite_count
-    user_submissions.where(favorite: true).count
   end
   
   # Get metadata value

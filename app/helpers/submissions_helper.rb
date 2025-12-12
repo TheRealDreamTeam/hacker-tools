@@ -5,7 +5,6 @@ module SubmissionsHelper
     active =
       case type
       when :upvote then user_submission&.upvote?
-      when :favorite then user_submission&.favorite?
       when :follow then current_user&.follows&.exists?(followable: submission)
       else false
       end
@@ -13,7 +12,6 @@ module SubmissionsHelper
     icon_class =
       case type
       when :upvote then active ? "bi bi-arrow-up-circle-fill" : "bi bi-arrow-up-circle"
-      when :favorite then active ? "bi bi-star-fill" : "bi bi-star"
       when :follow then active ? "bi bi-bell-fill" : "bi bi-bell"
       end
 

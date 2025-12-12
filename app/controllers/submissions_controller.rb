@@ -1,6 +1,6 @@
 class SubmissionsController < ApplicationController
   before_action :authenticate_user!, except: %i[index show]
-  before_action :set_submission, only: %i[show edit update destroy add_tag remove_tag follow upvote favorite]
+  before_action :set_submission, only: %i[show edit update destroy add_tag remove_tag follow upvote]
   before_action :authorize_owner!, only: %i[edit update destroy add_tag remove_tag]
 
   # GET /submissions
@@ -201,11 +201,6 @@ class SubmissionsController < ApplicationController
   # POST /submissions/:id/upvote
   def upvote
     toggle_interaction_flag(:upvote, :submission_upvote)
-  end
-
-  # POST /submissions/:id/favorite
-  def favorite
-    toggle_interaction_flag(:favorite, :submission_favorite)
   end
 
   private

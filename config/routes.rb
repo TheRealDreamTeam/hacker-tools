@@ -38,7 +38,6 @@ Rails.application.routes.draw do
       post :add_tag, on: :member
       delete :remove_tag, on: :member
       post :upvote, on: :member, to: "submissions#upvote"
-      post :favorite, on: :member, to: "submissions#favorite"
       post :follow, on: :member, to: "submissions#follow"
     end
     # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
