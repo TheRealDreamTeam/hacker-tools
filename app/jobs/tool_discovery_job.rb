@@ -68,11 +68,22 @@ class ToolDiscoveryJob < ApplicationJob
     updates = {}
 
     # Update tool_url if we discovered one and tool doesn't have one
+    # Validate that the URL is actually a valid URL format before updating
     if discovery_result[:official_website].present? && tool.tool_url.blank?
-      updates[:tool_url] = discovery_result[:official_website]
+      url = discovery_result[:official_website].strip
+      if valid_url?(url)
+        updates[:tool_url] = url
+      else
+        Rails.logger.warn "Skipping invalid URL for tool #{tool.id}: '#{url}'"
+      end
     elsif discovery_result[:github_repo].present? && tool.tool_url.blank?
       # Prefer official website, but use GitHub if that's all we have
-      updates[:tool_url] = discovery_result[:github_repo]
+      url = discovery_result[:github_repo].strip
+      if valid_url?(url)
+        updates[:tool_url] = url
+      else
+        Rails.logger.warn "Skipping invalid GitHub URL for tool #{tool.id}: '#{url}'"
+      end
     end
 
     # Update description if we got a better one
