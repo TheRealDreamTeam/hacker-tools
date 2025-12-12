@@ -82,6 +82,10 @@ class UnifiedSearchService
     query_embedding = generate_query_embedding(@query)
     return [] if query_embedding.nil?
 
+    # Format embedding array as PostgreSQL array literal string
+    # pgvector requires the array to be formatted as '[0.1,0.2,0.3]' before casting to vector
+    vector_string = "[#{query_embedding.join(',')}]"
+
     # Find tools with embeddings using cosine similarity
     # Use raw SQL for vector similarity search (pgvector)
     # Cosine distance: 1 - cosine_similarity (lower is more similar)
@@ -96,7 +100,7 @@ class UnifiedSearchService
       LIMIT ?
     SQL
 
-    params = [query_embedding, query_embedding, @limit * 2]
+    params = [vector_string, vector_string, @limit * 2]
 
     results = Tool.find_by_sql([sql, *params])
     
