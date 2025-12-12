@@ -99,7 +99,7 @@ class Submission < ApplicationRecord
       .where(status: statuses[:completed])
       .select("submissions.*, COUNT(user_submissions.id) AS upvotes_count")
       .group("submissions.id")
-      .order("upvotes_count DESC, submissions.created_at DESC")
+      .order("COUNT(user_submissions.id) DESC, submissions.created_at DESC")
   }
   
   # New & Hot: Submissions created in last 7 days, ranked by upvotes
@@ -109,7 +109,7 @@ class Submission < ApplicationRecord
       .left_joins(:user_submissions)
       .select("submissions.*, COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0) AS upvotes_count")
       .group("submissions.id")
-      .order("upvotes_count DESC, submissions.created_at DESC")
+      .order("COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0) DESC, submissions.created_at DESC")
   }
   
   # Most Upvoted: Submissions with most upvotes total
@@ -118,7 +118,7 @@ class Submission < ApplicationRecord
       .left_joins(:user_submissions)
       .select("submissions.*, COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0) AS upvotes_count")
       .group("submissions.id")
-      .order("upvotes_count DESC, submissions.created_at DESC")
+      .order("COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0) DESC, submissions.created_at DESC")
   }
   
   # Helper methods for status checks
