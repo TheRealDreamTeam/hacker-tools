@@ -120,7 +120,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
       }
     end
     submission = Submission.last
-    assert_equal @tool, submission.tool
+    assert_includes submission.tools, @tool
   end
 
   test "should prevent duplicate submission from same user" do

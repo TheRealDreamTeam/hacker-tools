@@ -68,7 +68,7 @@ class SubmissionTest < ActiveSupport::TestCase
   test "should belong to tool optionally" do
     tool = create(:tool)
     submission = create(:submission, tool: tool)
-    assert_equal tool, submission.tool
+    assert_includes submission.tools, tool
   end
 
   test "should have many submission_tags" do
