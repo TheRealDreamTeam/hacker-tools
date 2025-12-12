@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_12_000156) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_12_014156) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
@@ -188,6 +188,20 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_12_000156) do
     t.index ["tool_name"], name: "index_tools_on_tool_name"
   end
 
+  create_table "user_submissions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "submission_id", null: false
+    t.datetime "read_at"
+    t.boolean "upvote", default: false, null: false
+    t.boolean "favorite", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["submission_id", "upvote"], name: "index_user_submissions_on_submission_id_and_upvote", where: "(upvote = true)"
+    t.index ["submission_id"], name: "index_user_submissions_on_submission_id"
+    t.index ["user_id", "submission_id"], name: "index_user_submissions_on_user_id_and_submission_id", unique: true
+    t.index ["user_id"], name: "index_user_submissions_on_user_id"
+  end
+
   create_table "user_tools", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "tool_id", null: false
@@ -237,6 +251,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_12_000156) do
   add_foreign_key "tags", "tags", column: "parent_id"
   add_foreign_key "tool_tags", "tags"
   add_foreign_key "tool_tags", "tools"
+  add_foreign_key "user_submissions", "submissions"
+  add_foreign_key "user_submissions", "users"
   add_foreign_key "user_tools", "tools"
   add_foreign_key "user_tools", "users"
 end

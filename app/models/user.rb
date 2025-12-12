@@ -30,6 +30,9 @@ class User < ApplicationRecord
   # Through associations for interactions
   has_many :upvoted_tools, -> { where(user_tools: { upvote: true }) }, through: :user_tools, source: :tool
   has_many :favorited_tools, -> { where(user_tools: { favorite: true }) }, through: :user_tools, source: :tool
+  has_many :user_submissions, dependent: :destroy
+  has_many :upvoted_submissions, -> { where(user_submissions: { upvote: true }) }, through: :user_submissions, source: :submission
+  has_many :favorited_submissions, -> { where(user_submissions: { favorite: true }) }, through: :user_submissions, source: :submission
 
   # Polymorphic follows
   has_many :followed_tools, -> { where(follows: { followable_type: "Tool" }) }, through: :follows, source: :followable, source_type: "Tool"

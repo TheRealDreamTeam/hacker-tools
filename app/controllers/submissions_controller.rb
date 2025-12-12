@@ -1,6 +1,6 @@
 class SubmissionsController < ApplicationController
   before_action :authenticate_user!, except: %i[index show]
-  before_action :set_submission, only: %i[show edit update destroy add_tag remove_tag follow]
+  before_action :set_submission, only: %i[show edit update destroy add_tag remove_tag follow upvote favorite]
   before_action :authorize_owner!, only: %i[edit update destroy add_tag remove_tag]
 
   # GET /submissions
@@ -48,6 +48,9 @@ class SubmissionsController < ApplicationController
     @sort_by = params[:sort_by] || "recent"
     @sort_by_flags = params[:sort_by_flags] || "recent"
     @sort_by_bugs = params[:sort_by_bugs] || "recent"
+
+    # Track read interaction (similar to tools)
+    touch_read_interaction
 
     # Load comments with upvote counts and user upvote status
     comments_base = @submission.comments.comment_type_comment.top_level.includes(:user, :comment_upvotes, replies: [:user, :comment_upvotes])
@@ -195,6 +198,16 @@ class SubmissionsController < ApplicationController
     end
   end
 
+  # POST /submissions/:id/upvote
+  def upvote
+    toggle_interaction_flag(:upvote, :submission_upvote)
+  end
+
+  # POST /submissions/:id/favorite
+  def favorite
+    toggle_interaction_flag(:favorite, :submission_favorite)
+  end
+
   private
 
   def set_submission
@@ -223,6 +236,34 @@ class SubmissionsController < ApplicationController
       comments.trending
     else
       comments.recent
+    end
+  end
+
+  private
+
+  def touch_read_interaction
+    return unless current_user
+
+    user_submission = ensure_user_submission
+    user_submission.read_at ||= Time.current
+    user_submission.save if user_submission.changed?
+  end
+
+  def ensure_user_submission
+    @user_submission ||= @submission.user_submissions.find_or_create_by(user: current_user)
+  end
+
+  def toggle_interaction_flag(flag, i18n_key)
+    return redirect_to new_user_session_path unless current_user
+
+    user_submission = ensure_user_submission
+    new_value = !user_submission.public_send(flag)
+    user_submission.read_at ||= Time.current
+    user_submission.update(flag => new_value, read_at: user_submission.read_at)
+
+    respond_to do |format|
+      format.turbo_stream { render "submissions/interaction_update" }
+      format.html { redirect_back fallback_location: submission_path(@submission), notice: t("submissions.flash.#{i18n_key}") }
     end
   end
 end

@@ -22,6 +22,11 @@ class Submission < ApplicationRecord
   has_many :follows, as: :followable, dependent: :destroy
   has_many :followers, through: :follows, source: :user
   
+  # User interactions (upvotes, favorites, read tracking)
+  has_many :user_submissions, dependent: :destroy
+  has_many :upvoters, -> { where(user_submissions: { upvote: true }) }, through: :user_submissions, source: :user
+  has_many :favoriters, -> { where(user_submissions: { favorite: true }) }, through: :user_submissions, source: :user
+  
   # Active Storage attachments (for future use - images, etc.)
   has_one_attached :icon
   has_one_attached :picture
@@ -87,33 +92,33 @@ class Submission < ApplicationRecord
   scope :for_tool, ->(tool) { joins(:submission_tools).where(submission_tools: { tool_id: tool.id }) }
   
   # Engagement scopes for home page categories
-  # Trending: Most followed submissions in the last 30 days
+  # Trending: Most upvoted submissions in the last 30 days
   scope :trending, -> {
-    joins(:follows)
-      .where("follows.created_at >= ?", 30.days.ago)
+    joins(:user_submissions)
+      .where("user_submissions.upvote = ? AND user_submissions.created_at >= ?", true, 30.days.ago)
       .where(status: statuses[:completed])
-      .select("submissions.*, COUNT(follows.id) AS followers_count")
+      .select("submissions.*, COUNT(user_submissions.id) AS upvotes_count")
       .group("submissions.id")
-      .order("followers_count DESC, submissions.created_at DESC")
+      .order("upvotes_count DESC, submissions.created_at DESC")
   }
   
-  # New & Hot: Submissions created in last 7 days, ranked by followers
+  # New & Hot: Submissions created in last 7 days, ranked by upvotes
   scope :new_hot, -> {
     where("submissions.created_at >= ?", 7.days.ago)
       .where(status: statuses[:completed])
-      .left_joins(:follows)
-      .select("submissions.*, COALESCE(COUNT(follows.id), 0) AS followers_count")
+      .left_joins(:user_submissions)
+      .select("submissions.*, COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0) AS upvotes_count")
       .group("submissions.id")
-      .order("followers_count DESC, submissions.created_at DESC")
+      .order("upvotes_count DESC, submissions.created_at DESC")
   }
   
-  # Most Followed: Submissions with most followers total
-  scope :most_followed, -> {
+  # Most Upvoted: Submissions with most upvotes total
+  scope :most_upvoted, -> {
     where(status: statuses[:completed])
-      .left_joins(:follows)
-      .select("submissions.*, COALESCE(COUNT(follows.id), 0) AS followers_count")
+      .left_joins(:user_submissions)
+      .select("submissions.*, COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0) AS upvotes_count")
       .group("submissions.id")
-      .order("followers_count DESC, submissions.created_at DESC")
+      .order("upvotes_count DESC, submissions.created_at DESC")
   }
   
   # Helper methods for status checks
@@ -145,6 +150,33 @@ class Submission < ApplicationRecord
   # Get follower count
   def follower_count
     follows.count
+  end
+  
+  # Interaction helpers (similar to Tool model)
+  def user_submission_for(user)
+    return nil unless user
+
+    if user_submissions.loaded?
+      user_submissions.find { |us| us.user_id == user.id }
+    else
+      user_submissions.find_by(user: user)
+    end
+  end
+
+  def upvoted_by?(user)
+    user_submission_for(user)&.upvote?
+  end
+
+  def favorited_by?(user)
+    user_submission_for(user)&.favorite?
+  end
+
+  def upvote_count
+    user_submissions.where(upvote: true).count
+  end
+  
+  def favorite_count
+    user_submissions.where(favorite: true).count
   end
   
   # Get metadata value

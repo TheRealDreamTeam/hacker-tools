@@ -1,13 +1,41 @@
-<% state_follow = current_user&.follows&.exists?(followable: submission) %>
+<% state_upvote   = interaction_button_state(submission, current_user, :upvote) %>
+<% state_favorite = interaction_button_state(submission, current_user, :favorite) %>
+<% state_follow   = interaction_button_state(submission, current_user, :follow) %>
 
 <div id="<%= dom_id(submission, 'interactions') %>" class="interaction-buttons d-flex align-items-start gap-3 flex-wrap">
   <div class="interaction-item d-flex flex-column align-items-center gap-1">
+    <%= button_to upvote_submission_path(submission),
+                  method: :post,
+                  class: state_upvote[:btn_class],
+                  title: t("submissions.actions.upvote"),
+                  aria: { label: t("submissions.actions.upvote") } do %>
+      <i class="<%= state_upvote[:icon_class] %> <%= state_upvote[:active] ? 'text-primary' : 'text-secondary' %>"></i>
+    <% end %>
+    <span class="interaction-count" title="<%= t('submissions.actions.upvote') %>" aria-label="<%= t('submissions.actions.upvote') %>">
+      <%= submission.upvote_count %>
+    </span>
+  </div>
+
+  <div class="interaction-item d-flex flex-column align-items-center gap-1">
+    <%= button_to favorite_submission_path(submission),
+                  method: :post,
+                  class: state_favorite[:btn_class],
+                  title: t("submissions.actions.favorite"),
+                  aria: { label: t("submissions.actions.favorite") } do %>
+      <i class="<%= state_favorite[:icon_class] %> <%= state_favorite[:active] ? 'text-warning' : 'text-secondary' %>"></i>
+    <% end %>
+    <span class="interaction-count" title="<%= t('submissions.actions.favorite') %>" aria-label="<%= t('submissions.actions.favorite') %>">
+      <%= submission.favorite_count %>
+    </span>
+  </div>
+
+  <div class="interaction-item d-flex flex-column align-items-center gap-1">
     <%= button_to follow_submission_path(submission),
                   method: :post,
-                  class: "btn btn-sm btn-outline-secondary interaction-btn",
+                  class: state_follow[:btn_class],
                   title: t("submissions.actions.follow"),
                   aria: { label: t("submissions.actions.follow") } do %>
-      <i class="bi <%= state_follow ? 'bi-bell-fill' : 'bi-bell' %> <%= state_follow ? 'text-secondary' : 'text-secondary' %>"></i>
+      <i class="<%= state_follow[:icon_class] %> <%= state_follow[:active] ? 'text-secondary' : 'text-secondary' %>"></i>
     <% end %>
     <span class="interaction-count" title="<%= t('submissions.actions.follow') %>" aria-label="<%= t('submissions.actions.follow') %>">
       <%= submission.follower_count %>

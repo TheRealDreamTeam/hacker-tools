@@ -38,10 +38,10 @@ class PagesController < ApplicationController
                          .limit(10)
                          .includes(:tags, :user_tools)
 
-    # Get trending submissions (most followed in last 30 days)
+    # Get trending submissions (most upvoted in last 30 days)
     trending_submissions = Submission.trending
                                      .limit(10)
-                                     .includes(:user, :tools, :tags)
+                                     .includes(:user, :tools, :tags, :user_submissions)
 
     combine_and_rank_items(trending_tools.to_a, trending_submissions.to_a)
   end
@@ -58,15 +58,15 @@ class PagesController < ApplicationController
                         .limit(10)
                         .includes(:tags, :user_tools)
 
-    # Get new & hot submissions (created in last 7 days, ranked by followers)
+    # Get new & hot submissions (created in last 7 days, ranked by upvotes)
     new_hot_submissions = Submission.new_hot
                                     .limit(10)
-                                    .includes(:user, :tools, :tags)
+                                    .includes(:user, :tools, :tags, :user_submissions)
 
     combine_and_rank_items(new_hot_tools.to_a, new_hot_submissions.to_a)
   end
 
-  # Get most upvoted/followed items (tools + submissions) all time
+  # Get most upvoted items (tools + submissions) all time
   def get_most_upvoted_items
     # Get most upvoted tools
     most_upvoted_tools = Tool.public_tools
@@ -77,16 +77,16 @@ class PagesController < ApplicationController
                              .limit(10)
                              .includes(:tags, :user_tools)
 
-    # Get most followed submissions
-    most_followed_submissions = Submission.most_followed
+    # Get most upvoted submissions
+    most_upvoted_submissions = Submission.most_upvoted
                                           .limit(10)
-                                          .includes(:user, :tools, :tags)
+                                          .includes(:user, :tools, :tags, :user_submissions)
 
-    combine_and_rank_items(most_upvoted_tools.to_a, most_followed_submissions.to_a)
+    combine_and_rank_items(most_upvoted_tools.to_a, most_upvoted_submissions.to_a)
   end
 
   # Combine tools and submissions into a unified array with type indicators
-  # Items are sorted by engagement (upvotes for tools, followers for submissions)
+  # Items are sorted by engagement (upvotes for both tools and submissions)
   def combine_and_rank_items(tools, submissions)
     items = []
 
@@ -103,11 +103,11 @@ class PagesController < ApplicationController
 
     # Add submissions with type indicator
     submissions.each do |submission|
-      followers = submission.respond_to?(:followers_count) ? submission.followers_count.to_i : 0
+      upvotes = submission.respond_to?(:upvotes_count) ? submission.upvotes_count.to_i : 0
       items << {
         type: :submission,
         item: submission,
-        engagement: followers,
+        engagement: upvotes,
         created_at: submission.created_at
       }
     end
