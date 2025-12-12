@@ -9,10 +9,17 @@
         <!-- Left content: star, title, description, tags -->
         <div class="col-12 col-md-5">
           <div class="d-flex justify-content-between align-items-start mb-1 position-relative">
-            <h5 class="card-title mb-0">
+            <h5 class="card-title mb-0 <%= 'pe-4' if user_signed_in? %> flex-grow-1">
               <%= link_to "#{index + 1}. #{tool.tool_name}", tool_path(tool), class: "text-decoration-none" %>
             </h5>
-            <%= render "tools/read_state", tool: tool, classes: "position-absolute top-0 end-0 mt-1 me-1" %>
+            <% if user_signed_in? %>
+              <%= render "tools/read_state", tool: tool, classes: "ms-2 mt-1 flex-shrink-0" %>
+            <% end %>
+          </div>
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="badge bg-primary" style="font-size: 0.75rem;">
+              <%= t("tools.type") %>
+            </span>
           </div>
           <p class="card-text text-muted mb-2"><%= tool.tool_description.presence || t("pages.home.card.description", index: index + 1) %></p>
           <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
@@ -35,13 +42,11 @@
 
         <!-- Right content: logo + upvotes aligned on the same row -->
         <div class="col-12 col-md-7 d-flex justify-content-md-end justify-content-start align-items-center gap-3 mt-3 mt-md-0">
-          <div class="border rounded-circle bg-light d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
-            <% if tool.icon.attached? %>
+          <% if tool.icon.attached? %>
+            <div class="border rounded-circle bg-light d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
               <%= image_tag tool.icon, alt: tool.tool_name, class: "rounded-circle", style: "width: 64px; height: 64px; object-fit: cover;" %>
-            <% else %>
-              <span class="text-muted small"><%= t("pages.home.card.logo_placeholder") %></span>
-            <% end %>
-          </div>
+            </div>
+          <% end %>
           <%= render "tools/interaction_buttons", tool: tool %>
         </div>
       </div>
@@ -56,11 +61,14 @@
         <!-- Left content: number, title, description, tags -->
         <div class="col-12 col-md-5">
           <div class="d-flex justify-content-between align-items-start mb-1 position-relative">
-            <h5 class="card-title mb-0">
+            <h5 class="card-title mb-0 <%= 'pe-4' if user_signed_in? %> flex-grow-1">
               <%= link_to "#{index + 1}. #{submission.submission_name.presence || submission.submission_url}", 
                           submission_path(submission), 
                           class: "text-decoration-none" %>
             </h5>
+            <% if user_signed_in? %>
+              <%= render "submissions/read_state", submission: submission, classes: "ms-2 mt-1 flex-shrink-0" %>
+            <% end %>
           </div>
           <div class="d-flex align-items-center gap-2 mb-2">
             <span class="badge bg-primary" style="font-size: 0.75rem;">
@@ -82,13 +90,11 @@
 
         <!-- Right content: icon + upvote button -->
         <div class="col-12 col-md-7 d-flex justify-content-md-end justify-content-start align-items-center gap-3 mt-3 mt-md-0">
-          <div class="border rounded-circle bg-light d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
-            <% if submission.icon.attached? %>
+          <% if submission.icon.attached? %>
+            <div class="border rounded-circle bg-light d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
               <%= image_tag submission.icon, alt: submission.submission_name, class: "rounded-circle", style: "width: 64px; height: 64px; object-fit: cover;" %>
-            <% else %>
-              <span class="text-muted small"><%= t("pages.home.card.logo_placeholder") %></span>
-            <% end %>
-          </div>
+            </div>
+          <% end %>
           <%= render "submissions/interaction_buttons", submission: submission %>
         </div>
       </div>

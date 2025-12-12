@@ -55,7 +55,8 @@ class SubmissionSearchService
 
     # Use pg_search scope for full-text search
     # This uses PostgreSQL's full-text search with trigram for fuzzy matching
-    results = base_scope.search_by_text(@query)
+    # Must chain .with_pg_search_rank to access the pg_search_rank attribute
+    results = base_scope.search_by_text(@query).with_pg_search_rank
     
     # Return as array with relevance scores
     # pg_search adds a `pg_search_rank` attribute to each result
@@ -80,6 +81,10 @@ class SubmissionSearchService
     query_embedding = generate_query_embedding(@query)
     return [] if query_embedding.nil?
 
+    # Format embedding array as PostgreSQL array literal string
+    # pgvector requires the array to be formatted as '[0.1,0.2,0.3]' before casting to vector
+    vector_string = "[#{query_embedding.join(',')}]"
+
     # Find submissions with embeddings using cosine similarity
     # Use raw SQL for vector similarity search (pgvector)
     # Cosine distance: 1 - cosine_similarity (lower is more similar)
@@ -95,9 +100,9 @@ class SubmissionSearchService
       LIMIT ?
     SQL
 
-    params = [query_embedding, Submission.statuses[@status]]
+    params = [vector_string, Submission.statuses[@status]]
     params << Submission.submission_types[@submission_type] if @submission_type.present?
-    params << query_embedding
+    params << vector_string
     params << @limit * 2 # Get more results for ranking
 
     results = Submission.find_by_sql([sql, *params])

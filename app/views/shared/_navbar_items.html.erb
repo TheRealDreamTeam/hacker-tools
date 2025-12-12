@@ -2,11 +2,6 @@
 <% unless devise_controller? %>
   <% if user_signed_in? %>
   <li class="nav-item">
-    <%= link_to t("navigation.home"), root_path,
-        class: "nav-link",
-        data: { turbo_prefetch: false } %>
-  </li>
-  <li class="nav-item">
     <%= link_to t("navigation.submissions"), submissions_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>

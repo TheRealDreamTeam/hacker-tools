@@ -10,6 +10,9 @@
       <h1 class="h3 mb-2" id="submission-title">
         <%= @submission.submission_name.presence || @submission.submission_url %>
       </h1>
+      <p class="text-secondary mb-1 d-flex align-items-center gap-2">
+        <%= render "submissions/read_state", submission: @submission %>
+      </p>
       <div class="d-flex align-items-center gap-2 mb-2" id="submission-status-badges">
         <span class="badge bg-primary">
           <%= t("submissions.types.#{@submission.submission_type}") %>

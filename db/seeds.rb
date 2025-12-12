@@ -68,7 +68,14 @@ ActiveRecord::Base.transaction do
     { key: :charlie, email: "charlie@example.com", username: "charlie_frontend", bio: "Frontend lead focused on DX and performance." },
     { key: :diana, email: "diana@example.com", username: "diana_data", bio: "Data/ML engineer building evals and pipelines." },
     { key: :eve, email: "eve@example.com", username: "eve_security", bio: "Security engineer building safer CI/CD." },
-    { key: :frank, email: "frank@example.com", username: "frank_product", bio: "PM curating tools for the team." }
+    { key: :frank, email: "frank@example.com", username: "frank_product", bio: "PM curating tools for the team." },
+    { key: :grace, email: "grace@example.com", username: "grace_mobile", bio: "Mobile developer working on React Native and Flutter apps." },
+    { key: :henry, email: "henry@example.com", username: "henry_backend", bio: "Backend engineer specializing in microservices and APIs." },
+    { key: :ivy, email: "ivy@example.com", username: "ivy_design", bio: "Design engineer bridging UI/UX and frontend development." },
+    { key: :jack, email: "jack@example.com", username: "jack_qa", bio: "QA engineer focused on automation and test infrastructure." },
+    { key: :kate, email: "kate@example.com", username: "kate_ml", bio: "ML engineer building recommendation systems and NLP models." },
+    { key: :liam, email: "liam@example.com", username: "liam_sre", bio: "SRE managing production systems and incident response." },
+    { key: :mia, email: "mia@example.com", username: "mia_architect", bio: "Solutions architect designing scalable distributed systems." }
   ]
 
   user_defs.each do |attrs|
@@ -148,7 +155,19 @@ ActiveRecord::Base.transaction do
     { key: :langchain, name: "LangChain", url: "https://python.langchain.com", desc: "LLM orchestration library.", note: "Used for agent experiments.", tags: %i[ai llm python], created_at: 7.days.ago },
     { key: :openai, name: "OpenAI API", url: "https://platform.openai.com", desc: "GPT models and embeddings.", note: "Default LLM provider.", tags: %i[ai llm], created_at: 7.days.ago },
     { key: :pytest, name: "Pytest", url: "https://docs.pytest.org", desc: "Python testing framework.", note: "Fast tests and fixtures.", tags: %i[python testing], created_at: 5.days.ago },
-    { key: :react, name: "React", url: "https://react.dev", desc: "Component-based UI library.", note: "Used for comparison to Hotwire.", tags: %i[react frontend javascript], created_at: 16.days.ago }
+    { key: :react, name: "React", url: "https://react.dev", desc: "Component-based UI library.", note: "Used for comparison to Hotwire.", tags: %i[react frontend javascript], created_at: 16.days.ago },
+    { key: :vite, name: "Vite", url: "https://vitejs.dev", desc: "Next generation frontend tooling.", note: "Fast HMR and optimized builds.", tags: %i[frontend javascript productivity], created_at: 4.days.ago },
+    { key: :typescript, name: "TypeScript", url: "https://www.typescriptlang.org", desc: "Typed superset of JavaScript.", note: "Better DX with type safety.", tags: %i[javascript language], created_at: 13.days.ago },
+    { key: :nextjs, name: "Next.js", url: "https://nextjs.org", desc: "React framework for production.", note: "SSR, SSG, and API routes.", tags: %i[react frontend framework], created_at: 11.days.ago },
+    { key: :tailwind, name: "Tailwind CSS", url: "https://tailwindcss.com", desc: "Utility-first CSS framework.", note: "Rapid UI development.", tags: %i[frontend productivity], created_at: 7.days.ago },
+    { key: :redis, name: "Redis", url: "https://redis.io", desc: "In-memory data structure store.", note: "Caching and session storage.", tags: %i[backend data], created_at: 10.days.ago },
+    { key: :elasticsearch, name: "Elasticsearch", url: "https://www.elastic.co/elasticsearch", desc: "Distributed search and analytics engine.", note: "Full-text search and logging.", tags: %i[data backend], created_at: 12.days.ago },
+    { key: :terraform, name: "Terraform", url: "https://www.terraform.io", desc: "Infrastructure as code tool.", note: "Multi-cloud provisioning.", tags: %i[devops], created_at: 15.days.ago },
+    { key: :ansible, name: "Ansible", url: "https://www.ansible.com", desc: "Configuration management automation.", note: "Agentless orchestration.", tags: %i[devops], created_at: 13.days.ago },
+    { key: :jenkins, name: "Jenkins", url: "https://www.jenkins.io", desc: "Automation server for CI/CD.", note: "Extensible with plugins.", tags: %i[devops testing], created_at: 14.days.ago },
+    { key: :sentry, name: "Sentry", url: "https://sentry.io", desc: "Error tracking and performance monitoring.", note: "Real-time error alerts.", tags: %i[observability devops], created_at: 8.days.ago },
+    { key: :datadog, name: "Datadog", url: "https://www.datadoghq.com", desc: "Monitoring and security platform.", note: "APM, logs, and metrics.", tags: %i[observability devops], created_at: 6.days.ago },
+    { key: :jupyter, name: "Jupyter", url: "https://jupyter.org", desc: "Interactive computing notebooks.", note: "Data science and ML workflows.", tags: %i[data ai python], created_at: 9.days.ago }
   ]
 
   tool_defs.each do |attrs|
@@ -272,6 +291,227 @@ ActiveRecord::Base.transaction do
       tools: %i[prometheus grafana],
       tags: %i[observability devops],
       created_at: 1.day.ago
+    },
+    {
+      key: :vite_setup,
+      user: :charlie,
+      name: "Setting up Vite with React",
+      url: "https://example.com/vite-react-setup",
+      desc: "Quick start guide for Vite + React development.",
+      note: "Includes TypeScript configuration.",
+      type: :guide,
+      status: :completed,
+      tools: %i[vite react typescript],
+      tags: %i[frontend javascript],
+      created_at: 3.days.ago
+    },
+    {
+      key: :nextjs_ssr,
+      user: :charlie,
+      name: "Next.js SSR patterns",
+      url: "https://example.com/nextjs-ssr",
+      desc: "Server-side rendering best practices and performance tips.",
+      note: "Covers ISR and edge functions.",
+      type: :article,
+      status: :completed,
+      tools: %i[nextjs react],
+      tags: %i[frontend productivity],
+      created_at: 2.days.ago
+    },
+    {
+      key: :tailwind_components,
+      user: :ivy,
+      name: "Building reusable Tailwind components",
+      url: "https://example.com/tailwind-components",
+      desc: "Component library patterns with Tailwind CSS.",
+      note: "Includes dark mode support.",
+      type: :guide,
+      status: :completed,
+      tools: %i[tailwind],
+      tags: %i[frontend productivity],
+      created_at: 4.days.ago
+    },
+    {
+      key: :redis_caching,
+      user: :henry,
+      name: "Redis caching strategies",
+      url: "https://example.com/redis-caching",
+      desc: "Implementing effective caching layers with Redis.",
+      note: "Covers cache invalidation patterns.",
+      type: :article,
+      status: :completed,
+      tools: %i[redis backend],
+      tags: %i[backend data],
+      created_at: 5.days.ago
+    },
+    {
+      key: :elasticsearch_search,
+      user: :henry,
+      name: "Full-text search with Elasticsearch",
+      url: "https://example.com/elasticsearch-search",
+      desc: "Building search features with Elasticsearch queries.",
+      note: "Includes relevance tuning examples.",
+      type: :guide,
+      status: :completed,
+      tools: %i[elasticsearch],
+      tags: %i[data backend],
+      created_at: 6.days.ago
+    },
+    {
+      key: :terraform_aws,
+      user: :bob,
+      name: "Terraform AWS infrastructure",
+      url: "https://example.com/terraform-aws",
+      desc: "Provisioning AWS resources with Terraform modules.",
+      note: "Multi-region deployment patterns.",
+      type: :guide,
+      status: :completed,
+      tools: %i[terraform k8s],
+      tags: %i[devops],
+      created_at: 7.days.ago
+    },
+    {
+      key: :ansible_playbooks,
+      user: :bob,
+      name: "Ansible playbooks for deployment",
+      url: "https://example.com/ansible-playbooks",
+      desc: "Automating server configuration with Ansible.",
+      note: "Idempotent playbook examples.",
+      type: :documentation,
+      status: :completed,
+      tools: %i[ansible],
+      tags: %i[devops],
+      created_at: 8.days.ago
+    },
+    {
+      key: :jenkins_pipelines,
+      user: :jack,
+      name: "Jenkins CI/CD pipelines",
+      url: "https://example.com/jenkins-pipelines",
+      desc: "Building robust CI/CD workflows with Jenkins.",
+      note: "Declarative pipeline examples.",
+      type: :guide,
+      status: :completed,
+      tools: %i[jenkins],
+      tags: %i[devops testing],
+      created_at: 9.days.ago
+    },
+    {
+      key: :sentry_integration,
+      user: :liam,
+      name: "Error tracking with Sentry",
+      url: "https://example.com/sentry-integration",
+      desc: "Setting up Sentry for production error monitoring.",
+      note: "Includes release tracking and source maps.",
+      type: :guide,
+      status: :completed,
+      tools: %i[sentry],
+      tags: %i[observability devops],
+      created_at: 10.days.ago
+    },
+    {
+      key: :datadog_dashboards,
+      user: :liam,
+      name: "Datadog monitoring dashboards",
+      url: "https://example.com/datadog-dashboards",
+      desc: "Creating comprehensive monitoring dashboards.",
+      note: "APM and log correlation examples.",
+      type: :article,
+      status: :completed,
+      tools: %i[datadog],
+      tags: %i[observability devops],
+      created_at: 11.days.ago
+    },
+    {
+      key: :jupyter_notebooks,
+      user: :kate,
+      name: "Jupyter notebooks for ML workflows",
+      url: "https://example.com/jupyter-ml",
+      desc: "Organizing ML experiments with Jupyter notebooks.",
+      note: "Best practices for reproducible research.",
+      type: :guide,
+      status: :completed,
+      tools: %i[jupyter python],
+      tags: %i[ai data],
+      created_at: 12.days.ago
+    },
+    {
+      key: :typescript_advanced,
+      user: :charlie,
+      name: "Advanced TypeScript patterns",
+      url: "https://example.com/typescript-advanced",
+      desc: "Generics, conditional types, and utility types.",
+      note: "Real-world examples from production code.",
+      type: :article,
+      status: :completed,
+      tools: %i[typescript],
+      tags: %i[javascript language],
+      created_at: 13.days.ago
+    },
+    {
+      key: :react_native_setup,
+      user: :grace,
+      name: "React Native development setup",
+      url: "https://example.com/react-native-setup",
+      desc: "Getting started with React Native for mobile apps.",
+      note: "iOS and Android configuration.",
+      type: :guide,
+      status: :completed,
+      tools: %i[react],
+      tags: %i[frontend],
+      created_at: 14.days.ago
+    },
+    {
+      key: :microservices_architecture,
+      user: :henry,
+      name: "Microservices architecture patterns",
+      url: "https://example.com/microservices-patterns",
+      desc: "Designing scalable microservices systems.",
+      note: "Service communication and data consistency.",
+      type: :article,
+      status: :completed,
+      tools: %i[k8s docker],
+      tags: %i[backend devops],
+      created_at: 15.days.ago
+    },
+    {
+      key: :ml_pipelines,
+      user: :kate,
+      name: "Building ML pipelines with Python",
+      url: "https://example.com/ml-pipelines",
+      desc: "End-to-end ML pipeline from data to deployment.",
+      note: "Includes model versioning and monitoring.",
+      type: :guide,
+      status: :completed,
+      tools: %i[python jupyter],
+      tags: %i[ai data],
+      created_at: 16.days.ago
+    },
+    {
+      key: :api_design,
+      user: :mia,
+      name: "RESTful API design principles",
+      url: "https://example.com/api-design",
+      desc: "Best practices for designing REST APIs.",
+      note: "Versioning, pagination, and error handling.",
+      type: :article,
+      status: :completed,
+      tools: %i[rails],
+      tags: %i[backend],
+      created_at: 17.days.ago
+    },
+    {
+      key: :distributed_systems,
+      user: :mia,
+      name: "Distributed systems fundamentals",
+      url: "https://example.com/distributed-systems",
+      desc: "Consistency, availability, and partition tolerance.",
+      note: "CAP theorem and practical trade-offs.",
+      type: :article,
+      status: :completed,
+      tools: %i[k8s],
+      tags: %i[backend devops],
+      created_at: 18.days.ago
     }
   ]
 
@@ -341,7 +581,25 @@ ActiveRecord::Base.transaction do
     { user: :diana, tool: :langchain, upvote: true, read_at: 2.days.ago },
     { user: :eve, tool: :prometheus, upvote: true, favorite: true, read_at: 1.day.ago },
     { user: :eve, tool: :grafana, upvote: true, read_at: 1.day.ago },
-    { user: :frank, tool: :rails, upvote: true, read_at: 2.days.ago }
+    { user: :frank, tool: :rails, upvote: true, read_at: 2.days.ago },
+    { user: :grace, tool: :react, upvote: true, favorite: true, read_at: 3.days.ago },
+    { user: :grace, tool: :vite, upvote: true, read_at: 2.days.ago },
+    { user: :henry, tool: :redis, upvote: true, favorite: true, read_at: 4.days.ago },
+    { user: :henry, tool: :elasticsearch, upvote: true, read_at: 5.days.ago },
+    { user: :henry, tool: :postgres, upvote: true, read_at: 6.days.ago },
+    { user: :ivy, tool: :tailwind, upvote: true, favorite: true, read_at: 3.days.ago },
+    { user: :ivy, tool: :react, upvote: true, read_at: 4.days.ago },
+    { user: :jack, tool: :jenkins, upvote: true, favorite: true, read_at: 5.days.ago },
+    { user: :jack, tool: :gha, upvote: true, read_at: 6.days.ago },
+    { user: :kate, tool: :jupyter, upvote: true, favorite: true, read_at: 4.days.ago },
+    { user: :kate, tool: :langchain, upvote: true, read_at: 3.days.ago },
+    { user: :kate, tool: :openai, upvote: true, read_at: 2.days.ago },
+    { user: :liam, tool: :sentry, upvote: true, favorite: true, read_at: 1.day.ago },
+    { user: :liam, tool: :datadog, upvote: true, read_at: 2.days.ago },
+    { user: :liam, tool: :prometheus, upvote: true, read_at: 3.days.ago },
+    { user: :mia, tool: :terraform, upvote: true, favorite: true, read_at: 5.days.ago },
+    { user: :mia, tool: :k8s, upvote: true, read_at: 6.days.ago },
+    { user: :mia, tool: :docker, upvote: true, read_at: 7.days.ago }
   ]
 
   user_tool_defs.each do |attrs|
@@ -362,7 +620,24 @@ ActiveRecord::Base.transaction do
     { user: :charlie, submission: :react_vs_turbo, upvote: true, favorite: true, read_at: 1.day.ago },
     { user: :diana, submission: :langchain_agents, upvote: true, favorite: true, read_at: 2.days.ago },
     { user: :diana, submission: :pgvector_search, upvote: true, read_at: 2.days.ago },
-    { user: :eve, submission: :observability_stack, upvote: true, favorite: true, read_at: 12.hours.ago }
+    { user: :eve, submission: :observability_stack, upvote: true, favorite: true, read_at: 12.hours.ago },
+    { user: :charlie, submission: :vite_setup, upvote: true, favorite: true, read_at: 2.days.ago },
+    { user: :charlie, submission: :nextjs_ssr, upvote: true, read_at: 1.day.ago },
+    { user: :ivy, submission: :tailwind_components, upvote: true, favorite: true, read_at: 3.days.ago },
+    { user: :henry, submission: :redis_caching, upvote: true, read_at: 4.days.ago },
+    { user: :henry, submission: :elasticsearch_search, upvote: true, favorite: true, read_at: 5.days.ago },
+    { user: :bob, submission: :terraform_aws, upvote: true, read_at: 6.days.ago },
+    { user: :bob, submission: :ansible_playbooks, upvote: true, favorite: true, read_at: 7.days.ago },
+    { user: :jack, submission: :jenkins_pipelines, upvote: true, read_at: 8.days.ago },
+    { user: :liam, submission: :sentry_integration, upvote: true, favorite: true, read_at: 9.days.ago },
+    { user: :liam, submission: :datadog_dashboards, upvote: true, read_at: 10.days.ago },
+    { user: :kate, submission: :jupyter_notebooks, upvote: true, favorite: true, read_at: 11.days.ago },
+    { user: :charlie, submission: :typescript_advanced, upvote: true, read_at: 12.days.ago },
+    { user: :grace, submission: :react_native_setup, upvote: true, favorite: true, read_at: 13.days.ago },
+    { user: :henry, submission: :microservices_architecture, upvote: true, read_at: 14.days.ago },
+    { user: :kate, submission: :ml_pipelines, upvote: true, favorite: true, read_at: 15.days.ago },
+    { user: :mia, submission: :api_design, upvote: true, read_at: 16.days.ago },
+    { user: :mia, submission: :distributed_systems, upvote: true, favorite: true, read_at: 17.days.ago }
   ]
 
   user_submission_defs.each do |attrs|
@@ -387,7 +662,21 @@ ActiveRecord::Base.transaction do
     { user: :eve, followable: lists[:platform_ops] },
     { user: :eve, followable: tools[:gha] },
     { user: :frank, followable: users[:alice] },
-    { user: :frank, followable: lists[:rails_stack] }
+    { user: :frank, followable: lists[:rails_stack] },
+    { user: :grace, followable: tools[:react] },
+    { user: :grace, followable: tools[:vite] },
+    { user: :henry, followable: tools[:redis] },
+    { user: :henry, followable: tools[:elasticsearch] },
+    { user: :ivy, followable: tools[:tailwind] },
+    { user: :ivy, followable: tags[:frontend] },
+    { user: :jack, followable: tools[:jenkins] },
+    { user: :jack, followable: tags[:testing] },
+    { user: :kate, followable: tools[:jupyter] },
+    { user: :kate, followable: tags[:ai] },
+    { user: :liam, followable: tools[:sentry] },
+    { user: :liam, followable: tools[:datadog] },
+    { user: :mia, followable: tools[:terraform] },
+    { user: :mia, followable: users[:henry] }
   ]
 
   follow_defs.each do |attrs|
@@ -408,7 +697,31 @@ ActiveRecord::Base.transaction do
     { user: :diana, commentable: submissions[:pgvector_search], body: "Loved the migration snippet with cosine index.", created_at: 2.days.ago },
     { user: :bob, commentable: submissions[:k8s_deploy], body: "Blue/green example works well with Argo Rollouts.", created_at: 3.days.ago },
     { user: :eve, commentable: submissions[:observability_stack], body: "Please share the alert rules!", created_at: 1.day.ago },
-    { user: :alice, commentable: submissions[:react_vs_turbo], body: "Benchmarks were super helpful.", created_at: 1.day.ago, parent: 1 }
+    { user: :alice, commentable: submissions[:react_vs_turbo], body: "Benchmarks were super helpful.", created_at: 1.day.ago, parent: 1 },
+    { user: :charlie, commentable: tools[:vite], body: "Vite's HMR is incredibly fast. Game changer for development.", created_at: 2.days.ago },
+    { user: :grace, commentable: tools[:vite], body: "Agreed! The build times are also much better than Webpack.", created_at: 1.day.ago, parent: 6 },
+    { user: :henry, commentable: tools[:redis], body: "Redis is essential for our caching layer. Great performance.", created_at: 3.days.ago },
+    { user: :ivy, commentable: tools[:tailwind], body: "Tailwind makes prototyping so much faster. Love the utility classes.", created_at: 2.days.ago },
+    { user: :jack, commentable: tools[:jenkins], body: "Jenkins pipelines are powerful but can get complex. Good examples here.", created_at: 4.days.ago },
+    { user: :kate, commentable: tools[:jupyter], body: "Jupyter notebooks are perfect for ML experimentation and visualization.", created_at: 3.days.ago },
+    { user: :liam, commentable: tools[:sentry], body: "Sentry's error grouping and release tracking saved us hours of debugging.", created_at: 2.days.ago },
+    { user: :mia, commentable: tools[:terraform], body: "Terraform's state management is crucial for infrastructure as code.", created_at: 5.days.ago },
+    { user: :charlie, commentable: submissions[:vite_setup], body: "This guide helped me set up Vite in minutes. Clear and concise!", created_at: 2.days.ago },
+    { user: :ivy, commentable: submissions[:tailwind_components], body: "The dark mode examples are exactly what I needed. Thanks!", created_at: 3.days.ago },
+    { user: :henry, commentable: submissions[:redis_caching], body: "Cache invalidation strategies are well explained here.", created_at: 4.days.ago },
+    { user: :bob, commentable: submissions[:terraform_aws], body: "Multi-region deployment patterns are solid. Used this in production.", created_at: 6.days.ago },
+    { user: :liam, commentable: submissions[:sentry_integration], body: "Source maps integration was tricky until I found this guide.", created_at: 9.days.ago },
+    { user: :kate, commentable: submissions[:jupyter_notebooks], body: "Great tips on organizing notebooks for reproducible research.", created_at: 11.days.ago },
+    { user: :charlie, commentable: submissions[:typescript_advanced], body: "Conditional types are mind-bending but this article explains them well.", created_at: 12.days.ago },
+    { user: :grace, commentable: submissions[:react_native_setup], body: "iOS setup was straightforward with these instructions.", created_at: 13.days.ago },
+    { user: :henry, commentable: submissions[:microservices_architecture], body: "Service communication patterns are well covered. Good reference.", created_at: 14.days.ago },
+    { user: :mia, commentable: submissions[:api_design], body: "API versioning strategies are crucial. This covers all the important points.", created_at: 16.days.ago },
+    { user: :diana, commentable: tools[:pgvector], body: "pgvector makes semantic search so much easier than external services.", created_at: 3.days.ago },
+    { user: :bob, commentable: tools[:k8s], body: "Kubernetes has a learning curve but it's worth it for orchestration.", created_at: 7.days.ago },
+    { user: :eve, commentable: tools[:prometheus], body: "Prometheus metrics are essential for observability. Great tool.", created_at: 1.day.ago },
+    { user: :frank, commentable: tools[:rails], body: "Rails convention over configuration speeds up development significantly.", created_at: 2.days.ago },
+    { user: :alice, commentable: submissions[:nextjs_ssr], body: "ISR is a game changer for performance. Great article!", created_at: 1.day.ago },
+    { user: :charlie, commentable: submissions[:nextjs_ssr], body: "Edge functions are also worth exploring for global performance.", created_at: 1.day.ago, parent: 28 }
   ]
 
   comment_defs.each_with_index do |attrs, idx|
@@ -432,7 +745,29 @@ ActiveRecord::Base.transaction do
     { user: :charlie, comment: comments[0] },
     { user: :alice, comment: comments[1] },
     { user: :alice, comment: comments[2] },
-    { user: :diana, comment: comments[4] }
+    { user: :diana, comment: comments[4] },
+    { user: :grace, comment: comments[6] },
+    { user: :ivy, comment: comments[6] },
+    { user: :henry, comment: comments[8] },
+    { user: :jack, comment: comments[10] },
+    { user: :kate, comment: comments[11] },
+    { user: :liam, comment: comments[12] },
+    { user: :mia, comment: comments[13] },
+    { user: :charlie, comment: comments[14] },
+    { user: :ivy, comment: comments[15] },
+    { user: :bob, comment: comments[17] },
+    { user: :liam, comment: comments[18] },
+    { user: :kate, comment: comments[19] },
+    { user: :charlie, comment: comments[20] },
+    { user: :grace, comment: comments[21] },
+    { user: :henry, comment: comments[22] },
+    { user: :mia, comment: comments[23] },
+    { user: :diana, comment: comments[24] },
+    { user: :bob, comment: comments[25] },
+    { user: :eve, comment: comments[26] },
+    { user: :frank, comment: comments[27] },
+    { user: :alice, comment: comments[28] },
+    { user: :charlie, comment: comments[29] }
   ]
 
   upvote_defs.each do |attrs|
