@@ -50,8 +50,21 @@ module SubmissionProcessing
       # pgvector expects an array of floats
       embedding_array = embedding_result.vectors
 
-      # Store embedding in the vector column
-      submission.update!(embedding: embedding_array)
+      # Ensure all values are floats (pgvector requires numeric array)
+      embedding_array = embedding_array.map(&:to_f)
+
+      # Store embedding using raw SQL with proper vector casting
+      # Active Record doesn't automatically cast arrays to vector type
+      # Format: '[0.1,0.2,0.3]'::vector
+      # Use parameterized query to prevent SQL injection
+      vector_string = "[#{embedding_array.join(',')}]"
+      ActiveRecord::Base.connection.execute(
+        ActiveRecord::Base.sanitize_sql_array([
+          "UPDATE submissions SET embedding = ?::vector WHERE id = ?",
+          vector_string,
+          submission.id
+        ])
+      )
 
       Rails.logger.info "Embedding generated and stored for submission #{submission_id}"
     rescue StandardError => e
