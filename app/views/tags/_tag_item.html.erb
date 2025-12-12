@@ -3,9 +3,9 @@
     <div class="flex-grow-1">
       <div class="d-flex align-items-center gap-2 mb-1">
         <span class="badge <%= tag_badge_class(tag.tag_type) %>"><%= t("tags.tag_types.#{tag.tag_type}") %></span>
-        <strong><%= tag.tag_name %></strong>
+        <strong><%= link_to tag.tag_name, tag_path(tag), class: "text-decoration-none" %></strong>
         <% if tag.parent %>
-          <span class="text-muted small">(<%= t("tags.labels.parent") %>: <%= tag.parent.tag_name %>)</span>
+          <span class="text-muted small">(<%= t("tags.labels.parent") %>: <%= link_to tag.parent.tag_name, tag_path(tag.parent), class: "text-decoration-none" %>)</span>
         <% end %>
       </div>
       <% if tag.tag_description.present? %>

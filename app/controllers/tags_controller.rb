@@ -1,5 +1,5 @@
 class TagsController < ApplicationController
-  before_action :set_tag, only: %i[edit update destroy]
+  before_action :set_tag, only: %i[show edit update destroy]
 
   # GET /tags
   def index
@@ -12,6 +12,11 @@ class TagsController < ApplicationController
   # GET /tags/new
   def new
     @tag = Tag.new
+  end
+
+  # GET /tags/:id
+  def show
+    @tools = @tag.tools.includes(:user, :tags).order(created_at: :desc)
   end
 
   # GET /tags/:id/edit

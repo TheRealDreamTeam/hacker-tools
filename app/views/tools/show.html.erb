@@ -65,10 +65,21 @@
     </div>
   </div>
   <% if @tool_tags.any? %>
-    <div class="d-flex flex-wrap gap-2">
+    <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
       <% @tool_tags.each do |tag| %>
         <span class="badge <%= tag_badge_class(tag.tag_type) %> d-flex align-items-center gap-1">
-          <%= tag.display_name %>
+          <%= link_to tag.display_name,
+                      tag_path(tag),
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                      class: "text-decoration-none text-white tag-link",
+                      data: {
+                        bs_toggle: "tooltip",
+                        bs_title: tag.tag_description.presence || tag.display_name,
+                        bs_placement: "top"
+                      },
+                      title: tag.tag_description.presence || tag.display_name,
+                      style: "color: inherit !important;" %>
           <% if @tool.user == current_user %>
             <%= button_to "×",
                           remove_tag_tool_path(@tool, tag_id: tag.id),
