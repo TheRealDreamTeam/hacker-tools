@@ -2,7 +2,7 @@
 
 This document serves as the human-readable specification for the Hacker Tools application. It is maintained alongside development and updated as features are built.
 
-**Last Updated**: 2025-12-11 (Submission System - Phase 1, Week 1 Complete)
+**Last Updated**: 2025-12-12 (Tool Discovery & Enrichment - Phase 1 Complete)
 
 ## Overview
 
@@ -119,11 +119,19 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ### Tool
 - **Purpose**: Community-owned top-level entity representing any software-related concept, technology, service, or platform. Tools are shared community resources, not user-owned.
-- **Attributes**: `tool_name` (string, required), `tool_description` (text), `tool_url` (string), `author_note` (text), `visibility` (integer enum)
+- **Attributes**: `tool_name` (string, required), `tool_description` (text), `tool_url` (string, optional), `author_note` (text), `visibility` (integer enum)
 - **Active Storage**: `icon`, `picture` attachments
 - **Associations**: `has_many :submissions`; `has_many :comments, as: :commentable` (polymorphic); `has_many :tags, through: :tool_tags`; `has_many :lists, through: :list_tools`; `has_many :user_tools`
-- **Validations**: Presence on name; visibility enum.
-- **Status**: Updated - Removed user ownership; tools are now community-owned entities
+- **Validations**: Presence on name; visibility enum; URL format validation (if URL provided)
+- **Callbacks**: `after_create :enqueue_discovery_job` - Automatically enqueues `ToolDiscoveryJob` when a new tool is created
+- **Status**: Updated - Removed user ownership; tools are now community-owned entities. `tool_url` is optional (tools can exist without a URL).
+- **Automatic Enrichment**: When a tool is created (automatically via submission processing or manually), `ToolDiscoveryJob` runs in the background to:
+  - Discover the tool's official website using RubyLLM
+  - Find the GitHub repository (if applicable)
+  - Extract a description of what the tool is and what it does
+  - Fetch discovered URLs to extract additional metadata (title, description, images)
+  - Attach icons/images from discovered URLs using Active Storage
+  - Update the tool with discovered information (tool_url, tool_description, icon)
 
 ### List
 - **Purpose**: Curated collection of tools for a user.

@@ -37,6 +37,48 @@ class Tool < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :most_upvoted, -> { joins(:user_tools).where(user_tools: { upvote: true }).group("tools.id").order("COUNT(user_tools.id) DESC") }
 
+  # Get top tags for this tool, ranked by number of submissions that have both the tool and the tag
+  # This gives us relevance: tags that appear frequently with this tool are more relevant
+  # Returns tags with their submission counts (as a virtual attribute)
+  def top_tags(limit: 10)
+    # Get all tags associated with this tool
+    tool_tag_ids = tags.pluck(:id)
+    return [] if tool_tag_ids.empty?
+
+    # Count submissions that have BOTH each tag AND this tool
+    # Use parameterized SQL to prevent SQL injection (id is from database, limit is controlled)
+    sql = <<-SQL.squish
+      SELECT tags.*, 
+             COUNT(DISTINCT submission_tags.submission_id) AS submission_count
+      FROM tags
+      INNER JOIN tool_tags ON tags.id = tool_tags.tag_id
+      INNER JOIN submission_tags ON tags.id = submission_tags.tag_id
+      INNER JOIN submission_tools ON submission_tags.submission_id = submission_tools.submission_id
+      WHERE tool_tags.tool_id = ?
+        AND submission_tools.tool_id = ?
+      GROUP BY tags.id
+      ORDER BY submission_count DESC, tags.tag_name ASC
+      LIMIT ?
+    SQL
+
+    # Use sanitize_sql_array with proper parameterization (? placeholders, not $1)
+    sanitized_sql = Tag.send(:sanitize_sql_array, [sql, id, id, limit])
+    results = Tag.connection.execute(sanitized_sql)
+
+    # Convert results to Tag objects with submission_count attribute
+    tag_ids = results.map { |r| r["id"] }
+    tags_hash = Tag.where(id: tag_ids).index_by(&:id)
+    
+    results.map do |row|
+      tag = tags_hash[row["id"].to_i]
+      if tag
+        # Add submission_count as a virtual attribute
+        tag.define_singleton_method(:submission_count) { row["submission_count"].to_i }
+        tag
+      end
+    end.compact
+  end
+
   # Interaction helpers
   def user_tool_for(user)
     return nil unless user

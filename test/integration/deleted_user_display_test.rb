@@ -5,7 +5,8 @@ class DeletedUserDisplayTest < ActionDispatch::IntegrationTest
     @deleted_user = create(:user, user_status: :deleted)
     @active_user = create(:user)
     @tool = create(:tool)
-    @submission = create(:submission, user: @deleted_user, tool: @tool)
+    @submission = create(:submission, user: @deleted_user)
+    @submission.tools << @tool
     @comment = create(:comment, user: @deleted_user, commentable: @tool)
     # Sign in a user to access authenticated routes
     sign_in @active_user

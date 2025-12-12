@@ -5,17 +5,42 @@ class SubmissionsController < ApplicationController
 
   # GET /submissions
   def index
-    @submissions = Submission.includes(:user, :tool, :tags)
-                             .order(created_at: :desc)
+    @query = params[:query]&.strip
+    @submission_type = params[:type]
+    @status = params[:status] || :completed # Default to completed submissions
     
-    # Filter by submission type if provided
-    @submissions = @submissions.by_type(params[:type]) if params[:type].present?
+    # Use search service if query is present
+    if @query.present?
+      @submissions = SubmissionSearchService.search(
+        @query,
+        limit: params[:limit] || 20,
+        submission_type: @submission_type,
+        status: @status,
+        use_semantic: params[:use_semantic] != "false", # Default to true
+        use_fulltext: params[:use_fulltext] != "false"  # Default to true
+      )
+      
+      # Optionally enhance results with RAG (can be slow, so make it optional)
+      if params[:enhance] == "true"
+        @enhanced_results = SubmissionRagService.enhance_results(@query, @submissions, top_k: 5)
+      end
+    else
+      # Regular listing without search
+      @submissions = Submission.includes(:user, :tools, :tags)
+                               .order(created_at: :desc)
+      
+      # Filter by submission type if provided
+      @submissions = @submissions.by_type(@submission_type) if @submission_type.present?
+      
+      # Filter by status if provided
+      @submissions = @submissions.where(status: @status) if @status.present?
+      
+      # Filter by tool if provided
+      @submissions = @submissions.for_tool(Tool.find(params[:tool_id])) if params[:tool_id].present?
+    end
     
-    # Filter by status if provided
-    @submissions = @submissions.where(status: params[:status]) if params[:status].present?
-    
-    # Filter by tool if provided
-    @submissions = @submissions.for_tool(Tool.find(params[:tool_id])) if params[:tool_id].present?
+    # Eager load associations for performance
+    @submissions = @submissions.includes(:user, :tools, :tags) if @submissions.is_a?(ActiveRecord::Relation)
   end
 
   # GET /submissions/:id
@@ -183,7 +208,8 @@ class SubmissionsController < ApplicationController
   end
 
   def submission_params
-    params.require(:submission).permit(:submission_url, :author_note, :tool_id)
+    params.require(:submission).permit(:submission_url, :author_note)
+    # Note: tool_id is no longer a parameter - tool linking is automatic via SubmissionProcessingJob
   end
 
   # Helper method for sorting comments (shared with ToolsController)

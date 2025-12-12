@@ -109,7 +109,7 @@
                         </span>
                         <% if submission.tools.any? %>
                           <span class="text-muted small">
-                            <%= t("submissions.about_tools", tools: submission.tools.map { |t| link_to(t.tool_name, tool_path(t), class: "text-decoration-none") }.join(", ").html_safe) %>
+                            <%= raw t("submissions.about_tools", tools: submission.tools.map { |t| link_to(t.tool_name, tool_path(t), class: "text-decoration-none") }.join(", ").html_safe) %>
                           </span>
                         <% end %>
                       </div>

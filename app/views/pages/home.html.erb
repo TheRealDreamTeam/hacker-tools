@@ -104,20 +104,19 @@
     </div>
   </div>
 
-  <!-- Three-column layout: side rails for promos and center column for tool cards -->
+  <!-- Three-column layout: side rails for promos and center column for unified cards -->
   <div class="row g-3 justify-content-center">
     <div class="col-12 col-lg-10">
-      <% panels = { "trending" => @trending_tools, "new" => @new_hot_tools, "upvoted" => @most_upvoted_tools } %>
+      <% panels = { "trending" => @trending_items, "new" => @new_hot_items, "upvoted" => @most_upvoted_items } %>
 
-      <% panels.each_with_index do |(panel, tools), panel_idx| %>
+      <% panels.each_with_index do |(panel, items), panel_idx| %>
         <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless @category == panel %>" data-category-panel="<%= panel %>" id="category-panel-<%= panel %>">
           <div class="card-body">
-            <% if tools.blank? %>
+            <% if items.blank? %>
               <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
             <% else %>
-              <% tools.each_with_index do |tool, i| %>
-                <% upvotes = (tool.respond_to?(:upvotes_count) && tool.upvotes_count.present?) ? tool.upvotes_count.to_i : 0 %>
-                <%= render partial: "tool_card", locals: { tool: tool, index: i, upvotes: upvotes } %>
+              <% items.each_with_index do |item, i| %>
+                <%= render partial: "unified_card", locals: { item: item, index: i } %>
               <% end %>
             <% end %>
           </div>

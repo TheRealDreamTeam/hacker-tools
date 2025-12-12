@@ -405,7 +405,8 @@ When a user submits a link, the system should:
 2. **Type Classification Tool**: Classify submission type with confidence
 3. **Tool Detection Tool**: Detect and extract tool names from content
 4. **Tag Generation Tool**: Generate relevant tags
-5. **Relationship Discovery Tool**: Find related submissions (future phase)
+5. **Tool Discovery Tool**: Discover official website, GitHub repo, and description for tools (used by `ToolDiscoveryJob`)
+6. **Relationship Discovery Tool**: Find related submissions (future phase)
 
 **Documentation References:**
 - Main: https://rubyllm.com/
@@ -432,6 +433,7 @@ app/jobs/
     submission_embedding_generation_job.rb      # Phase 4: Requires all metadata (future phase)
     submission_relationship_discovery_job.rb   # Phase 5: Requires embedding (future phase)
   submission_processing_job.rb  # Orchestrator job
+  tool_discovery_job.rb          # Tool enrichment: Discovers official website, GitHub repo, description, icon
 ```
 
 **Processing Pipeline Dependencies:**
@@ -456,6 +458,51 @@ app/jobs/
 - Relationship discovery (needs embeddings + all metadata) - **STUB** (Phase 1, implement in Phase 2)
 
 **Note:** In Phase 1, the complete pipeline structure exists, but `SummarizationJob` and `RelationshipDiscoveryJob` are stubs (placeholders that log or return early). All other jobs are fully working.
+
+### Tool Discovery & Enrichment
+
+**Job**: `ToolDiscoveryJob`
+- **Trigger**: Automatically enqueued when a new `Tool` is created (via `after_create` callback)
+- **Purpose**: Enrich newly created tools with official website, GitHub repository, description, and icon
+- **Status**: **WORKING** (Phase 1)
+
+**Discovery Process:**
+1. **RubyLLM Discovery**: Uses `ToolDiscoveryTool` (RubyLLM tool) to discover:
+   - Official website URL
+   - GitHub repository URL (if applicable)
+   - Brief description of what the tool is and what it does
+   - Confidence score for the discovery
+2. **URL Enrichment**: If URLs are discovered, fetches them using Faraday and extracts:
+   - Title and description from Open Graph/Twitter Card metadata
+   - Icon/image URLs (Open Graph images, favicons, GitHub avatars)
+   - Additional metadata from HTML parsing
+3. **Tool Update**: Updates the tool with discovered information:
+   - Sets `tool_url` if tool doesn't have one (prefers official website over GitHub repo)
+   - Sets `tool_description` if tool doesn't have a good one
+   - Attaches icon/image using Active Storage if found
+4. **Error Handling**: Failures are logged but don't break tool creation (graceful degradation)
+
+**Key Features:**
+- Skips discovery if tool already has URL and description (avoids unnecessary API calls)
+- Only processes results with confidence > 0.5
+- Handles network failures gracefully
+- Converts relative URLs to absolute URLs
+- Supports multiple image sources (Open Graph, Twitter Cards, favicons, GitHub avatars)
+
+**RubyLLM Tools Used:**
+- `ToolDiscoveryTool` - Uses GPT-4o with `ToolDiscoverySchema` for structured output
+- Schema returns: `official_website`, `github_repo`, `description`, `confidence`, `reasoning`
+
+**Dependencies:**
+- RubyLLM (OpenAI API key required)
+- Faraday (HTTP client for fetching URLs)
+- Nokogiri (HTML parsing for metadata extraction)
+- Active Storage (for icon/image attachments)
+
+**Files:**
+- `app/jobs/tool_discovery_job.rb` - Main job implementation
+- `app/lib/ruby_llm_tools/tool_discovery_tool.rb` - RubyLLM tool for discovery
+- `app/lib/ruby_llm_tools/tool_discovery_schema.rb` - Schema for structured output
 
 **Orchestrator Pattern:**
 - `SubmissionProcessingJob` enqueues jobs in phases

@@ -1,4 +1,7 @@
 class Submission < ApplicationRecord
+  # Include pg_search for full-text search
+  include PgSearch::Model
+  
   # User ownership - submissions belong to users
   belongs_to :user
   
@@ -58,6 +61,21 @@ class Submission < ApplicationRecord
   before_validation :normalize_url, if: -> { submission_url.present? }
   before_validation :set_default_status, on: :create
   
+  # pg_search configuration for full-text search
+  # Search across submission_name, submission_description, and author_note
+  # Uses trigram for fuzzy matching and ranks results by relevance
+  pg_search_scope :search_by_text,
+                  against: {
+                    submission_name: "A",
+                    submission_description: "B",
+                    author_note: "C"
+                  },
+                  using: {
+                    tsearch: { prefix: true }, # Prefix matching for partial words
+                    trigram: { threshold: 0.3 } # Fuzzy matching with trigram similarity
+                  },
+                  ranked_by: ":trigram"
+  
   # Scopes
   scope :pending, -> { where(status: statuses[:pending]) }
   scope :processing, -> { where(status: statuses[:processing]) }
@@ -66,7 +84,37 @@ class Submission < ApplicationRecord
   scope :rejected, -> { where(status: statuses[:rejected]) }
   scope :recent, -> { order(created_at: :desc) }
   scope :by_type, ->(type) { where(submission_type: submission_types[type]) }
-  scope :for_tool, ->(tool) { where(tool: tool) }
+  scope :for_tool, ->(tool) { joins(:submission_tools).where(submission_tools: { tool_id: tool.id }) }
+  
+  # Engagement scopes for home page categories
+  # Trending: Most followed submissions in the last 30 days
+  scope :trending, -> {
+    joins(:follows)
+      .where("follows.created_at >= ?", 30.days.ago)
+      .where(status: statuses[:completed])
+      .select("submissions.*, COUNT(follows.id) AS followers_count")
+      .group("submissions.id")
+      .order("followers_count DESC, submissions.created_at DESC")
+  }
+  
+  # New & Hot: Submissions created in last 7 days, ranked by followers
+  scope :new_hot, -> {
+    where("submissions.created_at >= ?", 7.days.ago)
+      .where(status: statuses[:completed])
+      .left_joins(:follows)
+      .select("submissions.*, COALESCE(COUNT(follows.id), 0) AS followers_count")
+      .group("submissions.id")
+      .order("followers_count DESC, submissions.created_at DESC")
+  }
+  
+  # Most Followed: Submissions with most followers total
+  scope :most_followed, -> {
+    where(status: statuses[:completed])
+      .left_joins(:follows)
+      .select("submissions.*, COALESCE(COUNT(follows.id), 0) AS followers_count")
+      .group("submissions.id")
+      .order("followers_count DESC, submissions.created_at DESC")
+  }
   
   # Helper methods for status checks
   def processing?

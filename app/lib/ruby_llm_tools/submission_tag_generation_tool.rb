@@ -47,7 +47,14 @@ class SubmissionTagGenerationTool < RubyLLM::Tool
     "You are an expert at generating relevant tags for technical content. " \
     "Generate 3-10 relevant tags that accurately describe the submission. " \
     "Tags should be specific, relevant, and cover different aspects (technologies, topics, categories).\n\n" \
+    "TAG FORMATTING RULES (CRITICAL):\n" \
+    "- All tags must be lowercase\n" \
+    "- Prefer single words (e.g., 'react', 'javascript', 'svg')\n" \
+    "- If multiple words are needed, use kebab-case with MAX 2 parts (e.g., 'web-development', 'ai-assisted')\n" \
+    "- Do NOT create tags with more than 2 parts (e.g., avoid 'ai-assisted-coding' - split into 'ai', 'ai-assisted', 'coding')\n" \
+    "- Examples of good tags: 'react', 'javascript', 'web-development', 'ai-assisted', 'machine-learning'\n" \
+    "- Examples of bad tags: 'React', 'JavaScript', 'AI-Assisted-Coding', 'Machine Learning'\n\n" \
     "Content to tag:\n#{parts.join("\n")}\n\n" \
-    "Return a JSON array of tags with name, relevance score, and category."
+    "Return a JSON array of tags with name (following formatting rules), relevance score, and category."
   end
 end

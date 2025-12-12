@@ -4,45 +4,115 @@ class PagesController < ApplicationController
   def home
     @query = params[:query]&.strip
     @category = params[:category] || "trending"
-    base_scope = Tool.public_tools.includes(:tags, :user_tools)
 
-    # Apply search query filter if present (search in tool name, description, and tags)
+    # If search query is present, use unified search
     if @query.present?
-      base_scope = base_scope.left_joins(:tags).where(
-        "tools.tool_name ILIKE ? OR tools.tool_description ILIKE ? OR tags.tag_name ILIKE ?",
-        "%#{@query}%", "%#{@query}%", "%#{@query}%"
-      ).distinct
+      search_results = UnifiedSearchService.search(@query, limit: 10)
+      @trending_items = combine_and_rank_items(search_results[:tools], search_results[:submissions])
+      @new_hot_items = @trending_items # Use same results for search
+      @most_upvoted_items = @trending_items # Use same results for search
+    else
+      # Get mixed results for each category
+      @trending_items = get_trending_items
+      @new_hot_items = get_new_hot_items
+      @most_upvoted_items = get_most_upvoted_items
     end
-
-    # Trending: Tools with most upvotes in the last 30 days
-    @trending_tools = base_scope
-      .left_joins(:user_tools)
-      .where("user_tools.upvote = ? AND user_tools.created_at >= ?", true, 30.days.ago)
-      .select("tools.*, COUNT(user_tools.id) AS upvotes_count")
-      .group("tools.id")
-      .order("upvotes_count DESC, tools.created_at DESC")
-      .limit(10)
-
-    # New & Hot: Tools submitted in last 7 days, ranked by upvotes
-    @new_hot_tools = base_scope
-      .where("tools.created_at >= ?", 7.days.ago)
-      .left_joins(:user_tools)
-      .select("tools.*, COALESCE(SUM(CASE WHEN user_tools.upvote = true THEN 1 ELSE 0 END), 0) AS upvotes_count")
-      .group("tools.id")
-      .order("upvotes_count DESC, tools.created_at DESC")
-      .limit(10)
-
-    # Most Upvoted: Tools with most upvotes total
-    @most_upvoted_tools = base_scope
-      .left_joins(:user_tools)
-      .select("tools.*, COALESCE(SUM(CASE WHEN user_tools.upvote = true THEN 1 ELSE 0 END), 0) AS upvotes_count")
-      .group("tools.id")
-      .order("upvotes_count DESC, tools.created_at DESC")
-      .limit(10)
 
     respond_to do |format|
       format.html
       format.turbo_stream
     end
+  end
+
+  private
+
+  # Get trending items (tools + submissions) from last 30 days
+  def get_trending_items
+    # Get trending tools (most upvotes in last 30 days)
+    trending_tools = Tool.public_tools
+                         .left_joins(:user_tools)
+                         .where("user_tools.upvote = ? AND user_tools.created_at >= ?", true, 30.days.ago)
+                         .select("tools.*, COUNT(user_tools.id) AS upvotes_count")
+                         .group("tools.id")
+                         .order("upvotes_count DESC, tools.created_at DESC")
+                         .limit(10)
+                         .includes(:tags, :user_tools)
+
+    # Get trending submissions (most followed in last 30 days)
+    trending_submissions = Submission.trending
+                                     .limit(10)
+                                     .includes(:user, :tools, :tags)
+
+    combine_and_rank_items(trending_tools.to_a, trending_submissions.to_a)
+  end
+
+  # Get new & hot items (tools + submissions) from last 7 days
+  def get_new_hot_items
+    # Get new & hot tools (created in last 7 days, ranked by upvotes)
+    new_hot_tools = Tool.public_tools
+                        .where("tools.created_at >= ?", 7.days.ago)
+                        .left_joins(:user_tools)
+                        .select("tools.*, COALESCE(SUM(CASE WHEN user_tools.upvote = true THEN 1 ELSE 0 END), 0) AS upvotes_count")
+                        .group("tools.id")
+                        .order("upvotes_count DESC, tools.created_at DESC")
+                        .limit(10)
+                        .includes(:tags, :user_tools)
+
+    # Get new & hot submissions (created in last 7 days, ranked by followers)
+    new_hot_submissions = Submission.new_hot
+                                    .limit(10)
+                                    .includes(:user, :tools, :tags)
+
+    combine_and_rank_items(new_hot_tools.to_a, new_hot_submissions.to_a)
+  end
+
+  # Get most upvoted/followed items (tools + submissions) all time
+  def get_most_upvoted_items
+    # Get most upvoted tools
+    most_upvoted_tools = Tool.public_tools
+                             .left_joins(:user_tools)
+                             .select("tools.*, COALESCE(SUM(CASE WHEN user_tools.upvote = true THEN 1 ELSE 0 END), 0) AS upvotes_count")
+                             .group("tools.id")
+                             .order("upvotes_count DESC, tools.created_at DESC")
+                             .limit(10)
+                             .includes(:tags, :user_tools)
+
+    # Get most followed submissions
+    most_followed_submissions = Submission.most_followed
+                                          .limit(10)
+                                          .includes(:user, :tools, :tags)
+
+    combine_and_rank_items(most_upvoted_tools.to_a, most_followed_submissions.to_a)
+  end
+
+  # Combine tools and submissions into a unified array with type indicators
+  # Items are sorted by engagement (upvotes for tools, followers for submissions)
+  def combine_and_rank_items(tools, submissions)
+    items = []
+
+    # Add tools with type indicator
+    tools.each do |tool|
+      upvotes = tool.respond_to?(:upvotes_count) ? tool.upvotes_count.to_i : 0
+      items << {
+        type: :tool,
+        item: tool,
+        engagement: upvotes,
+        created_at: tool.created_at
+      }
+    end
+
+    # Add submissions with type indicator
+    submissions.each do |submission|
+      followers = submission.respond_to?(:followers_count) ? submission.followers_count.to_i : 0
+      items << {
+        type: :submission,
+        item: submission,
+        engagement: followers,
+        created_at: submission.created_at
+      }
+    end
+
+    # Sort by engagement (descending), then by created_at (descending)
+    items.sort_by { |i| [-i[:engagement], -i[:created_at].to_i] }
   end
 end

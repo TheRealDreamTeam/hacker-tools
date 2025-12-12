@@ -24,10 +24,6 @@
     <h2 class="h5"><%= t("tools.show.description") %></h2>
     <p><%= simple_format(@tool.tool_description) %></p>
   </div>
-  <div class="mb-4">
-    <h2 class="h5"><%= t("tools.show.author_note") %></h2>
-    <p><%= simple_format(@tool.author_note) %></p>
-  </div>
   <% if @tool.picture.attached? %>
     <div class="mb-4">
       <h2 class="h5"><%= t("tools.show.picture") %></h2>
@@ -62,12 +58,31 @@
   <% if @tool_tags.any? %>
     <div class="d-flex flex-wrap gap-2">
       <% @tool_tags.each do |tag| %>
-        <span class="badge <%= tag_badge_class(tag.tag_type) %>">
+        <span class="badge <%= tag_badge_class(tag.tag_type) %>" title="<%= tag.submission_count || 0 %> submission(s)">
           <%= tag.display_name %>
           <%# TODO: Re-enable tag removal when we decide on permissions %>
         </span>
       <% end %>
     </div>
+    <% if @all_tool_tags.count > @tool_tags.count %>
+      <p class="text-muted small mt-2 mb-0">
+        <%= t("tools.show.showing_top_tags", count: @tool_tags.count, total: @all_tool_tags.count) %>
+        <button class="btn btn-link btn-sm p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#all-tags">
+          <%= t("tools.show.show_all_tags") %>
+        </button>
+      </p>
+      <div id="all-tags" class="collapse mt-2">
+        <div class="d-flex flex-wrap gap-2">
+          <% @all_tool_tags.each do |tag| %>
+            <% unless @tool_tags.map(&:id).include?(tag.id) %>
+              <span class="badge <%= tag_badge_class(tag.tag_type) %>">
+                <%= tag.display_name %>
+              </span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
   <% else %>
     <p class="text-muted mb-0"><%= t("tools.show.no_tags") %></p>
   <% end %>

@@ -15,7 +15,8 @@
                           title: comment.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
               <span>↑</span> <span><%= comment.upvote_count %></span>
             <% end %>
-            <% if comment.user == current_user || (comment.commentable_type == "Tool" && comment.commentable.user == current_user) %>
+            <% if comment.user == current_user %>
+              <% # Tools are community-owned, so only comment author can delete %>
               <%= button_to t("comments.actions.delete"), tool_comment_path(comment.commentable, comment),
                             method: :delete,
                             data: { turbo_confirm: t("comments.confirmations.delete") },

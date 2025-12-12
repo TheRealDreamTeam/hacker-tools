@@ -29,6 +29,14 @@ class Tag < ApplicationRecord
   validates :tag_name, presence: true, uniqueness: { case_sensitive: false }
   validates :tag_type, presence: true
   validate :no_circular_parent_reference
+  before_validation :normalize_tag_name
+
+  # Normalize tag name to lowercase before validation
+  def normalize_tag_name
+    return if tag_name.blank?
+
+    self.tag_name = tag_name.downcase.strip
+  end
 
   # Scopes
   scope :roots, -> { where(parent_id: nil) }

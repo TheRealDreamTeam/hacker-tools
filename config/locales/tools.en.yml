@@ -23,6 +23,8 @@ en:
       tags_title: "Tags"
       no_tags: "No tags yet."
       select_tag: "Select a tag to add"
+      showing_top_tags: "Showing top %{count} of %{total} tags"
+      show_all_tags: "Show all tags"
       interactions_hint: "Upvote, favorite, or follow this tool."
       comments_title: "Discussion"
       flags_title: "Flags"

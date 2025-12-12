@@ -1,18 +1,16 @@
 # Job for discovering and enriching tool information from the internet
 # Runs automatically when a new tool is created
-# TODO: Implement internet scraping to enrich tool show pages
 #
-# Planned functionality:
-# - Search for tool's official website, GitHub repository, documentation
-# - Extract tool description, logo/icon, metadata
-# - Find related tools and technologies
-# - Update tool with enriched data (tool_url, tool_description, icon, etc.)
+# This job:
+# 1. Uses RubyLLM to discover the tool's official website, GitHub repo, and description
+# 2. Fetches discovered URLs to extract additional metadata (title, description, images)
+# 3. Updates the tool with discovered information (tool_url, tool_description, icon, etc.)
 #
-# Potential data sources:
-# - GitHub API (if tool_name matches a popular repository)
-# - Web scraping (official website, documentation sites)
-# - Package registries (npm, rubygems, pypi, etc.)
-# - Wikipedia/other knowledge bases
+# Data sources:
+# - RubyLLM for intelligent discovery of official websites and GitHub repos
+# - Web scraping (official website, GitHub pages) for metadata extraction
+require "stringio"
+
 class ToolDiscoveryJob < ApplicationJob
   queue_as :default
 
@@ -28,17 +26,209 @@ class ToolDiscoveryJob < ApplicationJob
 
     Rails.logger.info "Starting tool discovery for tool #{tool_id}: #{tool.tool_name}"
 
-    # TODO: Implement tool discovery logic
-    # 1. Search for tool's official website/GitHub repo
-    # 2. Extract metadata (description, logo, tags, etc.)
-    # 3. Update tool with discovered information
-    # 4. Handle errors gracefully (some tools may not have discoverable info)
+    # Step 1: Use RubyLLM to discover tool information
+    discovery_result = discover_tool_info(tool)
+    return unless discovery_result
 
-    Rails.logger.info "Tool discovery completed for tool #{tool_id} (stub - not yet implemented)"
+    # Step 2: Update tool with discovered information
+    update_tool_from_discovery(tool, discovery_result)
+
+    # Step 3: If we found URLs, fetch and extract additional metadata
+    enrich_from_urls(tool, discovery_result)
+
+    Rails.logger.info "Tool discovery completed for tool #{tool_id}: #{tool.tool_name}"
   rescue StandardError => e
     Rails.logger.error "Tool discovery error for tool #{tool_id}: #{e.message}"
     Rails.logger.error e.backtrace.first(5).join("\n")
     # Don't re-raise - tool discovery failures shouldn't break tool creation
+  end
+
+  private
+
+  # Use RubyLLM to discover tool information
+  def discover_tool_info(tool)
+    # Skip if tool already has a URL and description (already enriched)
+    return nil if tool.tool_url.present? && tool.tool_description.present? && tool.tool_description != "Auto-detected from submission"
+
+    discovery_tool = ToolDiscoveryTool.new
+    result = discovery_tool.execute(tool_name: tool.tool_name)
+
+    # Only proceed if we got meaningful results with reasonable confidence
+    return nil if result[:confidence].to_f < 0.5
+
+    Rails.logger.info "Discovered info for #{tool.tool_name}: website=#{result[:official_website]}, github=#{result[:github_repo]}, confidence=#{result[:confidence]}"
+    result
+  rescue StandardError => e
+    Rails.logger.warn "Tool discovery LLM call failed for #{tool.tool_name}: #{e.message}"
+    nil
+  end
+
+  # Update tool with discovered information
+  def update_tool_from_discovery(tool, discovery_result)
+    updates = {}
+
+    # Update tool_url if we discovered one and tool doesn't have one
+    if discovery_result[:official_website].present? && tool.tool_url.blank?
+      updates[:tool_url] = discovery_result[:official_website]
+    elsif discovery_result[:github_repo].present? && tool.tool_url.blank?
+      # Prefer official website, but use GitHub if that's all we have
+      updates[:tool_url] = discovery_result[:github_repo]
+    end
+
+    # Update description if we got a better one
+    if discovery_result[:description].present?
+      current_desc = tool.tool_description
+      # Only update if current description is auto-generated or blank
+      if current_desc.blank? || current_desc == "Auto-detected from submission"
+        updates[:tool_description] = discovery_result[:description]
+      end
+    end
+
+    tool.update!(updates) if updates.any?
+  end
+
+  # Fetch URLs and extract additional metadata (title, description, images)
+  def enrich_from_urls(tool, discovery_result)
+    # Try official website first, then GitHub repo
+    urls_to_fetch = []
+    urls_to_fetch << discovery_result[:official_website] if discovery_result[:official_website].present?
+    urls_to_fetch << discovery_result[:github_repo] if discovery_result[:github_repo].present? && urls_to_fetch.empty?
+
+    urls_to_fetch.each do |url|
+      next if url.blank?
+
+      begin
+        enrich_from_url(tool, url)
+        # Only process first successful URL
+        break
+      rescue StandardError => e
+        Rails.logger.warn "Failed to enrich tool #{tool.id} from URL #{url}: #{e.message}"
+        # Continue to next URL
+      end
+    end
+  end
+
+  # Fetch a single URL and extract metadata
+  def enrich_from_url(tool, url)
+    Rails.logger.info "Fetching metadata from #{url} for tool #{tool.id}"
+
+    response = Faraday.get(url) do |req|
+      req.headers["User-Agent"] = "HackerTools/1.0"
+      req.options.timeout = 10
+    end
+
+    return unless response.success?
+
+    doc = Nokogiri::HTML(response.body)
+    updates = {}
+
+    # Extract description if we don't have a good one
+    if tool.tool_description.blank? || tool.tool_description == "Auto-detected from submission"
+      description = extract_description(doc)
+      updates[:tool_description] = description if description.present? && description.length > 20
+    end
+
+    # Extract and attach icon/image
+    icon_url = extract_icon_url(doc, url)
+    if icon_url.present? && !tool.icon.attached?
+      attach_icon_from_url(tool, icon_url)
+    end
+
+    tool.update!(updates) if updates.any?
+  rescue Faraday::Error => e
+    Rails.logger.warn "Failed to fetch URL #{url} for tool #{tool.id}: #{e.message}"
+  end
+
+  # Extract description from HTML
+  def extract_description(doc)
+    # Try Open Graph description first
+    og_desc = doc.at_css('meta[property="og:description"]')&.[]('content')
+    return og_desc.strip if og_desc.present? && og_desc.strip.length > 20
+
+    # Try Twitter card description
+    twitter_desc = doc.at_css('meta[name="twitter:description"]')&.[]('content')
+    return twitter_desc.strip if twitter_desc.present? && twitter_desc.strip.length > 20
+
+    # Try meta description
+    meta_desc = doc.at_css('meta[name="description"]')&.[]('content')
+    return meta_desc.strip if meta_desc.present? && meta_desc.strip.length > 20
+
+    # For GitHub repos, try the repository description
+    github_desc = doc.at_css('p[class*="description"]')&.text&.strip
+    return github_desc if github_desc.present? && github_desc.length > 20
+
+    nil
+  end
+
+  # Extract icon/image URL from HTML
+  def extract_icon_url(doc, base_url)
+    # Try Open Graph image first
+    og_image = doc.at_css('meta[property="og:image"]')&.[]('content')
+    return absolute_url(og_image, base_url) if og_image.present?
+
+    # Try Twitter card image
+    twitter_image = doc.at_css('meta[name="twitter:image"]')&.[]('content')
+    return absolute_url(twitter_image, base_url) if twitter_image.present?
+
+    # For GitHub repos, try the repository avatar
+    github_avatar = doc.at_css('img[alt*="avatar"]')&.[]('src')
+    return absolute_url(github_avatar, base_url) if github_avatar.present?
+
+    # Try favicon
+    favicon = doc.at_css('link[rel="icon"]')&.[]('href')
+    return absolute_url(favicon, base_url) if favicon.present?
+
+    nil
+  end
+
+  # Convert relative URL to absolute URL
+  def absolute_url(url, base_url)
+    return nil if url.blank?
+
+    return url if url.start_with?("http://", "https://")
+
+    base_uri = URI.parse(base_url)
+    URI.join(base_uri, url).to_s
+  rescue URI::InvalidURIError
+    nil
+  end
+
+  # Attach icon from URL using Active Storage
+  def attach_icon_from_url(tool, icon_url)
+    return if icon_url.blank?
+
+    # Download the image
+    response = Faraday.get(icon_url) do |req|
+      req.headers["User-Agent"] = "HackerTools/1.0"
+      req.options.timeout = 10
+    end
+
+    return unless response.success?
+
+    # Check if it's actually an image
+    content_type = response.headers["content-type"]
+    return unless content_type&.start_with?("image/")
+
+    # Determine file extension from content type
+    extension = case content_type
+                when /jpeg|jpg/ then "jpg"
+                when /png/ then "png"
+                when /gif/ then "gif"
+                when /svg/ then "svg"
+                when /webp/ then "webp"
+                else "jpg" # Default fallback
+                end
+
+    # Attach to tool using Active Storage
+    tool.icon.attach(
+      io: StringIO.new(response.body),
+      filename: "icon.#{extension}",
+      content_type: content_type
+    )
+
+    Rails.logger.info "Attached icon from #{icon_url} to tool #{tool.id}"
+  rescue StandardError => e
+    Rails.logger.warn "Failed to attach icon from #{icon_url} to tool #{tool.id}: #{e.message}"
   end
 end
 

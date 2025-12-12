@@ -37,8 +37,10 @@ class ToolsController < ApplicationController
     @new_flag = @tool.comments.new(comment_type: :flag)
     @new_bug = @tool.comments.new(comment_type: :bug)
 
-    # Load tags for the tool and all available tags grouped by type
-    @tool_tags = @tool.tags.includes(:parent)
+    # Load top tags for the tool (ranked by relevance: submissions that have both tool and tag)
+    # Show top 10 by default, but keep all tags for tag management
+    @tool_tags = @tool.top_tags(limit: 10)
+    @all_tool_tags = @tool.tags.includes(:parent) # For tag management UI
     @available_tags = Tag.includes(:parent).order(tag_type: :asc, tag_name: :asc)
   end
 

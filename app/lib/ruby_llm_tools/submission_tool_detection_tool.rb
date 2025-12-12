@@ -42,9 +42,34 @@ class SubmissionToolDetectionTool < RubyLLM::Tool
     parts << "Author Note: #{author_note}" if author_note.present?
     parts << "URL: #{url}" if url.present?
     
+    # Extract domain from URL as a potential tool name hint
+    domain_hint = ""
+    if url.present?
+      begin
+        uri = URI.parse(url)
+        domain = uri.host&.sub(/\Awww\./, "")&.split(".")&.first
+        if domain.present? && domain.length > 2 && domain.length < 50
+          # Only suggest domain if it looks like a project name (not generic domains)
+          generic_domains = %w[github gitlab bitbucket npmjs pypi rubygems docker hub]
+          unless generic_domains.include?(domain.downcase)
+            domain_hint = "\n\nIMPORTANT: The URL domain suggests '#{domain}' might be a tool/project name. " \
+                         "If this appears to be a software project, framework, or library, include it as a detected tool."
+          end
+        end
+      rescue URI::InvalidURIError
+        # Ignore invalid URLs
+      end
+    end
+    
     "You are an expert at identifying software tools, frameworks, libraries, and technologies mentioned in content. " \
     "Extract all relevant tools mentioned, including programming languages, frameworks, libraries, services, and platforms.\n\n" \
-    "Content to analyze:\n#{parts.join("\n")}\n\n" \
+    "PAY SPECIAL ATTENTION to the URL: domain names often indicate the name of a software project, framework, or tool. " \
+    "For example, 'rubyllm.com' suggests 'rubyllm' is a tool, 'reactjs.org' suggests 'react' is a tool, etc.\n\n" \
+    "IMPORTANT: Do NOT combine company names with product names unless they form a single, well-known tool name. " \
+    "For example, if you see 'Disney' and 'Sora' mentioned together, and 'Sora' is OpenAI's product, " \
+    "detect 'OpenAI' and 'Sora' separately, NOT 'Disney Sora'. " \
+    "Only combine names if they represent a single, unified tool (e.g., 'Microsoft Azure', 'Google Cloud').\n\n" \
+    "Content to analyze:\n#{parts.join("\n")}#{domain_hint}\n\n" \
     "Return a JSON array of detected tools with name, confidence, and category."
   end
 end

@@ -36,8 +36,10 @@ class ToolTest < ActiveSupport::TestCase
   test "should have many submissions" do
     tool = create(:tool)
     user = create(:user)
-    submission1 = create(:submission, user: user, tool: tool)
-    submission2 = create(:submission, user: user, tool: tool)
+    submission1 = create(:submission, user: user)
+    submission2 = create(:submission, user: user)
+    submission1.tools << tool
+    submission2.tools << tool
 
     assert_equal 2, tool.submissions.count
     assert_includes tool.submissions, submission1
