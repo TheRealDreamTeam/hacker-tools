@@ -91,6 +91,7 @@ class Submission < ApplicationRecord
   scope :for_tool, ->(tool) { joins(:submission_tools).where(submission_tools: { tool_id: tool.id }) }
   
   # Engagement scopes for home page categories
+  # Note: These scopes return ActiveRecord::Relation that can be eager loaded after grouping
   # Trending: Most upvoted submissions in the last 30 days
   scope :trending, -> {
     joins(:user_submissions)

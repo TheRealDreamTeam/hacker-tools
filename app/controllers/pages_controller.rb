@@ -39,11 +39,22 @@ class PagesController < ApplicationController
                          .includes(:tags, :user_tools)
 
     # Get trending submissions (most upvoted in last 30 days)
-    trending_submissions = Submission.trending
-                                     .limit(10)
-                                     .includes(:user, :tools, :tags, :user_submissions)
+    # Note: Eager load after grouping to avoid GROUP BY conflicts
+    # First get IDs and upvote counts from grouped query
+    trending_results = Submission.trending.limit(10)
+    trending_data = trending_results.pluck(:id, Arel.sql("COUNT(user_submissions.id)"))
+    trending_submission_ids = trending_data.map(&:first)
+    upvotes_map = trending_data.to_h
+    
+    # Load full records with associations, preserving order
+    submissions_by_id = Submission.where(id: trending_submission_ids)
+                                  .includes(:user, :tools, :tags, :user_submissions)
+                                  .index_by(&:id)
+    trending_submissions = trending_submission_ids.map { |id| submissions_by_id[id] }.compact
+    # Add upvotes_count as virtual attribute
+    trending_submissions.each { |s| s.define_singleton_method(:upvotes_count) { upvotes_map[s.id] || 0 } }
 
-    combine_and_rank_items(trending_tools.to_a, trending_submissions.to_a)
+    combine_and_rank_items(trending_tools.to_a, trending_submissions)
   end
 
   # Get new & hot items (tools + submissions) from last 7 days
@@ -59,11 +70,22 @@ class PagesController < ApplicationController
                         .includes(:tags, :user_tools)
 
     # Get new & hot submissions (created in last 7 days, ranked by upvotes)
-    new_hot_submissions = Submission.new_hot
-                                    .limit(10)
-                                    .includes(:user, :tools, :tags, :user_submissions)
+    # Note: Eager load after grouping to avoid GROUP BY conflicts
+    # First get IDs and upvote counts from grouped query
+    new_hot_results = Submission.new_hot.limit(10)
+    new_hot_data = new_hot_results.pluck(:id, Arel.sql("COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0)"))
+    new_hot_submission_ids = new_hot_data.map(&:first)
+    upvotes_map = new_hot_data.to_h
+    
+    # Load full records with associations, preserving order
+    submissions_by_id = Submission.where(id: new_hot_submission_ids)
+                                  .includes(:user, :tools, :tags, :user_submissions)
+                                  .index_by(&:id)
+    new_hot_submissions = new_hot_submission_ids.map { |id| submissions_by_id[id] }.compact
+    # Add upvotes_count as virtual attribute
+    new_hot_submissions.each { |s| s.define_singleton_method(:upvotes_count) { upvotes_map[s.id] || 0 } }
 
-    combine_and_rank_items(new_hot_tools.to_a, new_hot_submissions.to_a)
+    combine_and_rank_items(new_hot_tools.to_a, new_hot_submissions)
   end
 
   # Get most upvoted items (tools + submissions) all time
@@ -78,11 +100,22 @@ class PagesController < ApplicationController
                              .includes(:tags, :user_tools)
 
     # Get most upvoted submissions
-    most_upvoted_submissions = Submission.most_upvoted
-                                          .limit(10)
-                                          .includes(:user, :tools, :tags, :user_submissions)
+    # Note: Eager load after grouping to avoid GROUP BY conflicts
+    # First get IDs and upvote counts from grouped query
+    most_upvoted_results = Submission.most_upvoted.limit(10)
+    most_upvoted_data = most_upvoted_results.pluck(:id, Arel.sql("COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0)"))
+    most_upvoted_submission_ids = most_upvoted_data.map(&:first)
+    upvotes_map = most_upvoted_data.to_h
+    
+    # Load full records with associations, preserving order
+    submissions_by_id = Submission.where(id: most_upvoted_submission_ids)
+                                  .includes(:user, :tools, :tags, :user_submissions)
+                                  .index_by(&:id)
+    most_upvoted_submissions = most_upvoted_submission_ids.map { |id| submissions_by_id[id] }.compact
+    # Add upvotes_count as virtual attribute
+    most_upvoted_submissions.each { |s| s.define_singleton_method(:upvotes_count) { upvotes_map[s.id] || 0 } }
 
-    combine_and_rank_items(most_upvoted_tools.to_a, most_upvoted_submissions.to_a)
+    combine_and_rank_items(most_upvoted_tools.to_a, most_upvoted_submissions)
   end
 
   # Combine tools and submissions into a unified array with type indicators
