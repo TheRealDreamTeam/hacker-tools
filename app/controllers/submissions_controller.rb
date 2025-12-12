@@ -104,8 +104,9 @@ class SubmissionsController < ApplicationController
           redirect_to @submission, notice: t("submissions.create.success")
         }
         format.turbo_stream { 
-          # For Turbo Stream, render the show page with subscription
-          render :create
+          # For Turbo Stream, redirect to show page with subscription
+          # The turbo_stream_from in the view will set up the subscription
+          redirect_to @submission, status: :see_other, notice: t("submissions.create.success")
         }
       end
     else

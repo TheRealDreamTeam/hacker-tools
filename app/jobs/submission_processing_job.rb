@@ -73,17 +73,9 @@ class SubmissionProcessingJob < ApplicationJob
       )
       broadcast_status_update(submission, :completed, "Processing complete!")
       
-      # Broadcast redirect instruction
-      # Use Rails URL helpers (not available in background jobs by default)
-      url_helpers = Rails.application.routes.url_helpers
-      submission_url = url_helpers.submission_path(submission)
-      
-      Turbo::StreamsChannel.broadcast_action_to(
-        "submission_#{submission.id}",
-        action: :redirect,
-        target: "submission-form-container",
-        url: submission_url
-      )
+      # Note: Redirect is handled by the controller after form submission
+      # The user is already on the submission show page, so no redirect needed
+      # Processing status updates are broadcast via Turbo Streams
       
       Rails.logger.info "Completed processing pipeline for submission #{submission_id}"
     rescue StandardError => e
