@@ -9,10 +9,12 @@
         <!-- Left content: star, title, description, tags -->
         <div class="col-12 col-md-5">
           <div class="d-flex justify-content-between align-items-start mb-1 position-relative">
-            <h5 class="card-title mb-0">
+            <h5 class="card-title mb-0 <%= 'pe-4' if user_signed_in? %> flex-grow-1">
               <%= link_to "#{index + 1}. #{tool.tool_name}", tool_path(tool), class: "text-decoration-none" %>
             </h5>
-            <%= render "tools/read_state", tool: tool, classes: "position-absolute top-0 end-0 mt-1 me-1" %>
+            <% if user_signed_in? %>
+              <%= render "tools/read_state", tool: tool, classes: "ms-2 mt-1 flex-shrink-0" %>
+            <% end %>
           </div>
           <div class="d-flex align-items-center gap-2 mb-2">
             <span class="badge bg-primary" style="font-size: 0.75rem;">
@@ -59,12 +61,14 @@
         <!-- Left content: number, title, description, tags -->
         <div class="col-12 col-md-5">
           <div class="d-flex justify-content-between align-items-start mb-1 position-relative">
-            <h5 class="card-title mb-0">
+            <h5 class="card-title mb-0 <%= 'pe-4' if user_signed_in? %> flex-grow-1">
               <%= link_to "#{index + 1}. #{submission.submission_name.presence || submission.submission_url}", 
                           submission_path(submission), 
                           class: "text-decoration-none" %>
             </h5>
-            <%= render "submissions/read_state", submission: submission, classes: "position-absolute top-0 end-0 mt-1 me-1" %>
+            <% if user_signed_in? %>
+              <%= render "submissions/read_state", submission: submission, classes: "ms-2 mt-1 flex-shrink-0" %>
+            <% end %>
           </div>
           <div class="d-flex align-items-center gap-2 mb-2">
             <span class="badge bg-primary" style="font-size: 0.75rem;">
