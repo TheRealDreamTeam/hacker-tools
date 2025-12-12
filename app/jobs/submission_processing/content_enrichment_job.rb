@@ -106,6 +106,9 @@ module SubmissionProcessing
       submission.metadata = submission.metadata.merge("detected_tools" => detected_tools)
       submission.save!
       
+      # Filter out hardware items (cables, physical devices, etc.)
+      detected_tools = filter_hardware_items(detected_tools)
+      
       # Filter out invalid tool combinations (e.g., "Disney Sora" when Sora is OpenAI's product)
       detected_tools = filter_invalid_tool_combinations(detected_tools)
       
@@ -219,6 +222,51 @@ module SubmissionProcessing
       Rails.logger.info "Assigned #{assigned_count} tag(s) to #{submission.tools.count} tool(s) from submission #{submission.id}"
     rescue StandardError => e
       Rails.logger.error "Error assigning tags to tools for submission #{submission.id}: #{e.message}"
+    end
+
+    # Filter out hardware items (cables, physical devices, etc.) that are not software tools
+    # This prevents items like "yaky" (a cable) or "USB-C" from being detected as software tools
+    def filter_hardware_items(detected_tools)
+      return detected_tools if detected_tools.empty?
+
+      # Blacklist of known hardware items that should not be detected as software tools
+      hardware_blacklist = %w[
+        yaky usb-c usbc hdmi ethernet cable connector adapter charger battery
+        phone smartphone tablet laptop computer monitor keyboard mouse
+        chip processor cpu gpu memory ram storage ssd hdd
+      ]
+
+      # Hardware-related keywords that indicate a physical item, not software
+      hardware_keywords = %w[
+        cable connector port adapter charger battery power supply
+        device hardware physical component chip processor
+      ]
+
+      filtered_tools = detected_tools.reject do |tool|
+        tool_name = tool["name"].downcase.strip
+        
+        # Check against blacklist
+        if hardware_blacklist.any? { |hw| tool_name == hw || tool_name.include?(hw) }
+          Rails.logger.info "Filtering out hardware item: '#{tool["name"]}' (matches hardware blacklist)"
+          next true
+        end
+        
+        # Check category - if explicitly marked as hardware, exclude it
+        if tool["category"] == "hardware" || tool["category"] == "device"
+          Rails.logger.info "Filtering out hardware item: '#{tool["name"]}' (category: #{tool["category"]})"
+          next true
+        end
+        
+        # Check if tool name contains hardware keywords
+        if hardware_keywords.any? { |keyword| tool_name.include?(keyword) }
+          Rails.logger.info "Filtering out hardware item: '#{tool["name"]}' (contains hardware keyword)"
+          next true
+        end
+        
+        false # Keep this tool
+      end
+      
+      filtered_tools
     end
 
     # Filter out invalid tool combinations like "Company Product" when the product belongs to another company

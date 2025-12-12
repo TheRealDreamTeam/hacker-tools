@@ -61,15 +61,20 @@ class SubmissionToolDetectionTool < RubyLLM::Tool
       end
     end
     
-    "You are an expert at identifying software tools, frameworks, libraries, and technologies mentioned in content. " \
-    "Extract all relevant tools mentioned, including programming languages, frameworks, libraries, services, and platforms.\n\n" \
+    "You are an expert at identifying SOFTWARE tools, frameworks, libraries, and technologies mentioned in content. " \
+    "Extract all relevant SOFTWARE tools mentioned, including programming languages, frameworks, libraries, services, and platforms.\n\n" \
+    "CRITICAL: Only detect SOFTWARE tools, NOT hardware items. " \
+    "EXCLUDE: physical cables (USB-C, HDMI, etc.), hardware devices (phones, computers, etc.), " \
+    "physical components (batteries, chips, etc.), or any non-software items. " \
+    "ONLY include items that are software, frameworks, libraries, programming languages, services, or platforms.\n\n" \
     "PAY SPECIAL ATTENTION to the URL: domain names often indicate the name of a software project, framework, or tool. " \
-    "For example, 'rubyllm.com' suggests 'rubyllm' is a tool, 'reactjs.org' suggests 'react' is a tool, etc.\n\n" \
+    "For example, 'rubyllm.com' suggests 'rubyllm' is a tool, 'reactjs.org' suggests 'react' is a tool, etc. " \
+    "However, if the domain refers to a hardware item or physical product, DO NOT include it.\n\n" \
     "IMPORTANT: Do NOT combine company names with product names unless they form a single, well-known tool name. " \
     "For example, if you see 'Disney' and 'Sora' mentioned together, and 'Sora' is OpenAI's product, " \
     "detect 'OpenAI' and 'Sora' separately, NOT 'Disney Sora'. " \
     "Only combine names if they represent a single, unified tool (e.g., 'Microsoft Azure', 'Google Cloud').\n\n" \
     "Content to analyze:\n#{parts.join("\n")}#{domain_hint}\n\n" \
-    "Return a JSON array of detected tools with name, confidence, and category."
+    "Return a JSON array of detected SOFTWARE tools with name, confidence, and category."
   end
 end
