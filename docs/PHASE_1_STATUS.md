@@ -1,6 +1,6 @@
 # Phase 1 Implementation Status
 
-**Last Updated**: 2025-12-12  
+**Last Updated**: 2025-12-12 (Embeddings Fully Working)  
 **Current Branch**: `feature/submission-and-search-improvements`
 
 ## Overview
@@ -85,7 +85,7 @@ This document tracks the completion status of Phase 1 implementation based on `d
 ## ⚠️ Partially Completed
 
 ### Processing Pipeline
-- [x] **Embedding Generation**: Working but requires pgvector extension (currently skipped if not available)
+- [x] **Embedding Generation**: ✅ **FULLY WORKING** - Generates embeddings for both Submissions and Tools using pgvector
 - [ ] **Safety Check Job**: Not implemented (TODO in orchestrator)
 - [ ] **Summarization Job**: Not created (planned for Phase 2)
 - [ ] **Relationship Discovery**: Stub only (planned for Phase 2)
@@ -97,7 +97,8 @@ This document tracks the completion status of Phase 1 implementation based on `d
 
 ### Search
 - [x] **Full-Text Search**: Working with pg_search
-- [x] **Semantic Search**: Working with embeddings (when pgvector available)
+- [x] **Semantic Search**: ✅ **FULLY WORKING** - Hybrid search (full-text + semantic) for both Tools and Submissions
+- [x] **Embedding Generation**: ✅ **FULLY WORKING** - Automatic embedding generation for all new Submissions and Tools
 - [ ] **Advanced Filtering**: Basic filtering exists, could add more options
 - [ ] **Faceting**: Not implemented (planned for Phase 2)
 
@@ -135,9 +136,10 @@ This document tracks the completion status of Phase 1 implementation based on `d
 ## 🔧 Technical Debt & Known Issues
 
 ### Current Issues
-1. **pgvector Extension**: Not installed - embedding generation is skipped
-   - **Impact**: Semantic search works but embeddings aren't stored
-   - **Solution**: Install pgvector extension or use alternative storage
+1. ~~**pgvector Extension**: Not installed - embedding generation is skipped~~ ✅ **RESOLVED**
+   - **Status**: pgvector extension is installed and working
+   - **Embeddings**: Successfully generating and storing embeddings for both Submissions and Tools
+   - **Note**: "unknown OID" warning in schema dumps is cosmetic only (doesn't affect functionality)
 
 2. **Safety Check**: Not implemented
    - **Impact**: No content safety validation
@@ -228,18 +230,18 @@ Based on `docs/PHASE_1_IMPLEMENTATION_PLAN.md`, Phase 1 is complete when:
 - [x] Users can create submissions (links)
 - [x] Processing pipeline runs successfully
 - [x] Classifications and tags are generated accurately
-- [x] Embeddings are generated for all submissions (when pgvector available)
+- [x] Embeddings are generated for all submissions and tools ✅ **FULLY WORKING**
 - [x] Search works with full-text and semantic search
 - [x] RAG enhances search results
 - [ ] All tests pass (needs review)
 - [ ] Documentation is complete (needs updates)
 - [ ] Code is production-ready (needs review)
 
-**Current Status**: ~85% Complete
+**Current Status**: ~90% Complete (Embeddings now fully working)
 
 ## 📝 Next Steps
 
-1. **Immediate**: Install pgvector extension (if available) or document alternative
+1. ~~**Immediate**: Install pgvector extension (if available) or document alternative~~ ✅ **COMPLETE**
 2. **High Priority**: Implement safety check job
 3. **High Priority**: Create processing status UI
 4. **Medium Priority**: Add fuzzy duplicate matching

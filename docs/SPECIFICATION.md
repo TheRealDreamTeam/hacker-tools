@@ -2,7 +2,7 @@
 
 This document serves as the human-readable specification for the Hacker Tools application. It is maintained alongside development and updated as features are built.
 
-**Last Updated**: 2025-12-12 (Tool Discovery & Enrichment - Phase 1 Complete)
+**Last Updated**: 2025-12-12 (Embeddings & Semantic Search - Phase 1 Complete)
 
 ## Overview
 
@@ -119,7 +119,7 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ### Tool
 - **Purpose**: Community-owned top-level entity representing any software-related concept, technology, service, or platform. Tools are shared community resources, not user-owned.
-- **Attributes**: `tool_name` (string, required), `tool_description` (text), `tool_url` (string, optional), `author_note` (text), `visibility` (integer enum)
+- **Attributes**: `tool_name` (string, required), `tool_description` (text), `tool_url` (string, optional), `author_note` (text), `visibility` (integer enum), `embedding` (vector(1536) - pgvector embedding for semantic search)
 - **Active Storage**: `icon`, `picture` attachments
 - **Associations**: `has_many :submissions`; `has_many :comments, as: :commentable` (polymorphic); `has_many :tags, through: :tool_tags`; `has_many :lists, through: :list_tools`; `has_many :user_tools`
 - **Validations**: Presence on name; visibility enum; URL format validation (if URL provided)
@@ -132,6 +132,8 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Fetch discovered URLs to extract additional metadata (title, description, images)
   - Attach icons/images from discovered URLs using Active Storage
   - Update the tool with discovered information (tool_url, tool_description, icon)
+  - Generate vector embeddings for semantic search (via `ToolEmbeddingGenerationJob`)
+- **Embeddings**: Vector embeddings (1536 dimensions) are automatically generated after tool discovery using OpenAI's `text-embedding-3-small` model. Embeddings combine tool name, description, and tags to enable semantic search and content similarity matching.
 
 ### List
 - **Purpose**: Curated collection of tools for a user.
@@ -207,6 +209,7 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - `metadata` (jsonb - flexible data storage)
   - `duplicate_of_id` (references submissions - for duplicate detection)
   - `processed_at` (datetime - when processing completed)
+  - `embedding` (vector(1536) - pgvector embedding for semantic search)
 - **Associations**: 
   - `belongs_to :user` (user who submitted the content)
   - `belongs_to :tool, optional: true` (tool this submission is about)
@@ -229,7 +232,8 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - `duplicate?` - Checks if submission is marked as duplicate
   - `metadata_value(key)` - Retrieves value from metadata JSONB
   - `set_metadata_value(key, value)` - Sets value in metadata JSONB
-- **Status**: Complete - Full CRUD with tag management, follow functionality, and polymorphic comments
+- **Status**: Complete - Full CRUD with tag management, follow functionality, polymorphic comments, and semantic search via embeddings
+- **Embeddings**: Vector embeddings (1536 dimensions) are automatically generated during processing using OpenAI's `text-embedding-3-small` model. Embeddings enable semantic search and content similarity matching.
 
 ### SubmissionTag (join)
 - **Purpose**: Many-to-many between submissions and tags.
@@ -339,10 +343,11 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Environment Variables**: [List required env vars]
 - **PostgreSQL Extensions**:
   - **pg_trgm**: Enabled for fuzzy text search
-  - **pgvector**: Available on Heroku Postgres (Standard, Premium, Private, Shield, and Essential plans with PostgreSQL 15+)
+  - **pgvector**: ✅ **ENABLED AND WORKING** - Available on Heroku Postgres (Standard, Premium, Private, Shield, and Essential plans with PostgreSQL 15+)
     - Not a separate addon - built into Heroku Postgres
     - Enabled automatically via migrations
-    - If extension is unavailable, migrations skip gracefully and embeddings are not generated
+    - **Status**: Fully functional - embeddings are being generated and stored for both Tools and Submissions
+    - **Note**: "unknown OID" warning in schema dumps is cosmetic only (doesn't affect functionality)
 
 ## Authentication (Devise)
 
