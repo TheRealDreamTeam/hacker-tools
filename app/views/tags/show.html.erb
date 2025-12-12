@@ -1,0 +1,79 @@
+<div class="p-2">
+  <div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+      <h1 class="h3 mb-2"><%= @tag.display_name %></h1>
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge <%= tag_badge_class(@tag.tag_type) %>">
+          <%= t("tags.tag_types.#{@tag.tag_type}") %>
+        </span>
+        <% if @tag.parent %>
+          <span class="text-muted small">
+            <%= t("tags.labels.parent") %>: 
+            <%= link_to @tag.parent.tag_name, tag_path(@tag.parent), class: "text-decoration-none" %>
+          </span>
+        <% end %>
+      </div>
+      <% if @tag.tag_description.present? %>
+        <p class="text-muted mb-0"><%= simple_format(@tag.tag_description) %></p>
+      <% end %>
+    </div>
+    <div class="d-flex gap-2">
+      <%= link_to t("actions.edit"), edit_tag_path(@tag), class: "btn btn-outline-primary" %>
+      <%= button_to t("actions.delete"), tag_path(@tag),
+                    method: :delete,
+                    data: { turbo_confirm: t("tags.confirmations.destroy") },
+                    class: "btn btn-outline-danger" %>
+    </div>
+  </div>
+
+  <% if @tag.children.any? %>
+    <div class="mb-4">
+      <h2 class="h5 mb-3"><%= t("tags.show.children_title") %></h2>
+      <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
+        <% @tag.children.each do |child| %>
+          <%= render_tag_link(child) %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="mb-4">
+    <h2 class="h5 mb-3">
+      <%= t("tags.show.tools_title") %>
+      <span class="badge bg-secondary"><%= @tools.count %></span>
+    </h2>
+    <% if @tools.any? %>
+      <div class="row row-cols-1 row-cols-md-2 g-3">
+        <% @tools.each do |tool| %>
+          <div class="col">
+            <div class="card h-100 shadow-sm">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                  <h3 class="h6 mb-1">
+                    <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
+                  </h3>
+                  <% if tool.icon.attached? %>
+                    <%= image_tag tool.icon, class: "rounded", style: "height: 48px; width: 48px; object-fit: cover;" %>
+                  <% end %>
+                </div>
+                <p class="text-muted mb-2"><%= truncate(tool.tool_description, length: 140) %></p>
+                <p class="small mb-0 text-secondary">
+                  <%= t("tools.index.owner", owner: display_user_name(tool.user)) %>
+                </p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="alert alert-light border">
+        <p class="mb-0"><%= t("tags.show.no_tools") %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= link_to t("actions.back"), tags_path, class: "btn btn-secondary" %>
+  </div>
+</div>
+
