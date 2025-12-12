@@ -182,12 +182,27 @@ module SubmissionProcessing
           normalized_name = normalized_name.downcase.strip
           next if normalized_name.blank?
           
-          # Find or create tag (Tag model normalizes tag_name to lowercase automatically)
-          tag = Tag.find_or_create_by!(
-            tag_name: normalized_name,
-            tag_type: tag_category
-          ) do |t|
-            t.tag_description = "Auto-generated from submission"
+          # Find existing tag by name (tag_name is unique, case-insensitive)
+          # If tag exists, use it regardless of tag_type to avoid validation errors
+          tag = Tag.find_by("LOWER(tag_name) = ?", normalized_name)
+          
+          # If tag doesn't exist, create it with the specified tag_type
+          unless tag
+            begin
+              tag = Tag.create!(
+                tag_name: normalized_name,
+                tag_type: tag_category,
+                tag_description: "Auto-generated from submission"
+              )
+            rescue ActiveRecord::RecordInvalid => e
+              # If creation fails (e.g., race condition), try to find it again
+              Rails.logger.warn "Tag creation failed for '#{normalized_name}': #{e.message}. Retrying find..."
+              tag = Tag.find_by("LOWER(tag_name) = ?", normalized_name)
+              unless tag
+                Rails.logger.error "Could not find or create tag '#{normalized_name}' after retry"
+                next
+              end
+            end
           end
           
           # Associate tag with submission (if not already associated)
