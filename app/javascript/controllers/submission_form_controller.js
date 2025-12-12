@@ -10,7 +10,8 @@ export default class extends Controller {
     "statusContainer",
     "similarSubmissions",
     "processingStatus",
-    "validationMessage"
+    "validationMessage",
+    "formContainer"
   ]
 
   static values = {
@@ -26,6 +27,14 @@ export default class extends Controller {
     
     // Debounce URL validation
     this.urlValidationTimeout = null
+    
+    // Disable submit button initially (until URL is entered)
+    this.disableSubmit()
+    
+    // Check if URL is already filled (e.g., on page reload)
+    if (this.urlInputTarget.value.trim().length > 0) {
+      this.enableSubmit()
+    }
   }
 
   disconnect() {
@@ -255,5 +264,29 @@ export default class extends Controller {
       failed: "Processing failed"
     }
     return messages[status] || "Processing..."
+  }
+
+  // Validate before form submission
+  validateBeforeSubmit(event) {
+    const url = this.urlInputTarget.value.trim()
+    
+    if (url.length === 0) {
+      event.preventDefault()
+      event.stopPropagation()
+      this.showValidationError("Please enter a URL before submitting.")
+      this.disableSubmit()
+      return false
+    }
+    
+    if (!this.isValidUrlFormat(url)) {
+      event.preventDefault()
+      event.stopPropagation()
+      this.showValidationError("Please enter a valid URL (e.g., https://example.com)")
+      this.disableSubmit()
+      return false
+    }
+    
+    // Allow submission to proceed
+    return true
   }
 }

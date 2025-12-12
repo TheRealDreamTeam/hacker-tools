@@ -3,7 +3,8 @@
       data: { 
         controller: "submission-form",
         submission_form_validate_url_value: validate_url_submissions_path,
-        submission_form_submission_id_value: @submission.id || nil
+        submission_form_submission_id_value: @submission.id || nil,
+        action: "submit->submission-form#validateBeforeSubmit"
       }
     }
   ) do |f| %>
