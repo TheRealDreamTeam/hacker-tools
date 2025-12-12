@@ -114,8 +114,7 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
       post submissions_path, params: {
         submission: {
           submission_url: "https://example.com/new-article",
-          author_note: "Test note",
-          tool_id: @tool.id
+          author_note: "Test note"
         }
       }
     end
