@@ -16,7 +16,8 @@ class TagsController < ApplicationController
 
   # GET /tags/:id
   def show
-    @tools = @tag.tools.includes(:user, :tags).order(created_at: :desc)
+    # Tools are community-owned, no user association to include
+    @tools = @tag.tools.includes(:tags).order(created_at: :desc)
   end
 
   # GET /tags/:id/edit
