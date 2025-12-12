@@ -54,4 +54,17 @@ module SubmissionsHelper
       "Processing"
     end
   end
+
+  # Determine read state for a submission (similar to ToolsHelper#read_state)
+  # Returns hash with visited status, icon class, title, and read_at timestamp
+  def submission_read_state(submission, current_user)
+    us = submission.user_submission_for(current_user)
+    visited = us&.read_at.present?
+    {
+      visited: visited,
+      icon_class: visited ? "bi bi-eye-fill text-success" : "bi bi-eye text-secondary",
+      title: visited ? t("submissions.read.visited") : t("submissions.read.not_visited"),
+      read_at: us&.read_at
+    }
+  end
 end
