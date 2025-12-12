@@ -42,5 +42,9 @@ module HackerTools
 
     # Enable locale fallbacks - if translation missing in current locale, fall back to default
     config.i18n.fallbacks = true
+
+    # Use SQL schema format to properly handle pgvector types
+    # This allows Rails to dump vector columns correctly in db/structure.sql
+    config.active_record.schema_format = :sql
   end
 end
