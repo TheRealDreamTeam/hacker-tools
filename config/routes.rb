@@ -60,6 +60,7 @@ Rails.application.routes.draw do
       delete :unfollow, on: :member, to: "lists#unfollow"
       collection do
         post :add_tool_to_multiple
+        post :add_submission_to_multiple
       end
     end
   end

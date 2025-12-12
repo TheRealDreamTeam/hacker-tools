@@ -196,6 +196,57 @@ class ListsController < ApplicationController
       redirect_to redirect_location, alert: "Tool or list not found."
     end
 
+    # POST /lists/add_submission_to_multiple
+    # Updates submission membership across multiple lists - adds to checked lists, removes from unchecked lists
+    def add_submission_to_multiple
+      submission = Submission.find(params[:submission_id])
+      submitted_list_ids = (params[:list_ids] || []).map(&:to_i)
+      user_lists = current_user.lists.includes(:submissions)
+      
+      added_count = 0
+      removed_count = 0
+
+      # Process each of the user's lists
+      user_lists.each do |list|
+        has_submission = list.submissions.include?(submission)
+        should_have_submission = submitted_list_ids.include?(list.id)
+
+        if should_have_submission && !has_submission
+          # Add submission to list
+          list.submissions << submission
+          added_count += 1
+        elsif !should_have_submission && has_submission
+          # Remove submission from list
+          list.submissions.delete(submission)
+          removed_count += 1
+        end
+      end
+
+      # Determine redirect location - prefer referer if available, otherwise use root or submission path
+      # This ensures redirect works correctly even on root page
+      redirect_location = if request.referer.present? && URI(request.referer).path != request.path
+                            request.referer
+                          elsif request.path == root_path || request.path == "/"
+                            root_path
+                          else
+                            submission_path(submission)
+                          end
+
+      # Build appropriate success message
+      messages = []
+      messages << "Added to #{added_count} list#{'s' if added_count != 1}" if added_count > 0
+      messages << "Removed from #{removed_count} list#{'s' if removed_count != 1}" if removed_count > 0
+
+      if messages.any?
+        redirect_to redirect_location, notice: messages.join(". ") + "."
+      else
+        redirect_to redirect_location, notice: "Lists updated."
+      end
+    rescue ActiveRecord::RecordNotFound
+      redirect_location = request.referer.present? ? request.referer : (request.path == root_path || request.path == "/" ? root_path : submission_path(submission))
+      redirect_to redirect_location, alert: "Submission or list not found."
+    end
+
     private
   
     # Set list for show action - allows viewing public lists from any user
