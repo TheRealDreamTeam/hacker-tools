@@ -64,6 +64,7 @@
   <div class="mt-4 d-flex gap-2">
     <%= f.button :submit, 
         class: "btn btn-primary",
+        disabled: true,
         data: { submission_form_target: "submitButton" } %>
     <%= link_to t("actions.cancel"), submissions_path, class: "btn btn-outline-secondary" %>
   </div>

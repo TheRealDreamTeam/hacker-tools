@@ -275,6 +275,8 @@ export default class extends Controller {
       event.stopPropagation()
       this.showValidationError("Please enter a URL before submitting.")
       this.disableSubmit()
+      // Focus on URL input
+      this.urlInputTarget.focus()
       return false
     }
     
@@ -283,10 +285,13 @@ export default class extends Controller {
       event.stopPropagation()
       this.showValidationError("Please enter a valid URL (e.g., https://example.com)")
       this.disableSubmit()
+      // Focus on URL input
+      this.urlInputTarget.focus()
       return false
     }
     
-    // Allow submission to proceed
+    // URL is valid - allow submission to proceed
+    // Don't prevent default, let the form submit normally
     return true
   }
 }
