@@ -20,10 +20,13 @@ class SubmissionsController < ApplicationController
         use_fulltext: params[:use_fulltext] != "false"  # Default to true
       )
       
-      # Optionally enhance results with RAG (can be slow, so make it optional)
-      if params[:enhance] == "true"
-        @enhanced_results = SubmissionRagService.enhance_results(@query, @submissions, top_k: 5)
-      end
+      # RAG enhancement disabled for now - will be used later for:
+      # 1. Suggesting linked submissions/tools when viewing individual items
+      # 2. Explaining similarity during new submission creation
+      # See docs/RAG_USAGE.md for future implementation plans
+      # if params[:enhance] == "true"
+      #   @enhanced_results = SubmissionRagService.enhance_results(@query, @submissions, top_k: 5)
+      # end
     else
       # Regular listing without search
       @submissions = Submission.includes(:user, :tools, :tags)

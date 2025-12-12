@@ -8,20 +8,33 @@ RAG (Retrieval-Augmented Generation) combines **vector similarity search** with 
 2. **Augments** the LLM prompt with this retrieved context
 3. **Generates** responses that are grounded in your actual data
 
-## Current RAG Implementation
+## Current Status
+
+**RAG is currently DISABLED for search functionality** (as of 2025-12-12)
+
+**Decision**: RAG enhancement for search results has been disabled to:
+- Improve search performance (RAG adds latency)
+- Reduce API costs (LLM calls are expensive)
+- Focus on core search functionality first
+
+**Future Use**: RAG will be implemented for:
+1. **Linked Content Suggestions** - When viewing a Tool or Submission, suggest related items
+2. **New Submission Similarity** - Explain why a submission is similar during creation
+
+## Previous RAG Implementation (Currently Disabled)
 
 ### SubmissionRagService (`app/services/submission_rag_service.rb`)
 
-**Current Usage**: Enhances search results by providing contextual summaries
+**Previous Usage**: Enhanced search results by providing contextual summaries (DISABLED)
 
-**How it works**:
+**How it worked** (for reference):
 1. User searches for submissions
 2. System retrieves top-K similar submissions using vector embeddings
 3. These submissions are used as context for the LLM
 4. LLM generates enhanced summaries explaining why each result is relevant
 5. Enhanced results are displayed to the user
 
-**Example Flow**:
+**Example Flow** (disabled):
 ```
 User Query: "React state management"
   ↓
@@ -32,9 +45,81 @@ LLM Prompt: "Given these 5 submissions about React, explain why Submission X is 
 Enhanced Summary: "This submission discusses Redux, a popular React state management library, and compares it to Context API..."
 ```
 
-## Potential RAG Use Cases for Better UX
+## Planned RAG Use Cases (Future Implementation)
 
-### 1. **Interactive Submission Form - Smart Suggestions** ⭐ (High Priority)
+### 1. **Linked Content Suggestions** ⭐ (High Priority - Planned)
+
+**Use Case**: When viewing a Tool or Submission, suggest related items
+
+**Problem**: Users viewing a tool/submission want to discover related content
+
+**RAG Solution**:
+- When user views a Tool/Submission, find top 5-10 similar items using embeddings
+- Use RAG to generate personalized recommendations: "If you're interested in [current item], you might also like [related items] because [explanation]"
+- Show recommendations with explanations on the show page
+
+**Benefits**:
+- Increases engagement
+- Helps users discover more content
+- Improves content discovery
+- Better than simple "similar items" list
+
+**Implementation Plan**:
+```ruby
+# In ToolController#show or SubmissionController#show
+def show
+  @tool = Tool.find(params[:id])
+  
+  # Find similar items
+  similar = find_similar_items(@tool, limit: 10)
+  
+  # Use RAG to generate recommendations
+  @recommendations = SubmissionRagService.recommend(
+    @tool,
+    similar,
+    user: current_user # Optional: personalize based on user's interests
+  )
+end
+```
+
+### 2. **New Submission Similarity Explanation** ⭐ (High Priority - Planned)
+
+**Use Case**: During new submission creation, explain why submissions are similar
+
+**Problem**: When user pastes a URL, we want to show them similar submissions with explanations
+
+**RAG Solution**:
+- As user pastes URL, generate embedding for the URL
+- Find top 3-5 similar submissions using vector similarity
+- Use RAG to generate a summary: "This looks similar to [submission X] about [topic Y]. Would you like to add to that discussion or create a new submission?"
+- Show user the similar submissions with explanations
+
+**Benefits**:
+- Prevents duplicate submissions
+- Helps users discover related content
+- Improves content organization
+
+**Implementation Plan**:
+```ruby
+# In SubmissionController#validate_url (enhance existing method)
+def validate_url
+  # ... existing validation ...
+  
+  if similar_submissions.any?
+    # Use RAG to explain similarity
+    explanation = SubmissionRagService.explain_similarity(
+      url,
+      similar_submissions,
+      {}
+    )
+    response[:explanation] = explanation[:explanation] if explanation
+  end
+end
+```
+
+## Previously Considered RAG Use Cases (Not Currently Planned)
+
+### 1. **Interactive Submission Form - Smart Suggestions** (Deferred)
 
 **Problem**: When user pastes a URL, we want to show them similar submissions before they submit.
 
@@ -272,17 +357,17 @@ All RAG implementations follow this pattern:
 
 ## Implementation Priority
 
-1. **High Priority** (Immediate):
-   - Interactive submission form with similar submissions (prevents duplicates)
-   - Smart duplicate detection with explanations
+1. **High Priority** (Planned):
+   - **Linked Content Suggestions** - Show related Tools/Submissions when viewing items
+   - **New Submission Similarity** - Explain similarity during submission creation
 
-2. **Medium Priority** (Next Phase):
-   - Submission recommendations
-   - Smart tag suggestions
+2. **Medium Priority** (Future):
+   - Smart tag suggestions based on similar submissions
+   - Content summarization with context
 
 3. **Low Priority** (Future):
-   - Question answering
-   - Contextual summarization
+   - Question answering about submissions
+   - Enhanced search results (previously implemented, now disabled)
 
 ## Example: Enhanced SubmissionRagService
 
