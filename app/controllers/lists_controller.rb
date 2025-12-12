@@ -1,7 +1,7 @@
 class ListsController < ApplicationController
     before_action :authenticate_user!, except: [:show]
     before_action :set_list, only: [:show]
-    before_action :set_list_for_owner, only: [:edit, :update, :destroy, :add_tool, :remove_tool]
+    before_action :set_list_for_owner, only: [:edit, :update, :destroy, :add_tool, :remove_tool, :remove_submission]
     before_action :set_list_for_follow, only: [:follow, :unfollow]
   
     def index
@@ -71,6 +71,15 @@ class ListsController < ApplicationController
       redirect_back(fallback_location: @list, notice: "Tool removed from list.")
     rescue ActiveRecord::RecordNotFound
       redirect_back(fallback_location: @list, alert: "Tool not found.")
+    end
+
+    # DELETE /lists/:id/remove_submission
+    def remove_submission
+      submission = Submission.find(params[:submission_id])
+      @list.submissions.delete(submission)
+      redirect_back(fallback_location: @list, notice: "Submission removed from list.")
+    rescue ActiveRecord::RecordNotFound
+      redirect_back(fallback_location: @list, alert: "Submission not found.")
     end
 
     # POST /lists/:id/follow

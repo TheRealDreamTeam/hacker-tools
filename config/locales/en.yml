@@ -347,6 +347,7 @@ en:
       not_found: "List not found"
       access_denied: "You don't have permission to view this list"
       by_user: "by %{username}"
+      add_item: "Add item"
     follow:
       follow: "Follow"
       unfollow: "Unfollow"
