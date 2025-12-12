@@ -96,13 +96,13 @@ class Submission < ApplicationRecord
   # Trending: Most upvoted submissions in the last 30 days
   # Uses left_joins to include submissions with 0 upvotes, but only counts upvotes from last 30 days
   scope :trending, -> {
+    cutoff_date = 30.days.ago
     where(status: statuses[:completed])
-      .where("submissions.created_at >= ?", 30.days.ago)
+      .where("submissions.created_at >= ?", cutoff_date)
       .left_joins(:user_submissions)
-      .where("user_submissions.upvote IS NULL OR (user_submissions.upvote = ? AND user_submissions.created_at >= ?)", true, 30.days.ago)
-      .select("submissions.*, COALESCE(SUM(CASE WHEN user_submissions.upvote = true AND user_submissions.created_at >= ? THEN 1 ELSE 0 END), 0) AS upvotes_count", 30.days.ago)
+      .select("submissions.*, COALESCE(SUM(CASE WHEN user_submissions.upvote = true AND user_submissions.created_at >= '#{cutoff_date.to_formatted_s(:db)}' THEN 1 ELSE 0 END), 0) AS upvotes_count")
       .group("submissions.id")
-      .order(Arel.sql("COALESCE(SUM(CASE WHEN user_submissions.upvote = true AND user_submissions.created_at >= ? THEN 1 ELSE 0 END), 0) DESC, submissions.created_at DESC"), 30.days.ago)
+      .order(Arel.sql("COALESCE(SUM(CASE WHEN user_submissions.upvote = true AND user_submissions.created_at >= '#{cutoff_date.to_formatted_s(:db)}' THEN 1 ELSE 0 END), 0) DESC, submissions.created_at DESC"))
   }
   
   # New & Hot: Submissions created in last 7 days, ranked by upvotes
