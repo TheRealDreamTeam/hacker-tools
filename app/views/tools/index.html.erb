@@ -1,7 +1,6 @@
 <div class="p-2">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 m-0"><%= t("tools.index.title") %></h1>
-    <%= link_to t("tools.index.new_tool"), new_tool_path, class: "btn btn-primary" %>
   </div>
   <% if @tools.any? %>
     <div class="row row-cols-1 row-cols-md-2 g-3">
