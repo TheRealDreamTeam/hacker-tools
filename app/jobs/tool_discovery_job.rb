@@ -192,6 +192,29 @@ class ToolDiscoveryJob < ApplicationJob
     nil
   end
 
+  # Validate that a string is a valid URL format
+  def valid_url?(url_string)
+    return false if url_string.blank?
+    
+    # Check for common invalid patterns (descriptive text, not URLs)
+    invalid_patterns = [
+      /^n\/a$/i,
+      /^not available$/i,
+      /^not.*identifiable/i,
+      /^the official website/i,
+      /^official website url/i,
+      /^website.*not.*clearly/i
+    ]
+    
+    return false if invalid_patterns.any? { |pattern| url_string.match?(pattern) }
+    
+    # Try to parse as URI to validate format
+    uri = URI.parse(url_string)
+    uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
+  rescue URI::InvalidURIError
+    false
+  end
+
   # Convert relative URL to absolute URL
   def absolute_url(url, base_url)
     return nil if url.blank?
