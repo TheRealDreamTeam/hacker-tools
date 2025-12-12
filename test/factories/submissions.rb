@@ -1,7 +1,6 @@
 FactoryBot.define do
   factory :submission do
     association :user
-    tool { nil } # Optional - can be nil
     
     sequence(:submission_url) { |n| "https://example.com/article-#{n}" }
     author_note { "This is a great article about React" }
@@ -39,7 +38,15 @@ FactoryBot.define do
     end
     
     trait :with_tool do
-      association :tool
+      after(:create) do |submission|
+        submission.tools << create(:tool)
+      end
+    end
+    
+    trait :with_tools do
+      after(:create) do |submission|
+        submission.tools << create_list(:tool, 2)
+      end
     end
   end
 end
