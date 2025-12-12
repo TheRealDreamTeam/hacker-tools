@@ -36,6 +36,11 @@ class ToolDiscoveryJob < ApplicationJob
     # Step 3: If we found URLs, fetch and extract additional metadata
     enrich_from_urls(tool, discovery_result)
 
+    # Step 4: Generate embedding for semantic search
+    # Reload tool to get latest description and other fields
+    tool.reload
+    ToolEmbeddingGenerationJob.perform_later(tool.id)
+
     Rails.logger.info "Tool discovery completed for tool #{tool_id}: #{tool.tool_name}"
   rescue StandardError => e
     Rails.logger.error "Tool discovery error for tool #{tool_id}: #{e.message}"

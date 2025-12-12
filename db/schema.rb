@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_12_014156) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_12_021951) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
@@ -132,29 +132,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_12_014156) do
     t.index ["tool_id"], name: "index_submission_tools_on_tool_id"
   end
 
-  create_table "submissions", force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.integer "submission_type", default: 0, null: false
-    t.integer "status", default: 0, null: false
-    t.string "submission_url"
-    t.string "normalized_url"
-    t.text "author_note"
-    t.string "submission_name"
-    t.text "submission_description"
-    t.jsonb "metadata", default: {}, null: false
-    t.bigint "duplicate_of_id"
-    t.datetime "processed_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["duplicate_of_id"], name: "index_submissions_on_duplicate_of_id"
-    t.index ["metadata"], name: "index_submissions_on_metadata", using: :gin
-    t.index ["normalized_url", "user_id"], name: "index_submissions_on_normalized_url_and_user_id", unique: true, where: "(normalized_url IS NOT NULL)"
-    t.index ["processed_at"], name: "index_submissions_on_processed_at"
-    t.index ["status", "submission_type"], name: "index_submissions_on_status_and_submission_type"
-    t.index ["status"], name: "index_submissions_on_status"
-    t.index ["submission_type"], name: "index_submissions_on_submission_type"
-    t.index ["user_id", "status"], name: "index_submissions_on_user_id_and_status"
-  end
+# Could not dump table "submissions" because of following StandardError
+#   Unknown type 'vector(1536)' for column 'embedding'
 
   create_table "tags", force: :cascade do |t|
     t.string "tag_name", null: false
@@ -177,16 +156,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_12_014156) do
     t.index ["tool_id"], name: "index_tool_tags_on_tool_id"
   end
 
-  create_table "tools", force: :cascade do |t|
-    t.string "tool_name", null: false
-    t.text "tool_description"
-    t.string "tool_url"
-    t.text "author_note"
-    t.integer "visibility", default: 0, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["tool_name"], name: "index_tools_on_tool_name"
-  end
+# Could not dump table "tools" because of following StandardError
+#   Unknown type 'vector(1536)' for column 'embedding'
 
   create_table "user_submissions", force: :cascade do |t|
     t.bigint "user_id", null: false
