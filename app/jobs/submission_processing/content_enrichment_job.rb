@@ -401,6 +401,34 @@ module SubmissionProcessing
         nil
       end
     end
+
+    # Broadcast tags update via Turbo Stream
+    def broadcast_tags_update(submission)
+      # Reload to get fresh tags
+      submission.tags.reload
+      Turbo::StreamsChannel.broadcast_update_to(
+        "submission_#{submission.id}",
+        target: "submission-tags",
+        partial: "submissions/tags_section",
+        locals: { submission: submission }
+      )
+    rescue StandardError => e
+      Rails.logger.warn "Failed to broadcast tags update: #{e.message}"
+    end
+
+    # Broadcast tools update via Turbo Stream
+    def broadcast_tools_update(submission)
+      # Reload to get fresh tools
+      submission.tools.reload
+      Turbo::StreamsChannel.broadcast_update_to(
+        "submission_#{submission.id}",
+        target: "submission-tools-section",
+        partial: "submissions/tools_section",
+        locals: { submission: submission }
+      )
+    rescue StandardError => e
+      Rails.logger.warn "Failed to broadcast tools update: #{e.message}"
+    end
   end
 end
 
