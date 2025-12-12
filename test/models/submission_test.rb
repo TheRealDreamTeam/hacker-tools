@@ -65,10 +65,15 @@ class SubmissionTest < ActiveSupport::TestCase
     assert_equal user, submission.user
   end
 
-  test "should belong to tool optionally" do
-    tool = create(:tool)
-    submission = create(:submission, tool: tool)
-    assert_includes submission.tools, tool
+  test "should belong to multiple tools" do
+    tool1 = create(:tool)
+    tool2 = create(:tool)
+    submission = create(:submission)
+    submission.tools << [tool1, tool2]
+    
+    assert_includes submission.tools, tool1
+    assert_includes submission.tools, tool2
+    assert_equal 2, submission.tools.count
   end
 
   test "should have many submission_tags" do
