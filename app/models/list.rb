@@ -6,5 +6,6 @@ class List < ApplicationRecord
   has_many :tools, through: :list_tools
 
   validates :list_name, presence: true
+  validates :list_name, uniqueness: { scope: :user_id }
 end
 
