@@ -1,11 +1,9 @@
 <%# Tags section partial for Turbo Stream updates %>
 <% submission_tags = submission.tags %>
 <% if submission_tags.any? %>
-  <div class="d-flex flex-wrap gap-2">
+  <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
     <% submission_tags.each do |tag| %>
-      <span class="badge <%= tag_badge_class(tag.tag_type) %>">
-        <%= tag.display_name %>
-      </span>
+      <%= render_tag_link(tag) %>
     <% end %>
   </div>
 <% else %>

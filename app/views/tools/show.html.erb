@@ -58,21 +58,7 @@
   <% if @tool_tags.any? %>
     <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
       <% @tool_tags.each do |tag| %>
-        <span class="badge <%= tag_badge_class(tag.tag_type) %> d-flex align-items-center gap-1">
-          <%= link_to tag.display_name,
-                      tag_path(tag),
-                      target: "_blank",
-                      rel: "noopener noreferrer",
-                      class: "text-decoration-none text-white tag-link",
-                      data: {
-                        bs_toggle: "tooltip",
-                        bs_title: tag.tag_description.presence || tag.display_name,
-                        bs_placement: "top"
-                      },
-                      title: tag.tag_description.presence || tag.display_name,
-                      style: "color: inherit !important;" %>
-          <%# TODO: Re-enable tag removal when we decide on permissions (admin-only or open editing) %>
-        </span>
+        <%= render_tag_link(tag) %>
       <% end %>
     </div>
     <% if @all_tool_tags.count > @tool_tags.count %>
