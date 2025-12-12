@@ -40,9 +40,8 @@ class PagesController < ApplicationController
 
     # Get trending submissions (most upvoted in last 30 days)
     # Note: Eager load after grouping to avoid GROUP BY conflicts
-    # First get IDs and upvote counts from grouped query
-    trending_results = Submission.trending.limit(10)
-    trending_data = trending_results.pluck(:id, Arel.sql("COUNT(user_submissions.id)"))
+    # First get IDs and upvote counts from grouped query in one call
+    trending_data = Submission.trending.limit(10).pluck(:id, Arel.sql("COUNT(user_submissions.id)"))
     trending_submission_ids = trending_data.map(&:first)
     upvotes_map = trending_data.to_h
     
@@ -71,9 +70,8 @@ class PagesController < ApplicationController
 
     # Get new & hot submissions (created in last 7 days, ranked by upvotes)
     # Note: Eager load after grouping to avoid GROUP BY conflicts
-    # First get IDs and upvote counts from grouped query
-    new_hot_results = Submission.new_hot.limit(10)
-    new_hot_data = new_hot_results.pluck(:id, Arel.sql("COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0)"))
+    # First get IDs and upvote counts from grouped query in one call
+    new_hot_data = Submission.new_hot.limit(10).pluck(:id, Arel.sql("COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0)"))
     new_hot_submission_ids = new_hot_data.map(&:first)
     upvotes_map = new_hot_data.to_h
     
@@ -101,9 +99,8 @@ class PagesController < ApplicationController
 
     # Get most upvoted submissions
     # Note: Eager load after grouping to avoid GROUP BY conflicts
-    # First get IDs and upvote counts from grouped query
-    most_upvoted_results = Submission.most_upvoted.limit(10)
-    most_upvoted_data = most_upvoted_results.pluck(:id, Arel.sql("COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0)"))
+    # First get IDs and upvote counts from grouped query in one call
+    most_upvoted_data = Submission.most_upvoted.limit(10).pluck(:id, Arel.sql("COALESCE(SUM(CASE WHEN user_submissions.upvote = true THEN 1 ELSE 0 END), 0)"))
     most_upvoted_submission_ids = most_upvoted_data.map(&:first)
     upvotes_map = most_upvoted_data.to_h
     
