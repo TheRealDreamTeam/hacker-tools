@@ -164,9 +164,6 @@ ActiveRecord::Base.transaction do
     attach_tags(tool, attrs[:tags], tags)
     tools[attrs[:key]] = tool
   end
-ensure
-  Tool.set_callback(:create, :after, :enqueue_discovery_job) if tool_callback_disabled
-end
 
   # Submissions (user-owned content about tools)
   log_step "Creating submissions"
@@ -441,6 +438,8 @@ end
   upvote_defs.each do |attrs|
     CommentUpvote.find_or_create_by!(user: users[attrs[:user]], comment: attrs[:comment])
   end
+ensure
+  Tool.set_callback(:create, :after, :enqueue_discovery_job) if tool_callback_disabled
 end
 
 # Summary
