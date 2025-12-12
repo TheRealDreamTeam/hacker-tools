@@ -11,7 +11,7 @@ class ProfilesController < ApplicationController
     # Show user's submissions (completed ones are public by default)
     @public_submissions = @user.submissions
       .completed
-      .includes(:tool, :tags, :user)
+      .includes(:tools, :tags, :user)
       .order(created_at: :desc)
       .limit(20)
     
