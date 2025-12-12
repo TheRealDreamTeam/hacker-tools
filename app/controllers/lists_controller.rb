@@ -195,14 +195,34 @@ class ListsController < ApplicationController
       messages << "Added to #{added_count} list#{'s' if added_count != 1}" if added_count > 0
       messages << "Removed from #{removed_count} list#{'s' if removed_count != 1}" if removed_count > 0
 
-      if messages.any?
-        redirect_to redirect_location, notice: messages.join(". ") + "."
-      else
-        redirect_to redirect_location, notice: "Lists updated."
+      notice_message = if messages.any?
+                         messages.join(". ") + "."
+                       else
+                         "Lists updated."
+                       end
+
+      # Reload tool associations to get updated list count
+      tool.reload
+      # Clear association cache to ensure fresh count
+      tool.association(:lists).reset if tool.association(:lists).loaded?
+
+      respond_to do |format|
+        format.html { redirect_to redirect_location, notice: notice_message }
+        format.turbo_stream { 
+          @tool = tool
+          flash.now[:notice] = notice_message
+          render "lists/add_tool_to_multiple"
+        }
       end
     rescue ActiveRecord::RecordNotFound
       redirect_location = request.referer.present? ? request.referer : (request.path == root_path || request.path == "/" ? root_path : tool_path(tool))
-      redirect_to redirect_location, alert: "Tool or list not found."
+      respond_to do |format|
+        format.html { redirect_to redirect_location, alert: "Tool or list not found." }
+        format.turbo_stream {
+          flash.now[:alert] = "Tool or list not found."
+          render "lists/add_tool_to_multiple"
+        }
+      end
     end
 
     # POST /lists/add_submission_to_multiple
@@ -246,14 +266,34 @@ class ListsController < ApplicationController
       messages << "Added to #{added_count} list#{'s' if added_count != 1}" if added_count > 0
       messages << "Removed from #{removed_count} list#{'s' if removed_count != 1}" if removed_count > 0
 
-      if messages.any?
-        redirect_to redirect_location, notice: messages.join(". ") + "."
-      else
-        redirect_to redirect_location, notice: "Lists updated."
+      notice_message = if messages.any?
+                         messages.join(". ") + "."
+                       else
+                         "Lists updated."
+                       end
+
+      # Reload submission associations to get updated list count
+      submission.reload
+      # Clear association cache to ensure fresh count
+      submission.association(:lists).reset if submission.association(:lists).loaded?
+
+      respond_to do |format|
+        format.html { redirect_to redirect_location, notice: notice_message }
+        format.turbo_stream { 
+          @submission = submission
+          flash.now[:notice] = notice_message
+          render "lists/add_submission_to_multiple"
+        }
       end
     rescue ActiveRecord::RecordNotFound
       redirect_location = request.referer.present? ? request.referer : (request.path == root_path || request.path == "/" ? root_path : submission_path(submission))
-      redirect_to redirect_location, alert: "Submission or list not found."
+      respond_to do |format|
+        format.html { redirect_to redirect_location, alert: "Submission or list not found." }
+        format.turbo_stream {
+          flash.now[:alert] = "Submission or list not found."
+          render "lists/add_submission_to_multiple"
+        }
+      end
     end
 
     private

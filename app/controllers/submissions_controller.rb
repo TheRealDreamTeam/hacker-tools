@@ -122,7 +122,10 @@ class SubmissionsController < ApplicationController
     if @submission.update(submission_params)
       respond_to do |format|
         format.html { redirect_to @submission, notice: t("submissions.update.success") }
-        format.turbo_stream { render :update }
+        format.turbo_stream { 
+          # Redirect to show page after successful update
+          redirect_to @submission, status: :see_other, notice: t("submissions.update.success")
+        }
       end
     else
       respond_to do |format|
