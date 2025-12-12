@@ -57,9 +57,7 @@
                   <% end %>
                 </div>
                 <p class="text-muted mb-2"><%= truncate(tool.tool_description, length: 140) %></p>
-                <p class="small mb-0 text-secondary">
-                  <%= t("tools.index.owner", owner: display_user_name(tool.user)) %>
-                </p>
+                <%# Tools are community-owned, no owner to display %>
               </div>
             </div>
           </div>

@@ -41,8 +41,6 @@
         </div>
       </div>
   </div>
-
-  <%= link_to t("account_settings.back"), profile_path, class: "back-link mt-4 d-inline-block" %>
 </div>
 
 <%# Confirmation Modal for Avatar Deletion %>
@@ -68,7 +66,7 @@
           <p><%= t("account_settings.destroy.modal_message") %></p>
           <div class="mt-3">
             <%= f.label :password, t("account_settings.destroy.password_label"), class: "form-label" %>
-            <%= f.password_field :password, class: "form-control #{'is-invalid' if @user.errors[:delete_account_password].any?}", placeholder: t("account_settings.destroy.password_placeholder"), required: true, autocomplete: "current-password" %>
+            <%= f.password_field :password, id: "delete-account-password", class: "form-control #{'is-invalid' if @user.errors[:delete_account_password].any?}", placeholder: t("account_settings.destroy.password_placeholder"), required: true, autocomplete: "current-password" %>
             <% if @user.errors[:delete_account_password].any? %>
               <div class="invalid-feedback">
                 <% @user.errors[:delete_account_password].each do |error| %>

@@ -6,6 +6,14 @@ class Tag < ApplicationRecord
   # Many-to-many with tools
   has_many :tool_tags, dependent: :destroy
   has_many :tools, through: :tool_tags
+  
+  # Many-to-many with submissions
+  has_many :submission_tags, dependent: :destroy
+  has_many :submissions, through: :submission_tags
+
+  # Followable
+  has_many :follows, as: :followable, dependent: :destroy
+  has_many :followers, through: :follows, source: :user
 
   # Tag types enum - categories for organizing tags
   enum tag_type: {
@@ -21,6 +29,14 @@ class Tag < ApplicationRecord
   validates :tag_name, presence: true, uniqueness: { case_sensitive: false }
   validates :tag_type, presence: true
   validate :no_circular_parent_reference
+  before_validation :normalize_tag_name
+
+  # Normalize tag name to lowercase before validation
+  def normalize_tag_name
+    return if tag_name.blank?
+
+    self.tag_name = tag_name.downcase.strip
+  end
 
   # Scopes
   scope :roots, -> { where(parent_id: nil) }

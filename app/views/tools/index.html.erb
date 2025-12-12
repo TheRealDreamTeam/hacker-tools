@@ -30,9 +30,7 @@
                   <% end %>
                 </div>
               <% end %>
-              <p class="small mb-2 text-secondary">
-                <%= t("tools.index.owner", owner: display_user_name(tool.user)) %>
-              </p>
+              <%# Tools are community-owned, no owner to display %>
               <div>
                 <%= render "tools/interaction_buttons", tool: tool %>
               </div>

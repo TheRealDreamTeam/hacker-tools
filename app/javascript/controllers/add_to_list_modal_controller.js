@@ -5,7 +5,7 @@ import { Controller } from "@hotwired/stimulus"
 // It reads data from the button that triggers it and populates the modal dynamically
 // The controller is attached to the modal element itself so it can manage form submissions
 export default class extends Controller {
-  static targets = ["modal", "title", "toolId", "form", "body", "listGroup"]
+  static targets = ["modal", "title", "toolId", "submissionId", "form", "body", "listGroup"]
 
   connect() {
     // Initialize Bootstrap modal instance
@@ -74,8 +74,15 @@ export default class extends Controller {
 
   // Handle custom event from button (for buttons outside the modal)
   handleOpenModalEvent(event) {
-    const { toolId, toolName, lists } = event.detail
-    this.openModal(toolId, toolName, lists)
+    const { type, toolId, toolName, submissionId, submissionName, lists } = event.detail
+    
+    if (type === "submission") {
+      this.openModalForSubmission(submissionId, submissionName, lists)
+    } else if (type === "tool") {
+      this.openModalForTool(toolId, toolName, lists)
+    } else {
+      console.error("Add to list modal: Unknown type", type)
+    }
   }
 
   // Handle direct action from button (when button has data-action)
@@ -84,19 +91,41 @@ export default class extends Controller {
     
     // Get values from the button that was clicked (the element that triggered the event)
     const button = event.currentTarget
-    const toolId = parseInt(button.dataset.addToListModalToolIdValue)
+    const toolId = button.dataset.addToListModalToolIdValue ? parseInt(button.dataset.addToListModalToolIdValue) : null
     const toolName = button.dataset.addToListModalToolNameValue
+    const submissionId = button.dataset.addToListModalSubmissionIdValue ? parseInt(button.dataset.addToListModalSubmissionIdValue) : null
+    const submissionName = button.dataset.addToListModalSubmissionNameValue
     const lists = JSON.parse(button.dataset.addToListModalListsValue || "[]")
     
-    this.openModal(toolId, toolName, lists)
+    if (submissionId && submissionName) {
+      this.openModalForSubmission(submissionId, submissionName, lists)
+    } else if (toolId && toolName) {
+      this.openModalForTool(toolId, toolName, lists)
+    } else {
+      console.error("Add to list modal: Missing required values")
+    }
   }
 
-  // Internal method to open the modal with the provided data
-  openModal(toolId, toolName, lists) {
+  // Internal method to open the modal for a tool
+  openModalForTool(toolId, toolName, lists) {
     // Validate that required targets exist
     if (!this.hasTitleTarget || !this.hasToolIdTarget || !this.hasListGroupTarget) {
       console.error("Add to list modal: Required targets not found")
       return
+    }
+
+    // Update form action to use tool route
+    if (this.hasFormTarget) {
+      this.formTarget.action = this.formTarget.dataset.toolAction || "/lists/add_tool_to_multiple"
+    }
+
+    // Hide submission field, show tool field
+    if (this.hasSubmissionIdTarget) {
+      this.submissionIdTarget.style.display = "none"
+      this.submissionIdTarget.value = ""
+    }
+    if (this.hasToolIdTarget) {
+      this.toolIdTarget.style.display = "block"
     }
 
     // Update modal title with tool name
@@ -106,7 +135,7 @@ export default class extends Controller {
     this.toolIdTarget.value = toolId
 
     // Populate list checkboxes
-    this.populateLists(lists)
+    this.populateLists(lists, "has_tool")
 
     // Show modal
     if (this.modalInstance) {
@@ -114,7 +143,44 @@ export default class extends Controller {
     }
   }
 
-  populateLists(lists) {
+  // Internal method to open the modal for a submission
+  openModalForSubmission(submissionId, submissionName, lists) {
+    // Validate that required targets exist
+    if (!this.hasTitleTarget || !this.hasSubmissionIdTarget || !this.hasListGroupTarget) {
+      console.error("Add to list modal: Required targets not found")
+      return
+    }
+
+    // Update form action to use submission route
+    if (this.hasFormTarget) {
+      this.formTarget.action = this.formTarget.dataset.submissionAction || "/lists/add_submission_to_multiple"
+    }
+
+    // Hide tool field, show submission field
+    if (this.hasToolIdTarget) {
+      this.toolIdTarget.style.display = "none"
+      this.toolIdTarget.value = ""
+    }
+    if (this.hasSubmissionIdTarget) {
+      this.submissionIdTarget.style.display = "block"
+    }
+
+    // Update modal title with submission name
+    this.titleTarget.textContent = `Add "${submissionName}" to lists`
+
+    // Set submission_id in hidden field
+    this.submissionIdTarget.value = submissionId
+
+    // Populate list checkboxes
+    this.populateLists(lists, "has_submission")
+
+    // Show modal
+    if (this.modalInstance) {
+      this.modalInstance.show()
+    }
+  }
+
+  populateLists(lists, hasKey = "has_tool") {
     if (!this.hasListGroupTarget) {
       console.error("Add to list modal: List group target not found")
       return
@@ -137,7 +203,7 @@ export default class extends Controller {
       checkbox.value = list.id
       checkbox.id = `list_${list.id}`
       checkbox.className = "form-check-input"
-      checkbox.checked = list.has_tool
+      checkbox.checked = list[hasKey] || false
 
       const label = document.createElement("label")
       label.htmlFor = `list_${list.id}`
@@ -147,8 +213,8 @@ export default class extends Controller {
       formCheck.appendChild(checkbox)
       formCheck.appendChild(label)
 
-      // Add badge if tool is already in list
-      if (list.has_tool) {
+      // Add badge if item is already in list
+      if (list[hasKey]) {
         const badge = document.createElement("span")
         badge.className = "badge bg-secondary ms-2"
         badge.textContent = "Already in list"

@@ -3,33 +3,47 @@ require "test_helper"
 class ToolTest < ActiveSupport::TestCase
   # Validations
   test "should require tool_name" do
-    user = create(:user)
-    tool = Tool.new(user: user)
+    tool = Tool.new
     assert_not tool.valid?
     assert_includes tool.errors[:tool_name], "can't be blank"
   end
 
-  test "should require user" do
-    tool = Tool.new(tool_name: "Test Tool")
-    assert_not tool.valid?
-    assert_includes tool.errors[:user], "must exist"
+  test "should allow tool without tool_url" do
+    tool = Tool.new(tool_name: "Elasticsearch", tool_description: "Search engine")
+    assert tool.valid?
+    assert_nil tool.tool_url
   end
 
-  # Associations
-  test "should belong to user" do
-    user = create(:user)
-    tool = create(:tool, user: user)
-    assert_equal user, tool.user
+  test "should enqueue tool discovery job after creation" do
+    assert_enqueued_with(job: ToolDiscoveryJob) do
+      create(:tool, tool_name: "New Tool")
+    end
   end
+
+  # Note: Tools are now community-owned, not user-owned
+  # Users submit content (submissions) about tools, but don't own the tools themselves
 
   test "should have many comments" do
     tool = create(:tool)
-    comment1 = create(:comment, tool: tool)
-    comment2 = create(:comment, tool: tool)
+    comment1 = create(:comment, commentable: tool)
+    comment2 = create(:comment, commentable: tool)
 
     assert_equal 2, tool.comments.count
     assert_includes tool.comments, comment1
     assert_includes tool.comments, comment2
+  end
+
+  test "should have many submissions" do
+    tool = create(:tool)
+    user = create(:user)
+    submission1 = create(:submission, user: user)
+    submission2 = create(:submission, user: user)
+    submission1.tools << tool
+    submission2.tools << tool
+
+    assert_equal 2, tool.submissions.count
+    assert_includes tool.submissions, submission1
+    assert_includes tool.submissions, submission2
   end
 
   test "should have many tool_tags" do
@@ -116,25 +130,22 @@ class ToolTest < ActiveSupport::TestCase
     assert_not_includes favoriters, user2
   end
 
-  test "should have many subscribers through user_tools" do
+  test "should have many followers through follows" do
     tool = create(:tool)
     user1 = create(:user)
     user2 = create(:user)
-    create(:user_tool, tool: tool, user: user1, subscribe: true)
-    create(:user_tool, tool: tool, user: user2, subscribe: false)
+    create(:follow, followable: tool, user: user1)
 
-    # Access the association to ensure it's executed
-    subscribers = tool.subscribers.to_a
-    assert_equal 1, subscribers.count
-    assert_includes subscribers, user1
-    assert_not_includes subscribers, user2
+    followers = tool.followers.to_a
+    assert_equal 1, followers.count
+    assert_includes followers, user1
+    assert_not_includes followers, user2
   end
 
   # Scopes
   test "public_tools scope should return only public tools" do
-    user = create(:user)
-    public_tool = create(:tool, user: user, visibility: 0)
-    private_tool = create(:tool, user: user, visibility: 1)
+    public_tool = create(:tool, visibility: 0)
+    private_tool = create(:tool, visibility: 1)
 
     # Actually call the scope and iterate to ensure it's executed
     public_tools = Tool.public_tools.to_a
@@ -143,10 +154,9 @@ class ToolTest < ActiveSupport::TestCase
   end
 
   test "recent scope should order by created_at desc" do
-    user = create(:user)
-    tool1 = create(:tool, user: user, created_at: 2.days.ago)
-    tool2 = create(:tool, user: user, created_at: 1.day.ago)
-    tool3 = create(:tool, user: user, created_at: Time.current)
+    tool1 = create(:tool, created_at: 2.days.ago)
+    tool2 = create(:tool, created_at: 1.day.ago)
+    tool3 = create(:tool, created_at: Time.current)
 
     # Actually call the scope and iterate to ensure it's executed
     recent_tools = Tool.recent.to_a
@@ -155,10 +165,9 @@ class ToolTest < ActiveSupport::TestCase
   end
 
   test "most_upvoted scope should order by upvote count" do
-    user = create(:user)
-    tool1 = create(:tool, user: user)
-    tool2 = create(:tool, user: user)
-    tool3 = create(:tool, user: user)
+    tool1 = create(:tool)
+    tool2 = create(:tool)
+    tool3 = create(:tool)
 
     user1 = create(:user)
     user2 = create(:user)
@@ -186,7 +195,7 @@ class ToolTest < ActiveSupport::TestCase
   # Dependent destroy
   test "should destroy associated comments when tool is destroyed" do
     tool = create(:tool)
-    comment = create(:comment, tool: tool)
+    comment = create(:comment, commentable: tool)
 
     assert_difference "Comment.count", -1 do
       tool.destroy

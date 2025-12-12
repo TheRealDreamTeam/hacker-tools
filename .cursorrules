@@ -9,12 +9,7 @@ You are a senior software engineer and technical lead working on a professional 
 
 ### Required Response Sections
 
-1. **Summary of Changes**
-   - List all files that were created, modified, or deleted
-   - Provide a brief overview of what was changed at a high level
-   - Use clear, concise bullet points
-
-2. **What Was Changed and Why**
+1. **What Was Changed and Why**
    - For each significant change, explain:
      - **What** was changed (specific files, methods, configurations)
      - **Why** it was changed (the problem it solves, the requirement it fulfills)
@@ -22,20 +17,20 @@ You are a senior software engineer and technical lead working on a professional 
    - Be specific about file paths and key modifications
    - Explain trade-offs or alternatives considered (if relevant)
 
-3. **How It Works**
+2. **How It Works**
    - Provide a clear explanation of how the implementation works
    - Explain the flow of execution (for features) or the mechanism (for configurations)
    - Include relevant code examples or references to key files
    - Explain how different components interact
    - Document any important patterns or conventions used
 
-4. **Next Steps** (when applicable)
+3. **Next Steps** (when applicable)
    - What the user should do next
    - Any additional configuration needed
    - Testing recommendations
    - Future considerations or improvements
 
-5. **How to Test** (when applicable)
+4. **How to Test** (when applicable)
    - Provide a brief manual testing guide for UI/UX changes
    - Include step-by-step instructions for testing the change in the browser
    - Only include this section when it makes sense (UI changes, user-facing features, visual updates, etc.)
@@ -48,7 +43,7 @@ You are a senior software engineer and technical lead working on a professional 
      - Styling changes: "Check the component at different screen sizes, verify responsive behavior"
      - Feature additions: "Test the new feature flow from start to finish"
 
-6. **Specification Update** (MANDATORY for feature implementations)
+5. **Specification Update** (MANDATORY for feature implementations)
    - **MUST update** `docs/SPECIFICATION.md` when implementing features
    - Document new features, models, routes, and significant changes
    - Include feature status, user stories, and technical details
@@ -109,6 +104,18 @@ You are deeply familiar with and apply best practices for:
 - Implement proper loading states in Stimulus controllers
 - Handle race conditions (multiple users updating simultaneously)
 - Use `broadcast_replace`, `broadcast_append`, `broadcast_remove` appropriately
+- **CRITICAL: Turbo Stream update vs replace**: 
+  - Use `turbo_stream.update` when updating only the content inside an element (e.g., text, numbers, innerHTML)
+  - Use `turbo_stream.replace` when replacing the entire element structure (e.g., form elements, buttons with `button_to`)
+  - **Why**: `replace` replaces the entire element, which can break structure and cause subsequent updates to fail if the replacement doesn't exactly match the original structure. `update` only changes innerHTML, preserving the element and its attributes, making it more reliable for simple content updates
+  - **Example**: For updating a count number, use `update` on the element containing the number, not `replace` on a parent container
+  - **Best Practice**: When in doubt, use `update` for simple content changes; reserve `replace` for structural changes
+  - **CRITICAL: Structure Consistency for `replace`**: When using `turbo_stream.replace`, the replacement structure MUST exactly match the original:
+    - Include the same wrapper elements (divs, containers) with the same IDs and classes
+    - The element being replaced must have the same ID in both the initial view and the Turbo Stream template
+    - Preserve all wrapper divs, classes, and attributes to ensure subsequent updates work correctly
+    - **Example**: If initial view has `<div id="follow-button" class="container">...</div>`, the Turbo Stream template must also include `<div id="follow-button" class="container">...</div>` in the replace block
+    - **Failure pattern**: If the structure differs, the first update may work but subsequent updates will fail because the DOM structure no longer matches what Turbo expects
 
 ### Important Considerations
 - Provide complete SEO-friendly metadata on pages (title/description, canonical URLs) and Open Graph/Twitter card tags for shareability.
@@ -377,6 +384,7 @@ Before implementing any RubyLLM feature, you MUST:
 
 ### Official Documentation Pages
 - **Main Documentation**: https://rubyllm.com/
+- **Rails Integration**: https://rubyllm.com/rails/ - For ActiveRecord persistence, Hotwire streaming, `acts_as_chat`, `acts_as_message`, and Rails-specific patterns
 - **Chat & Conversations**: https://rubyllm.com/chat/ - For conversation history, message handling, `add_message`, `ask`
 - **Tools**: https://rubyllm.com/tools/ - For function calling, tool creation, tool execution, `RubyLLM::Tool`
 - **Agentic Workflows**: https://rubyllm.com/agentic-workflows/ - For multi-agent systems, parallel execution, model routing
@@ -388,24 +396,59 @@ Before implementing any RubyLLM feature, you MUST:
 **CRITICAL**: When implementing RubyLLM features, you MUST reference and follow the official RubyLLM documentation:
 
 - **Official Documentation**: https://rubyllm.com/
+- **Rails Integration**: https://rubyllm.com/rails/ - Use for ActiveRecord persistence, Hotwire streaming, and Rails-specific patterns
 - **Chat & Conversations**: https://rubyllm.com/chat/ - Use for conversation history, message handling
+- **Structured Output**: https://rubyllm.com/chat/#getting-structured-output - Use RubyLLM::Schema for structured output
+- **Embeddings**: https://rubyllm.com/embeddings/ - Use for semantic search, recommendations, and content similarity
 - **Tools**: https://rubyllm.com/tools/ - Use for function calling, validation tools, tool execution
 - **Agentic Workflows**: https://rubyllm.com/async/ - Use for multi-agent systems, parallel execution
 - **Async Execution**: https://rubyllm.com/async/ - Use for concurrent operations, performance optimization
-- **Schema Validation**: Use `RubyLLM::Schema` for structured output validation
+- **Schema Gem**: https://github.com/danielfriis/ruby_llm-schema - Use `RubyLLM::Schema.create` for structured output
 - **Error Handling**: Follow RubyLLM error handling patterns from documentation
 
 **Implementation Requirements**:
 - **MANDATORY**: Check official documentation before implementing ANY RubyLLM feature
 - **MANDATORY**: Use the exact API methods and patterns shown in the documentation
-- Use appropriate models (GPT-4o for structured output, GPT-4o-mini for simple tasks)
+- **MANDATORY**: Always use structured output with `RubyLLM::Schema` (from `ruby_llm-schema` gem: https://github.com/danielfriis/ruby_llm-schema)
+- **Model Selection**: Use `gpt-4o` or `gpt-4.1-nano` for structured output tasks (NOT `gpt-4o-mini`)
+- **Structured Output Pattern**: Always use `RubyLLM::Schema.create` block for output schemas in tools
 - Follow RubyLLM patterns for tools, chat instances, and async execution exactly as documented
-- Use `RubyLLM::Schema` for structured output (see `app/lib/recipe_schema.rb` for example)
+- Use `RubyLLM.embed` for embeddings (see https://rubyllm.com/embeddings/)
 - Implement tools as `RubyLLM::Tool` subclasses following the documentation patterns
 - Use `Async` gem for parallel execution following RubyLLM async documentation
 - Reference `docs/AGENTIC_WORKFLOW_DESIGN.md` for project-specific workflow patterns
 - **DO NOT** invent new patterns - use what's documented
 - **DO NOT** assume API behavior - verify in documentation
+
+**Structured Output with RubyLLM::Schema**:
+- Always use `RubyLLM::Schema.create` block for defining output schemas
+- Use `chat.ask(context)` with schema defined in `params` block
+- The schema ensures structured JSON output from the LLM
+- Works best with `gpt-4o` or `gpt-4.1-nano` models
+- Example pattern:
+  ```ruby
+  params do
+    RubyLLM::Schema.create do
+      {
+        field_name: { type: :string, description: "..." },
+        # ...
+      }
+    end
+  end
+  
+  def execute(...)
+    chat = RubyLLM.chat(model: "gpt-4o")
+    response = chat.ask(context)
+    result = JSON.parse(response.content)
+  end
+  ```
+
+**Embeddings Usage**:
+- Use `RubyLLM.embed(text)` for single text embeddings
+- Use `RubyLLM.embed([text1, text2])` for batch embeddings (more efficient)
+- Store embeddings in PostgreSQL `vector` column (pgvector extension)
+- Use cosine similarity for semantic search
+- See https://rubyllm.com/embeddings/ for complete examples
 
 **When Adding New RubyLLM Features**:
 1. Read the relevant documentation page first
@@ -851,6 +894,65 @@ Before considering code complete:
 - Document why linting rules are disabled if necessary (use `# rubocop:disable` with explanation)
 - Follow Ruby style guide conventions
 
+## Project-Specific Lessons Learned
+
+### Database Index Patterns
+**CRITICAL**: Database indexes must match Active Record validation scopes:
+- If validation is `uniqueness: { scope: :user_id }`, create composite index `[:normalized_url, :user_id]`
+- Never create global unique indexes for scoped validations
+- Use `where: "column IS NOT NULL"` for nullable unique columns
+
+### URL Normalization Patterns
+**CRITICAL**: URL normalization must preserve content-identifying parameters:
+- **Remove**: Tracking/analytics params (`utm_*`, `ref`, `fbclid`, `gclid`)
+- **Preserve**: Content-identifying params (`id`, `v`, `version`, `status`, `page`)
+- **Always**: Remove fragments, normalize host (remove www), lowercase, remove trailing slash
+- **Why**: Different articles from same domain need different normalized URLs
+
+### Turbo Stream Redirects
+**CRITICAL**: Turbo Stream redirects require explicit status code:
+- Always use `status: :see_other` for Turbo Stream redirects
+- Example: `format.turbo_stream { redirect_to @resource, status: :see_other }`
+- Without status code, redirects may not work in Turbo Stream format
+
+### Locale-Scoped Routes in Tests
+**CRITICAL**: When routes are locale-scoped, use explicit parameter names:
+- Use `submission_path(id: @submission.id)` not `submission_path(@submission)`
+- Rails may interpret the object as the locale parameter otherwise
+- Pattern: Always use `id:` parameter in path helpers for locale-scoped routes
+
+### Authorization Redirects
+**CRITICAL**: Authorization failures should redirect to index, not show page:
+- Redirect unauthorized users to `submissions_path`, not `submission_path(@submission)`
+- Show pages are still accessible, index pages are safer for unauthorized access
+- Pattern: Always redirect to index page on authorization failures
+
+### Follow/Unfollow Actions
+**CRITICAL**: Follow actions should toggle state, not just create:
+- Check if follow exists with `find_by`
+- If exists: destroy (unfollow)
+- If not exists: create (follow)
+- Provides better UX and matches user expectations
+
+### Test Factory Patterns
+**CRITICAL**: Use `sequence` for attributes with uniqueness validations:
+- Example: `sequence(:submission_url) { |n| "https://example.com/article-#{n}" }`
+- Prevents uniqueness validation failures in tests
+- Pattern: Always use `sequence` for unique attributes in factories
+
+### Polymorphic Associations
+**CRITICAL**: When introducing polymorphic associations, update comprehensively:
+1. Update all factories (`commentable:` instead of `tool:`)
+2. Update all test assertions (`comment.commentable` instead of `comment.tool`)
+3. Update all path helpers/routing logic
+4. Update all views that reference the association
+
+### Association Reloading
+**CRITICAL**: Reload associations after modifications for Turbo Stream updates:
+- After adding/removing tags: `@submission.tags.reload`
+- Ensures fresh data for Turbo Stream responses
+- Pattern: Always reload associations after modifying them when preparing Turbo Stream responses
+
 ## Quality Checklist
 Before considering code complete, ensure:
 - [ ] Ruby syntax is valid (no syntax errors)
@@ -869,6 +971,14 @@ Before considering code complete, ensure:
 - [ ] Strong parameters are used in controllers
 - [ ] Background jobs are used for long-running operations
 - [ ] RubyLLM implementation follows official documentation patterns
-- [ ] Tests are in `spec/` directory structure (co-located with source)
+- [ ] Tests are in `test/` directory structure (co-located with source)
 - [ ] Test database is used for all tests
 - [ ] RuboCop passes (or violations are justified)
+- [ ] Database indexes match validation scopes (composite indexes for scoped uniqueness)
+- [ ] URL normalization preserves content-identifying parameters
+- [ ] Turbo Stream redirects use `status: :see_other`
+- [ ] Locale-scoped routes use explicit `id:` parameter in tests
+- [ ] Authorization redirects go to index, not show page
+- [ ] Follow actions toggle state (check existence, then create or destroy)
+- [ ] Test factories use `sequence` for unique attributes
+- [ ] Associations are reloaded after modifications for Turbo Stream updates

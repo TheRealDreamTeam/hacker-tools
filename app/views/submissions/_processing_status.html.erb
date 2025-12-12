@@ -1,0 +1,22 @@
+<%# Processing status display for real-time updates %>
+<div class="col-12 mb-3">
+  <div class="alert <%= processing_status_alert_class(local_assigns[:status] || submission.status.to_sym) %>">
+    <div class="d-flex align-items-center">
+      <% current_status = local_assigns[:status] || submission.status.to_sym %>
+      <% if current_status == :processing %>
+        <div class="spinner-border spinner-border-sm me-2" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      <% end %>
+      <div>
+        <strong><%= processing_status_title(current_status) %></strong>
+        <% if local_assigns[:message].present? %>
+          <div class="small mt-1"><%= local_assigns[:message] %></div>
+        <% end %>
+        <% if local_assigns[:phase].present? %>
+          <div class="small text-muted mt-1"><%= local_assigns[:phase].humanize %></div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

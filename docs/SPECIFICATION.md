@@ -2,11 +2,11 @@
 
 This document serves as the human-readable specification for the Hacker Tools application. It is maintained alongside development and updated as features are built.
 
-**Last Updated**: 2025-12-11
+**Last Updated**: 2025-12-12 (Embeddings & Semantic Search - Phase 1 Complete)
 
 ## Overview
 
-Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineering tools. Users can publish tools, tag them, group them into lists, discuss via threaded comments, and interact via upvotes/favorites/subscriptions.
+Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineering tools. Users can publish tools, tag them, group them into lists, discuss via threaded comments, and interact via upvotes/favorites/follows.
 
 ### Seed Data Snapshot
 - Tool catalog seeded with 34 tools (original set doubled plus security-focused additions from a soft-deleted user).
@@ -16,20 +16,47 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ## Core Features
 
-### Tool Catalog
-- **Status**: In Progress
-- **Description**: Users publish tools with descriptions, links, and media. Visibility controls allow private/unlisted/public sharing.
+### Submission System
+- **Status**: Complete (Phase 1, Week 1)
+- **Description**: Users submit content (articles, guides, repos, etc.) about tools. Tools are community-owned entities, submissions are user-contributed content.
 - **User Stories**:
-  - As a user, I want to create a tool entry with description, icon, and link so others can discover it.
-  - As a visitor, I want to browse and filter tools by tags and lists so I can find relevant items quickly.
+  - As a user, I want to submit content about a tool so others can discover it.
+  - As a user, I want to see my submissions in my dashboard.
+  - As a visitor, I want to browse and filter submissions by type, status, and tool.
+  - As a user, I want to tag my submissions for better organization.
+  - As a user, I want to follow submissions to track updates.
+- **Technical Implementation**:
+  - Models: `Submission`, `SubmissionTag`, `ListSubmission`
+  - Ownership: `Submission` belongs to `User`; `Tool` is community-owned (no user ownership)
+  - Submission types: article, guide, documentation, github_repo, etc.
+  - Status workflow: pending → processing → completed/failed/rejected
+  - Routes: `resources :submissions` with nested comments and member routes for tags/follow
+  - URL normalization for duplicate detection (preserves content-identifying query params)
+  - Polymorphic comments (can comment on both Tools and Submissions)
+- **UI/UX Considerations**:
+  - Submission index with filtering (by type, status, tool)
+  - Submission show page with comments, flags, bugs, tags
+  - Tag management (add/remove tags - owner only)
+  - Follow/unfollow functionality
+  - Turbo Streams for real-time updates
+- **Dependencies**:
+  - Devise-authenticated users to create/edit submissions
+  - Processing pipeline (Step 2.1+) for automatic enrichment
+
+### Tool Catalog
+- **Status**: Updated - Community-Owned
+- **Description**: Tools are community-owned top-level entities. Users submit content about tools, they don't own tools.
+- **User Stories**:
+  - As a visitor, I want to browse tools and see submissions about them.
+  - As a visitor, I want to filter tools by tags and lists.
 - **Technical Implementation**:
   - Models: `Tool`, `Tag`, `ToolTag`, `List`, `ListTool`
-  - Ownership: `Tool` belongs to `User`
+  - Ownership: Tools are community-owned (no user ownership)
   - Visibility/list types modeled as enums on `Tool` and `List`
   - Tagging and list inclusion via join tables
   - Routes: `resources :tools` (index, show, new, create, edit, update, destroy)
   - Active Storage attachments for tool `icon` and `picture`
-  - Creation flow: user supplies URL + author note; name/description/picture can be LLM-generated from URL
+  - Polymorphic comments (can comment on both Tools and Submissions)
 - **UI/UX Considerations**:
   - Use Bootstrap grid/cards; responsive at mobile breakpoints
   - Turbo Streams for live updates when tools are added/edited
@@ -39,13 +66,13 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ### Engagement & Feedback
 - **Status**: In Progress
-- **Description**: Users discuss tools and react with upvotes, favorites, subscriptions, and read tracking.
+- **Description**: Users discuss tools and react with upvotes, favorites, follows, and read tracking.
 - **User Stories**:
   - As a user, I want to comment on a tool and reply to threads so I can ask questions or provide feedback.
-  - As a user, I want to upvote/favorite/subscribe to tools so I can track what matters.
+  - As a user, I want to upvote/favorite/follow tools so I can track what matters.
   - As a user, I want to upvote comments so helpful answers are surfaced.
 - **Technical Implementation**:
-  - Models: `Comment`, `CommentUpvote`, `UserTool`
+  - Models: `Comment`, `CommentUpvote`, `UserTool`, `Follow` (polymorphic)
   - Threaded comments via `parent_id` on `Comment`
   - Comment types: `comment`, `flag`, `bug`; `solved` marks resolved flags/bugs
   - Tool show page sections: comments (threaded), flags (resolvable), bugs (resolvable)
@@ -60,7 +87,7 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 ## Data Models
 
 ### User (Devise)
-- **Purpose**: Authenticated account that owns tools/lists and participates in discussions.
+- **Purpose**: Authenticated account that submits content, creates lists, and participates in discussions.
 - **Attributes**:
   - `email` (string, required, unique among active users)
   - `encrypted_password` (string, required)
@@ -70,9 +97,11 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - `user_bio` (text)
 - **Active Storage**: `avatar` attachment
 - **Associations**:
-  - `has_many :tools`, `has_many :lists`, `has_many :comments`
+  - `has_many :submissions` (user-contributed content about tools)
+  - `has_many :lists`, `has_many :comments`
   - `has_many :user_tools`, `has_many :tool_interactions, through: :user_tools`
   - `has_many :comment_upvotes`
+- **Status**: Updated - Removed `has_many :tools`; users no longer own tools, they submit content about tools
 - **Validations**: 
   - Presence on username/email
   - Uniqueness on username/email among active users only (allows reuse after deletion)
@@ -89,23 +118,45 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Username/email become immediately available for reuse
 
 ### Tool
-- **Purpose**: A published tool with metadata, owned by a user.
-- **Attributes**: `tool_name` (string, required), `tool_description` (text), `tool_url` (string), `author_note` (text), `visibility` (integer enum)
+- **Purpose**: Community-owned top-level entity representing any software-related concept, technology, service, or platform. Tools are shared community resources, not user-owned.
+- **Attributes**: `tool_name` (string, required), `tool_description` (text), `tool_url` (string, optional), `author_note` (text), `visibility` (integer enum), `embedding` (vector(1536) - pgvector embedding for semantic search)
 - **Active Storage**: `icon`, `picture` attachments
-- **Associations**: `belongs_to :user`; `has_many :comments`; `has_many :tags, through: :tool_tags`; `has_many :lists, through: :list_tools`; `has_many :user_tools`
-- **Validations**: Presence on name; visibility enum.
+- **Associations**: `has_many :submissions`; `has_many :comments, as: :commentable` (polymorphic); `has_many :tags, through: :tool_tags`; `has_many :lists, through: :list_tools`; `has_many :user_tools`
+- **Validations**: Presence on name; visibility enum; URL format validation (if URL provided)
+- **Callbacks**: `after_create :enqueue_discovery_job` - Automatically enqueues `ToolDiscoveryJob` when a new tool is created
+- **Status**: Updated - Removed user ownership; tools are now community-owned entities. `tool_url` is optional (tools can exist without a URL).
+- **Automatic Enrichment**: When a tool is created (automatically via submission processing or manually), `ToolDiscoveryJob` runs in the background to:
+  - Discover the tool's official website using RubyLLM
+  - Find the GitHub repository (if applicable)
+  - Extract a description of what the tool is and what it does
+  - Fetch discovered URLs to extract additional metadata (title, description, images)
+  - Attach icons/images from discovered URLs using Active Storage
+  - Update the tool with discovered information (tool_url, tool_description, icon)
+  - Generate vector embeddings for semantic search (via `ToolEmbeddingGenerationJob`)
+- **Embeddings**: Vector embeddings (1536 dimensions) are automatically generated after tool discovery using OpenAI's `text-embedding-3-small` model. Embeddings combine tool name, description, and tags to enable semantic search and content similarity matching.
 
 ### List
 - **Purpose**: Curated collection of tools for a user.
-- **Attributes**: `list_name` (string, required), `list_type` (integer enum), `visibility` (integer enum)
-- **Associations**: `belongs_to :user`; `has_many :tools, through: :list_tools`
-- **Validations**: Presence on name; enums on type/visibility.
+- **Attributes**: `list_name` (string, required), `list_type` (integer enum), `visibility` (integer enum: private/public)
+- **Associations**: 
+  - `belongs_to :user`
+  - `has_many :tools, through: :list_tools`
+  - `has_many :follows, as: :followable` (polymorphic)
+  - `has_many :followers, through: :follows, source: :user`
+- **Validations**: Presence on name; uniqueness of name scoped to user; enums on type/visibility.
+- **Scopes**: 
+  - `public_lists` - Returns only public lists (visibility = public)
+  - `recent` - Orders by creation date descending
+- **Helper Methods**:
+  - `follower_count` - Returns count of users following this list
+  - `followed_by?(user)` - Checks if a user is following this list
 
 ### Comment
-- **Purpose**: Threaded discussion on a tool.
+- **Purpose**: Threaded discussion on tools or submissions (polymorphic).
 - **Attributes**: `comment` (text, required), `comment_type` (integer enum: comment/flag/bug), `parent_id` (self-referential), `solved` (boolean)
-- **Associations**: `belongs_to :tool`; `belongs_to :user`; `belongs_to :parent, class_name: "Comment", optional: true`; `has_many :replies, class_name: "Comment"`
+- **Associations**: `belongs_to :commentable, polymorphic: true` (can be Tool or Submission); `belongs_to :user`; `belongs_to :parent, class_name: "Comment", optional: true`; `has_many :replies, class_name: "Comment"`
 - **Validations**: Presence on body; presence on type.
+- **Status**: Updated - Now polymorphic to support comments on both Tools and Submissions
 
 ### Tag
 - **Purpose**: Hierarchical classification system for tools with parent-child relationships.
@@ -130,10 +181,71 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ### UserTool (join/state)
 - **Purpose**: Per-user interaction state for a tool.
-- **Attributes**: `read_at` (datetime), `upvote` (boolean), `favorite` (boolean), `subscribe` (boolean), foreign keys to user/tool
+- **Attributes**: `read_at` (datetime), `upvote` (boolean), `favorite` (boolean), foreign keys to user/tool
 - **Associations**: `belongs_to :user`; `belongs_to :tool`
 - **Validations**: Uniqueness on `[user_id, tool_id]`.
-- **Behavior**: Created/touched on tool show (sets `read_at`), toggled via upvote/favorite/follow buttons on home, tools index, and tool show.
+- **Behavior**: Created/touched on tool show (sets `read_at`), toggled via upvote/favorite buttons on home, tools index, and tool show.
+
+### Follow (polymorphic)
+- **Purpose**: Unified following system for users, tools, lists, and tags.
+- **Attributes**: `user_id`, `followable_type`, `followable_id`
+- **Associations**: `belongs_to :user`; `belongs_to :followable, polymorphic: true`
+- **Validations**: 
+  - Uniqueness on `[user_id, followable_type, followable_id]`
+  - `cannot_follow_self` - Prevents users from following themselves (when followable_type is "User")
+  - `cannot_follow_own_list` - Prevents users from following their own lists (when followable_type is "List")
+- **Behavior**: Replaces tool subscriptions; used for following users/tools/lists/tags.
+
+### Submission
+- **Purpose**: User-contributed content about tools. Can be articles, guides, documentation, GitHub repos, etc.
+- **Attributes**: 
+  - `submission_url` (string, nullable - for future text-only posts)
+  - `normalized_url` (string, nullable, unique scoped to user_id)
+  - `submission_type` (integer enum: article, guide, documentation, github_repo, etc.)
+  - `status` (integer enum: pending, processing, completed, failed, rejected)
+  - `author_note` (text - free text description from user)
+  - `submission_name` (string - extracted/derived name)
+  - `submission_description` (text - extracted description)
+  - `metadata` (jsonb - flexible data storage)
+  - `duplicate_of_id` (references submissions - for duplicate detection)
+  - `processed_at` (datetime - when processing completed)
+  - `embedding` (vector(1536) - pgvector embedding for semantic search)
+- **Associations**: 
+  - `belongs_to :user` (user who submitted the content)
+  - `belongs_to :tool, optional: true` (tool this submission is about)
+  - `has_many :submission_tags`; `has_many :tags, through: :submission_tags`
+  - `has_many :list_submissions`; `has_many :lists, through: :list_submissions`
+  - `has_many :comments, as: :commentable` (polymorphic)
+  - `has_many :follows, as: :followable` (polymorphic)
+  - `has_many :followers, through: :follows, source: :user`
+- **Validations**: 
+  - Presence of user
+  - URL format validation (when submission_url present)
+  - Uniqueness of normalized_url scoped to user_id
+- **Scopes**: 
+  - `pending`, `completed`, `processing`, `failed`, `rejected` (by status)
+  - `recent` (ordered by created_at desc)
+  - `by_type(type)` (filter by submission_type)
+  - `for_tool(tool)` (filter by tool)
+- **Helper Methods**: 
+  - `follower_count` - Returns count of users following this submission
+  - `duplicate?` - Checks if submission is marked as duplicate
+  - `metadata_value(key)` - Retrieves value from metadata JSONB
+  - `set_metadata_value(key, value)` - Sets value in metadata JSONB
+- **Status**: Complete - Full CRUD with tag management, follow functionality, polymorphic comments, and semantic search via embeddings
+- **Embeddings**: Vector embeddings (1536 dimensions) are automatically generated during processing using OpenAI's `text-embedding-3-small` model. Embeddings enable semantic search and content similarity matching.
+
+### SubmissionTag (join)
+- **Purpose**: Many-to-many between submissions and tags.
+- **Attributes**: `submission_id`, `tag_id`
+- **Associations**: `belongs_to :submission`; `belongs_to :tag`
+- **Validations**: Uniqueness on `[submission_id, tag_id]`.
+
+### ListSubmission (join)
+- **Purpose**: Submissions included in a list.
+- **Attributes**: `list_id`, `submission_id`
+- **Associations**: `belongs_to :list`; `belongs_to :submission`
+- **Validations**: Uniqueness on `[list_id, submission_id]`.
 
 ### CommentUpvote (join)
 - **Purpose**: User upvotes on comments.
@@ -229,6 +341,13 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Platform**: Heroku
 - **App Name**: hacker-tools
 - **Environment Variables**: [List required env vars]
+- **PostgreSQL Extensions**:
+  - **pg_trgm**: Enabled for fuzzy text search
+  - **pgvector**: ✅ **ENABLED AND WORKING** - Available on Heroku Postgres (Standard, Premium, Private, Shield, and Essential plans with PostgreSQL 15+)
+    - Not a separate addon - built into Heroku Postgres
+    - Enabled automatically via migrations
+    - **Status**: Fully functional - embeddings are being generated and stored for both Tools and Submissions
+    - **Note**: "unknown OID" warning in schema dumps is cosmetic only (doesn't affect functionality)
 
 ## Authentication (Devise)
 
@@ -262,6 +381,8 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Description**: User profile page and account settings management
 - **Features**:
   - Profile display page showing username, avatar, and bio
+  - Tabbed interface showing public tools, comments, upvotes, and lists
+  - Public lists display with follow/unfollow functionality
   - Account settings with separate sections for different updates
   - Avatar management (upload, delete) - no password required
   - Bio management - no password required
@@ -269,7 +390,10 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Password changes - password required
   - Account soft deletion with confirmation modal
 - **Routes**:
-  - `GET /profile` → `profiles#show` (profile display page)
+  - `GET /u/:username` → `profiles#show` (public profile display page)
+  - `POST /u/:username/follow` → `profiles#follow` (follow user)
+  - `DELETE /u/:username/unfollow` → `profiles#unfollow` (unfollow user)
+  - `GET /dashboard` → `dashboard#show` (private dashboard)
   - `GET /account_settings` → `account_settings#show` (account settings)
   - `PATCH /account_settings/update_avatar` → `account_settings#update_avatar`
   - `PATCH /account_settings/update_bio` → `account_settings#update_bio`
@@ -279,9 +403,16 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - `DELETE /account_settings` → `account_settings#destroy` (soft delete account)
 - **Controllers**:
   - `ProfilesController` - Simple controller for profile display
+  - `DashboardController` - Private, read-only dashboard slices for the current user
   - `AccountSettingsController` - Custom controller for account management (independent from Devise)
 - **Views**:
-  - Profile page (`profiles/show.html.erb`) - Read-only profile display with link to account settings
+  - Profile page (`profiles/show.html.erb`) - Read-only profile display with tabbed interface:
+    - Posts tab: Public tools created by the user
+    - Comments tab: Comments made by the user on public tools
+    - Upvotes tab: Public tools upvoted by the user
+    - Lists tab: Public lists created by the user with follow/unfollow buttons
+  - List card partial (`profiles/_list_card.html.erb`) - Displays list name, tool count, creation date, follower count, and follow button
+  - Dashboard (`dashboard/show.html.erb`) - Overview cards (counts) and recent slices for tools, lists, discussions, favorites, follows
   - Account settings (`account_settings/show.html.erb`) - Split into 5 sections:
     1. Avatar update (with delete button)
     2. Bio update
@@ -299,13 +430,26 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Signs out user after deletion
   - Deleted users cannot log in (blocked via authentication)
   - Username/email become available for new registrations immediately
+- **Lists Management**:
+  - Lists can be created, edited, and deleted by their owners
+  - Lists have visibility settings (private/public)
+  - Public lists are displayed on user profile pages
+  - Users can follow/unfollow public lists (except their own)
+  - Follow/unfollow actions use Turbo Streams for real-time updates
+  - Routes:
+    - `POST /lists/:id/follow` → `lists#follow` (follow a public list)
+    - `DELETE /lists/:id/unfollow` → `lists#unfollow` (unfollow a list)
+  - Turbo Stream template (`lists/follow_update.turbo_stream.erb`) updates follow button and follower count in real time
 - **UI/UX**:
-  - Profile page shows avatar (or gray placeholder with initial)
+  - Profile page shows avatar (or gray placeholder with initial) and no edit CTA (settings moved to nav)
+  - Dashboard is a private view; public profile to be added later
   - Account settings organized in card-based sections
   - Each section has its own submit button
   - Confirmation modal for destructive actions (avatar deletion, account deletion)
   - Consistent styling with design system (12px rounded corners, proper spacing)
   - Deleted users display as "Deleted Account" throughout the application
+  - List cards on profile page show list name, tool count, creation date, follower count, and follow button
+  - Follow buttons only appear for signed-in users viewing lists they don't own
 
 ## UI Components
 
@@ -316,6 +460,10 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Main navbar (`shared/_navbar.html.erb`)
   - Navbar items partial (`shared/_navbar_items.html.erb`)
   - Offcanvas menu for mobile devices
+- **Links**:
+  - Home, Tools, New Tool, Tags, Profile (private), Dashboard (private), Account (account settings), Auth links
+- **Behavior**:
+  - Dashboard and Account links are distinct from Profile; Profile stays read-only
 - **Styling**:
   - Navbar has no rounded corners (as per design system)
   - Navbar links have hover animations (translateY and background color change)
@@ -387,12 +535,13 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Components**: Home page view (`pages/home.html.erb`)
 - **Layout & UX**:
   - Divider under navbar, then an 8-column wide primary search bar (large input + search button)
+  - **Unified Search**: Searches both Tools and Submissions simultaneously using hybrid search (full-text + semantic)
   - Category toggle bar for `Trending`, `New & Hot`, and `Most Upvoted` lists (JS-ready to switch lists without reload)
-  - Each category panel renders up to 10 live tools:
-    - Trending: most upvoted in the last 30 days (by `user_tools.upvote`)
-    - New & Hot: tools from last 7 days ranked by upvotes
+  - Each category panel renders up to 10 live items (mixed Tools and Submissions):
+    - Trending: most upvoted in the last 30 days (by `user_tools.upvote` or `user_submissions.upvote`)
+    - New & Hot: items from last 7 days ranked by upvotes
     - Most Upvoted: highest upvotes all time
-    - Left (≈5 cols @ ≥md): star, ordinalized position, tool description or fallback, tags (or sample tags), stretched-link to `/tools/:id`
+    - Left (≈5 cols @ ≥md): star, ordinalized position, description or fallback, tags (or sample tags), stretched-link to item
     - Right (≈7 cols @ ≥md): logo stub plus inline upvote button showing “▲ X upvotes”; signed-in users increment inline, guests see an alert to sign in
 - **Styling**:
   - Bootstrap grid-first layout, responsive down to mobile

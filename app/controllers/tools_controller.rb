@@ -1,10 +1,11 @@
 class ToolsController < ApplicationController
   before_action :set_tool, only: %i[show edit update destroy add_tag remove_tag upvote favorite follow]
-  before_action :authorize_owner!, only: %i[edit update destroy add_tag remove_tag]
+  # TODO: Re-enable authorization when we decide on permissions (admin-only or open editing)
+  # before_action :authorize_owner!, only: %i[edit update destroy add_tag remove_tag]
 
   # GET /tools
   def index
-    @tools = Tool.includes(:user, :tags, :user_tools).order(created_at: :desc)
+    @tools = Tool.includes(:tags, :user_tools).order(created_at: :desc)
   end
 
   # GET /tools/:id
@@ -36,14 +37,16 @@ class ToolsController < ApplicationController
     @new_flag = @tool.comments.new(comment_type: :flag)
     @new_bug = @tool.comments.new(comment_type: :bug)
 
-    # Load tags for the tool and all available tags grouped by type
-    @tool_tags = @tool.tags.includes(:parent)
+    # Load top tags for the tool (ranked by relevance: submissions that have both tool and tag)
+    # Show top 10 by default, but keep all tags for tag management
+    @tool_tags = @tool.top_tags(limit: 10)
+    @all_tool_tags = @tool.tags.includes(:parent) # For tag management UI
     @available_tags = Tag.includes(:parent).order(tag_type: :asc, tag_name: :asc)
   end
 
   # GET /tools/new
   def new
-    @tool = current_user.tools.new
+    @tool = Tool.new
   end
 
   # GET /tools/:id/edit
@@ -52,7 +55,7 @@ class ToolsController < ApplicationController
 
   # POST /tools
   def create
-    @tool = current_user.tools.new(tool_params)
+    @tool = Tool.new(tool_params)
 
     if @tool.save
       redirect_to @tool, notice: t("tools.flash.created")
@@ -108,7 +111,33 @@ class ToolsController < ApplicationController
 
   # POST /tools/:id/follow
   def follow
-    toggle_interaction_flag(:subscribe, :tool_follow)
+    return redirect_to new_user_session_path unless current_user
+
+    # Toggle follow: if exists, destroy (unfollow); if not, create (follow)
+    follow_record = current_user.follows.find_by(followable: @tool)
+    
+    if follow_record
+      follow_record.destroy
+    else
+      # Use find_or_create_by to handle race conditions gracefully
+      # The unique index at database level prevents duplicates
+      current_user.follows.find_or_create_by!(followable: @tool)
+    end
+
+    respond_to do |format|
+      format.turbo_stream { render "tools/interaction_update" }
+      format.html { redirect_back fallback_location: tool_path(@tool), notice: t("tools.flash.tool_follow") }
+    end
+  rescue ActiveRecord::RecordNotUnique
+    # Handle race condition: if another request created it between find_by and find_or_create_by
+    # The follow now exists, so destroy it (toggle behavior)
+    follow_record = current_user.follows.find_by(followable: @tool)
+    follow_record&.destroy
+
+    respond_to do |format|
+      format.turbo_stream { render "tools/interaction_update" }
+      format.html { redirect_back fallback_location: tool_path(@tool), notice: t("tools.flash.tool_follow") }
+    end
   end
 
   private
@@ -117,12 +146,14 @@ class ToolsController < ApplicationController
     @tool = Tool.find(params[:id])
   end
 
-  # Ensure only the owner can modify or delete.
-  def authorize_owner!
-    return if @tool.user == current_user
-
-    redirect_to tools_path, alert: t("tools.flash.unauthorized")
-  end
+  # TODO: Re-implement authorization when we decide on permissions
+  # Tools are now community-owned, so we need to decide:
+  # - Admin-only editing?
+  # - Open editing for all users?
+  # - Some other permission model?
+  # def authorize_owner!
+  #   # Implementation depends on chosen permission model
+  # end
 
   def tool_params
     params.require(:tool).permit(:tool_url, :author_note)

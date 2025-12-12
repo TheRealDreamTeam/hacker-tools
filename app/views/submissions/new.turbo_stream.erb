@@ -1,0 +1,14 @@
+<%= turbo_stream.replace "submission-form-container" do %>
+  <% if @submission.errors.any? %>
+    <div class="alert alert-danger">
+      <h4 class="alert-heading"><%= t("submissions.flash.validation_error") %></h4>
+      <ul class="mb-0">
+        <% @submission.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <%= render "form", submission: @submission %>
+<% end %>
+

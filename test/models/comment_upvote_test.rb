@@ -11,7 +11,7 @@ class CommentUpvoteTest < ActiveSupport::TestCase
 
   test "should require user" do
     tool = create(:tool)
-    comment = create(:comment, tool: tool)
+    comment = create(:comment, commentable: tool)
     comment_upvote = CommentUpvote.new(comment: comment)
     assert_not comment_upvote.valid?
     assert_includes comment_upvote.errors[:user], "must exist"
@@ -19,7 +19,7 @@ class CommentUpvoteTest < ActiveSupport::TestCase
 
   test "should enforce uniqueness of comment_id and user_id combination" do
     tool = create(:tool)
-    comment = create(:comment, tool: tool)
+    comment = create(:comment, commentable: tool)
     user = create(:user)
     create(:comment_upvote, comment: comment, user: user)
 
@@ -31,7 +31,7 @@ class CommentUpvoteTest < ActiveSupport::TestCase
   # Associations
   test "should belong to comment" do
     tool = create(:tool)
-    comment = create(:comment, tool: tool)
+    comment = create(:comment, commentable: tool)
     user = create(:user)
     comment_upvote = create(:comment_upvote, comment: comment, user: user)
     assert_equal comment, comment_upvote.comment
@@ -39,7 +39,7 @@ class CommentUpvoteTest < ActiveSupport::TestCase
 
   test "should belong to user" do
     tool = create(:tool)
-    comment = create(:comment, tool: tool)
+    comment = create(:comment, commentable: tool)
     user = create(:user)
     comment_upvote = create(:comment_upvote, comment: comment, user: user)
     assert_equal user, comment_upvote.user

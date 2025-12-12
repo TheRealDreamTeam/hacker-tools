@@ -5,9 +5,10 @@ Rails 7.1 + Ruby 3.3 app using PostgreSQL, Redis (Action Cable), Hotwire (Turbo 
 ## Requirements
 - Ruby 3.3.5 (matching `.ruby-version` / Gemfile)
 - Bundler (`gem install bundler`)
-- PostgreSQL 14+ running locally
+- PostgreSQL 14+ running locally (16+ recommended for pgvector support)
 - Redis running locally (for Action Cable; start with `redis-server`)
-- Node.js (for Playwright browser install) and `npx playwright install chromium`
+- Node.js (for Playwright browser install) and `npx playwright install chromium`)
+- **Optional**: pgvector extension for embeddings (install with `apt-get install postgresql-16-pgvector` on Ubuntu/Debian)
 
 ## Setup
 ```bash
@@ -45,7 +46,15 @@ By default runs at http://localhost:3000. Ensure Redis is running for Action Cab
 - Development uses local disk by default.
 - To use Cloudinary, set `CLOUDINARY_URL` and configure `config/storage.yml`/env to select the Cloudinary service in production.
 
+## Deployment (Heroku)
+
+- **PostgreSQL Extensions**: pgvector is available on Heroku Postgres (Standard, Premium, Private, Shield, and Essential plans with PostgreSQL 15+)
+  - Not a separate addon - it's built into Heroku Postgres
+  - Migrations will automatically enable the extension if available
+  - If pgvector is unavailable, the app continues to work without embeddings
+
 ## Troubleshooting
 - Database connection: verify `DATABASE_URL` or local Postgres credentials.
 - Redis: ensure `redis-server` is running for Action Cable and Action Job (if configured).
 - Playwright: if system tests fail to launch a browser, rerun `npx playwright install chromium`.
+- pgvector: If embedding generation fails, check that the extension is installed/enabled. The app works without it.

@@ -4,8 +4,8 @@ import { Controller } from "@hotwired/stimulus"
 // Initializes Bootstrap tooltips for tag links and other elements
 export default class extends Controller {
   connect() {
-    // Initialize all tooltips within this element
-    // Bootstrap tooltips need to be initialized after DOM is ready
+    // Wait for Bootstrap to be available before initializing tooltips
+    // Bootstrap is loaded via importmap and should be available globally
     this.initializeTooltips()
     
     // Reinitialize tooltips after Turbo navigation
@@ -23,26 +23,40 @@ export default class extends Controller {
     }
     
     // Dispose of all tooltips in this element
-    const tooltips = this.element.querySelectorAll('[data-bs-toggle="tooltip"]')
-    tooltips.forEach(element => {
-      const tooltip = bootstrap.Tooltip.getInstance(element)
-      if (tooltip) {
-        tooltip.dispose()
-      }
-    })
+    // Check if Bootstrap is available before accessing it
+    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+      const tooltips = this.element.querySelectorAll('[data-bs-toggle="tooltip"]')
+      tooltips.forEach(element => {
+        const tooltip = bootstrap.Tooltip.getInstance(element)
+        if (tooltip) {
+          tooltip.dispose()
+        }
+      })
+    }
   }
 
   initializeTooltips() {
+    // Check if Bootstrap is available before initializing tooltips
+    if (typeof bootstrap === 'undefined' || !bootstrap.Tooltip) {
+      // If Bootstrap isn't available yet, try again after a short delay
+      setTimeout(() => this.initializeTooltips(), 100)
+      return
+    }
+
     // Find all elements with tooltip data attributes within this controller's element
     const tooltipElements = this.element.querySelectorAll('[data-bs-toggle="tooltip"]')
     
     tooltipElements.forEach(element => {
       // Check if tooltip is already initialized to avoid duplicates
       if (!bootstrap.Tooltip.getInstance(element)) {
+        // Get placement from data attribute (data-bs-placement becomes bsPlacement in dataset)
+        const placement = element.dataset.bsPlacement || element.getAttribute('data-bs-placement') || 'top'
+        
         // Initialize Bootstrap tooltip
+        // Bootstrap will automatically read data-bs-title or title attribute for the tooltip content
         new bootstrap.Tooltip(element, {
           trigger: 'hover',
-          placement: element.dataset.bsPlacement || 'top',
+          placement: placement,
           html: false
         })
       }

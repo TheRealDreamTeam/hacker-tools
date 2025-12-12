@@ -1,12 +1,11 @@
 <%= turbo_stream.replace "category-panel-trending" do %>
   <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless @category == 'trending' %>" data-category-panel="trending" id="category-panel-trending">
     <div class="card-body">
-      <% if @trending_tools.blank? %>
+      <% if @trending_items.blank? %>
         <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
       <% else %>
-        <% @trending_tools.each_with_index do |tool, i| %>
-          <% upvotes = (tool.respond_to?(:upvotes_count) && tool.upvotes_count.present?) ? tool.upvotes_count.to_i : 0 %>
-          <%= render partial: "tool_card", locals: { tool: tool, index: i, upvotes: upvotes } %>
+        <% @trending_items.each_with_index do |item, i| %>
+          <%= render partial: "unified_card", locals: { item: item, index: i } %>
         <% end %>
       <% end %>
     </div>
@@ -16,12 +15,11 @@
 <%= turbo_stream.replace "category-panel-new" do %>
   <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless @category == 'new' %>" data-category-panel="new" id="category-panel-new">
     <div class="card-body">
-      <% if @new_hot_tools.blank? %>
+      <% if @new_hot_items.blank? %>
         <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
       <% else %>
-        <% @new_hot_tools.each_with_index do |tool, i| %>
-          <% upvotes = (tool.respond_to?(:upvotes_count) && tool.upvotes_count.present?) ? tool.upvotes_count.to_i : 0 %>
-          <%= render partial: "tool_card", locals: { tool: tool, index: i, upvotes: upvotes } %>
+        <% @new_hot_items.each_with_index do |item, i| %>
+          <%= render partial: "unified_card", locals: { item: item, index: i } %>
         <% end %>
       <% end %>
     </div>
@@ -31,15 +29,13 @@
 <%= turbo_stream.replace "category-panel-upvoted" do %>
   <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless @category == 'upvoted' %>" data-category-panel="upvoted" id="category-panel-upvoted">
     <div class="card-body">
-      <% if @most_upvoted_tools.blank? %>
+      <% if @most_upvoted_items.blank? %>
         <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
       <% else %>
-        <% @most_upvoted_tools.each_with_index do |tool, i| %>
-          <% upvotes = (tool.respond_to?(:upvotes_count) && tool.upvotes_count.present?) ? tool.upvotes_count.to_i : 0 %>
-          <%= render partial: "tool_card", locals: { tool: tool, index: i, upvotes: upvotes } %>
+        <% @most_upvoted_items.each_with_index do |item, i| %>
+          <%= render partial: "unified_card", locals: { item: item, index: i } %>
         <% end %>
       <% end %>
     </div>
   </div>
 <% end %>
-

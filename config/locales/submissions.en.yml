@@ -1,0 +1,83 @@
+en:
+  submissions:
+    index:
+      title: "Submissions"
+      new_submission: "New Submission"
+      empty_state: "No submissions yet. Create the first one!"
+    new:
+      title: "Create Submission"
+    edit:
+      title: "Edit Submission"
+    show:
+      description: "Description"
+      author_note: "Author Note"
+      picture: "Picture"
+      tags_title: "Tags"
+      no_tags: "No tags yet."
+      select_tag: "Select a tag to add"
+      comments_title: "Discussion"
+      flags_title: "Flags"
+      bugs_title: "Bugs"
+    by_user: "by %{user}"
+    about_tool: "About %{tool}"
+    about_tools: "About %{tools}"
+    types:
+      article: "Article"
+      guide: "Guide"
+      documentation: "Documentation"
+      github_repo: "GitHub Repo"
+      social_post: "Social Post"
+      code_snippet: "Code Snippet"
+      website: "Website"
+      video: "Video"
+      podcast: "Podcast"
+      post: "Post"
+      other: "Other"
+    statuses:
+      pending: "Pending"
+      processing: "Processing"
+      completed: "Completed"
+      failed: "Failed"
+      rejected: "Rejected"
+    actions:
+      upvote: "Upvote"
+      favorite: "Favorite"
+      add_tag: "Add tag"
+      remove_tag: "Remove tag"
+      follow: "Follow"
+    form:
+      submission_url: "URL"
+      submission_url_hint: "Link to the content (article, repo, guide, etc.)"
+      author_note: "Author Note"
+      author_note_hint: "Optional description or notes about this submission"
+      tool: "Related Tool"
+      tool_hint: "Optional - select a tool this submission is about"
+      tool_prompt: "Select a tool (optional)"
+    confirmations:
+      destroy_title: "Delete Submission"
+      destroy_message: "Are you sure you want to delete this submission? This action cannot be undone."
+    flash:
+      created: "Submission created successfully. Processing..."
+      updated: "Submission updated successfully."
+      destroyed: "Submission deleted."
+      unauthorized: "You are not allowed to modify this submission."
+      validation_error: "Please fix the errors below and try again."
+      add_tag:
+        success: "Tag '%{tag}' added successfully."
+        already_exists: "Tag '%{tag}' is already associated with this submission."
+      remove_tag:
+        success: "Tag '%{tag}' removed successfully."
+        not_found: "Tag '%{tag}' not found on this submission."
+      follow:
+        success: "You are now following this submission."
+        unfollowed: "You are no longer following this submission."
+        already_following: "You are already following this submission."
+      submission_upvote: "Upvote toggled."
+      submission_favorite: "Favorite toggled."
+    create:
+      success: "Submission created successfully."
+    update:
+      success: "Submission updated successfully."
+    destroy:
+      success: "Submission deleted successfully."
+

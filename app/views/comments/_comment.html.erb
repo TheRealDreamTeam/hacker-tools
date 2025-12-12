@@ -8,17 +8,33 @@
           <p class="text-secondary small mb-0"><%= l(comment.created_at, format: :short) %></p>
         </div>
         <div class="d-flex gap-2 align-items-center">
-          <%= button_to upvote_tool_comment_path(comment.tool, comment),
-                        method: :post,
-                        class: "btn btn-sm #{comment.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'}",
-                        title: comment.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
-            <span>↑</span> <span><%= comment.upvote_count %></span>
-          <% end %>
-          <% if comment.user == current_user || comment.tool.user == current_user %>
-            <%= button_to t("comments.actions.delete"), tool_comment_path(comment.tool, comment),
-                          method: :delete,
-                          data: { turbo_confirm: t("comments.confirmations.delete") },
-                          class: "btn btn-sm btn-outline-danger" %>
+          <% if comment.commentable_type == "Tool" %>
+            <%= button_to upvote_tool_comment_path(comment.commentable, comment),
+                          method: :post,
+                          class: "btn btn-sm #{comment.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'}",
+                          title: comment.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
+              <span>↑</span> <span><%= comment.upvote_count %></span>
+            <% end %>
+            <% if comment.user == current_user %>
+              <% # Tools are community-owned, so only comment author can delete %>
+              <%= button_to t("comments.actions.delete"), tool_comment_path(comment.commentable, comment),
+                            method: :delete,
+                            data: { turbo_confirm: t("comments.confirmations.delete") },
+                            class: "btn btn-sm btn-outline-danger" %>
+            <% end %>
+          <% elsif comment.commentable_type == "Submission" %>
+            <%= button_to upvote_submission_comment_path(comment.commentable, comment),
+                          method: :post,
+                          class: "btn btn-sm #{comment.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'}",
+                          title: comment.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
+              <span>↑</span> <span><%= comment.upvote_count %></span>
+            <% end %>
+            <% if comment.user == current_user || (comment.commentable_type == "Submission" && comment.commentable.user == current_user) %>
+              <%= button_to t("comments.actions.delete"), submission_comment_path(comment.commentable, comment),
+                            method: :delete,
+                            data: { turbo_confirm: t("comments.confirmations.delete") },
+                            class: "btn btn-sm btn-outline-danger" %>
+            <% end %>
           <% end %>
         </div>
       </div>
@@ -32,7 +48,7 @@
       </button>
       <div class="collapse mt-2" id="reply-form-<%= comment.id %>">
         <%= render "comments/form",
-                    tool: comment.tool,
+                    commentable: comment.commentable,
                     comment: Comment.new(parent: comment, comment_type: :comment),
                     submit_label: t("comments.actions.reply"),
                     placeholder: t("comments.form.reply_placeholder"),

@@ -1,5 +1,6 @@
 class Comment < ApplicationRecord
-  belongs_to :tool
+  # Polymorphic association - comments can belong to Tools or Submissions
+  belongs_to :commentable, polymorphic: true
   belongs_to :user
 
   # Self-referential parent-child relationship for threaded comments
@@ -38,6 +39,12 @@ class Comment < ApplicationRecord
   # Get upvote count
   def upvote_count
     comment_upvotes.count
+  end
+  
+  # Helper method to get the tool (for backward compatibility during migration)
+  # This will work for both Tool and Submission commentables
+  def tool
+    commentable.is_a?(Tool) ? commentable : commentable&.tool
   end
 
   private

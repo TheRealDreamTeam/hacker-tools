@@ -6,7 +6,7 @@
         <div class="d-flex justify-content-between align-items-start mb-1 position-relative">
           <h5 class="card-title mb-0">
             <%= link_to "#{index + 1}. #{tool.tool_name}", tool_path(tool), class: "text-decoration-none" %>
-            <em class="text-secondary small ms-2 fst-italic"><%= display_user_name(tool.user) %></em>
+            <%# Tools are community-owned, no owner to display %>
           </h5>
           <%= render "tools/read_state", tool: tool, classes: "position-absolute top-0 end-0 mt-1 me-1" %>
         </div>

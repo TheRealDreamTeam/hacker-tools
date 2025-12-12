@@ -1,15 +1,10 @@
 <div class="container mt-4">
-  <div class="row">
+  <!-- Profile Header -->
+  <div class="row mb-4">
     <div class="col-12">
-      <h1 class="h3 mb-4"><%= t("profiles.show.title") %></h1>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-lg-8">
       <div class="card">
         <div class="card-body">
-          <div class="d-flex align-items-start gap-4 mb-4">
+          <div class="d-flex align-items-start gap-4 mb-3">
             <!-- Avatar -->
             <div>
               <% if @user.avatar.attached? %>
@@ -21,24 +16,197 @@
               <% end %>
             </div>
 
-            <!-- Username and Bio -->
+            <!-- Username and Info -->
             <div class="flex-grow-1">
-              <h2 class="h4 mb-2"><%= @user.username %></h2>
-              <% if @user.user_bio.present? %>
-                <p class="text-muted mb-0"><%= simple_format(@user.user_bio) %></p>
-              <% else %>
-                <p class="text-muted mb-0"><em><%= t("profiles.show.no_bio") %></em></p>
-              <% end %>
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h1 class="h3 mb-2"><%= @user.username %></h1>
+                  <p class="text-muted mb-2">
+                    <%= t("profiles.show.joined") %> <%= l(@user.created_at, format: :long) %>
+                  </p>
+                </div>
+                <!-- Follow Button Container - Stable wrapper for Turbo Stream updates -->
+                <% if user_signed_in? && !@is_own_profile %>
+                  <div id="<%= dom_id(@user, 'follow') %>" class="follow-button-container">
+                    <% if @is_following %>
+                      <%= button_to unfollow_user_path(@user.username),
+                          method: :delete,
+                          class: "btn btn-outline-secondary",
+                          data: { turbo: true } do %>
+                        <%= t("profiles.follow.unfollow") %>
+                      <% end %>
+                    <% else %>
+                      <%= button_to follow_user_path(@user.username),
+                          method: :post,
+                          class: "btn btn-primary",
+                          data: { turbo: true } do %>
+                        <%= t("profiles.follow.follow") %>
+                      <% end %>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+              <!-- Followers and Following Counts -->
+              <div class="d-flex gap-3">
+                <span class="text-muted">
+                  <strong id="followers-count"><%= @followers_count %></strong> <%= t("profiles.show.followers") %>
+                </span>
+                <span class="text-muted">
+                  <strong id="following-count"><%= @following_count %></strong> <%= t("profiles.show.following") %>
+                </span>
+              </div>
             </div>
-          </div>
-
-          <!-- Link to Account Settings -->
-          <div class="mt-4">
-            <%= link_to t("profiles.show.edit_account"), account_settings_path, class: "btn btn-primary w-100" %>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
+  <!-- Horizontal Spacer -->
+  <hr class="my-4">
+
+  <!-- Activity Tabs -->
+  <div class="row">
+    <div class="col-12">
+      <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab">
+            <%= t("profiles.show.tabs.submissions") %> (<%= @public_submissions.count %>)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="comments-tab" data-bs-toggle="tab" data-bs-target="#comments" type="button" role="tab">
+            <%= t("profiles.show.tabs.comments") %> (<%= @public_comments.count %>)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="upvotes-tab" data-bs-toggle="tab" data-bs-target="#upvotes" type="button" role="tab">
+            <%= t("profiles.show.tabs.upvotes") %> (<%= @public_upvoted_tools.count %>)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="lists-tab" data-bs-toggle="tab" data-bs-target="#lists" type="button" role="tab">
+            <%= t("profiles.show.tabs.lists") %> (<%= @public_lists.count %>)
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="profileTabContent">
+        <!-- Submissions Tab -->
+        <div class="tab-pane fade show active" id="posts" role="tabpanel">
+          <% if @public_submissions.any? %>
+            <div class="list-group">
+              <% @public_submissions.each do |submission| %>
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                      <h5 class="mb-1">
+                        <%= link_to submission.submission_name.presence || submission.submission_url, submission_path(submission), class: "text-decoration-none" %>
+                      </h5>
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary" style="font-size: 0.75rem;">
+                          <%= t("submissions.types.#{submission.submission_type}") %>
+                        </span>
+                        <% if submission.tools.any? %>
+                          <span class="text-muted small">
+                            <%= raw t("submissions.about_tools", tools: submission.tools.map { |t| link_to(t.tool_name, tool_path(t), class: "text-decoration-none") }.join(", ").html_safe) %>
+                          </span>
+                        <% end %>
+                      </div>
+                      <% if submission.submission_description.presence || submission.author_note.present? %>
+                        <p class="mb-1 text-muted"><%= truncate(submission.submission_description.presence || submission.author_note, length: 150) %></p>
+                      <% end %>
+                      <small class="text-muted">
+                        <%= l(submission.created_at, format: :short) %>
+                        <% if submission.tags.any? %>
+                          • <%= submission.tags.limit(3).pluck(:tag_name).join(", ") %>
+                        <% end %>
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-muted"><%= t("profiles.show.tabs.no_submissions") %></p>
+          <% end %>
+        </div>
+
+        <!-- Comments Tab -->
+        <div class="tab-pane fade" id="comments" role="tabpanel">
+          <% if @public_comments.any? %>
+            <div class="list-group">
+              <% @public_comments.each do |comment| %>
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                      <h6 class="mb-1">
+                        <% if comment.commentable_type == "Tool" %>
+                          <%= link_to comment.commentable.tool_name, tool_path(comment.commentable), class: "text-decoration-none" %>
+                        <% elsif comment.commentable_type == "Submission" %>
+                          <%= link_to comment.commentable.submission_name.presence || comment.commentable.submission_url, submission_path(comment.commentable), class: "text-decoration-none" %>
+                        <% end %>
+                      </h6>
+                      <p class="mb-1"><%= truncate(comment.comment, length: 200) %></p>
+                      <small class="text-muted">
+                        <%= l(comment.created_at, format: :short) %>
+                        <% if comment.comment_type != "comment" %>
+                          • <span class="badge bg-secondary"><%= comment.comment_type.humanize %></span>
+                        <% end %>
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-muted"><%= t("profiles.show.tabs.no_comments") %></p>
+          <% end %>
+        </div>
+
+        <!-- Upvotes Tab -->
+        <div class="tab-pane fade" id="upvotes" role="tabpanel">
+          <% if @public_upvoted_tools.any? %>
+            <div class="list-group">
+              <% @public_upvoted_tools.each do |tool| %>
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div class="flex-grow-1">
+                      <h5 class="mb-1">
+                        <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
+                      </h5>
+                      <% if tool.tool_description.present? %>
+                        <p class="mb-1 text-muted"><%= truncate(tool.tool_description, length: 150) %></p>
+                      <% end %>
+                      <small class="text-muted">
+                        <%# Tools are community-owned, no owner to display %>
+                        <% if tool.tags.any? %>
+                          <%= tool.tags.limit(3).pluck(:tag_name).join(", ") %>
+                        <% end %>
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-muted"><%= t("profiles.show.tabs.no_upvotes") %></p>
+          <% end %>
+        </div>
+
+        <!-- Lists Tab -->
+        <div class="tab-pane fade" id="lists" role="tabpanel">
+          <% if @public_lists.any? %>
+            <div class="list-group">
+              <% @public_lists.each do |list| %>
+                <%= render "profiles/list_card", list: list %>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-muted"><%= t("profiles.show.tabs.no_lists") %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

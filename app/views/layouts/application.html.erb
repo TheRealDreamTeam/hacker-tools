@@ -97,7 +97,9 @@
   <body data-controller="page-transition" style="visibility: hidden; opacity: 0;" class="d-flex flex-column min-vh-100">
     <%= render "shared/navbar" %>
     <div id="main-content" class="page-transition-content flex-grow-1">
-      <%= render "shared/flashes" %>
+      <div id="flash-messages">
+        <%= render "shared/flashes" %>
+      </div>
       <%= yield %>
     </div>
     <%= render "shared/footer" %>

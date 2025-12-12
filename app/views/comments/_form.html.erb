@@ -1,6 +1,7 @@
 <% placeholder ||= t("comments.form.placeholder") %>
 <% submit_label ||= t("comments.actions.submit") %>
-<%= simple_form_for([tool, comment]) do |f| %>
+<% commentable ||= tool # Backward compatibility %>
+<%= simple_form_for([commentable, comment]) do |f| %>
   <%= f.input :comment_type, as: :hidden %>
   <%= f.input :parent_id, as: :hidden %>
   <div class="mb-2">

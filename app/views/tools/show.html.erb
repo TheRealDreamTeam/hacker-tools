@@ -3,7 +3,6 @@
     <div>
       <h1 class="h3 mb-2"><%= @tool.tool_name %></h1>
       <p class="text-secondary mb-1 d-flex align-items-center gap-2">
-        <span><%= t("tools.show.owner", owner: display_user_name(@tool.user)) %></span>
         <%= render "tools/read_state", tool: @tool %>
       </p>
       <% if @tool.tool_url.present? %>
@@ -25,10 +24,6 @@
     <h2 class="h5"><%= t("tools.show.description") %></h2>
     <p><%= simple_format(@tool.tool_description) %></p>
   </div>
-  <div class="mb-4">
-    <h2 class="h5"><%= t("tools.show.author_note") %></h2>
-    <p><%= simple_format(@tool.author_note) %></p>
-  </div>
   <% if @tool.picture.attached? %>
     <div class="mb-4">
       <h2 class="h5"><%= t("tools.show.picture") %></h2>
@@ -38,11 +33,7 @@
   <div class="mb-4">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h2 class="h5 mb-0"><%= t("tools.show.tags_title") %></h2>
-    <% if @tool.user == current_user %>
-      <button class="btn btn-sm btn-outline-primary" data-bs-toggle="collapse" data-bs-target="#add-tag-form">
-        <%= t("tools.actions.add_tag") %>
-      </button>
-    <% end %>
+    <%# TODO: Re-enable tag management when we decide on permissions (admin-only or open editing) %>
   </div>
   <div id="add-tag-form" class="collapse mb-3">
     <div class="card card-body">
@@ -67,44 +58,37 @@
   <% if @tool_tags.any? %>
     <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
       <% @tool_tags.each do |tag| %>
-        <span class="badge <%= tag_badge_class(tag.tag_type) %> d-flex align-items-center gap-1">
-          <%= link_to tag.display_name,
-                      tag_path(tag),
-                      target: "_blank",
-                      rel: "noopener noreferrer",
-                      class: "text-decoration-none text-white tag-link",
-                      data: {
-                        bs_toggle: "tooltip",
-                        bs_title: tag.tag_description.presence || tag.display_name,
-                        bs_placement: "top"
-                      },
-                      title: tag.tag_description.presence || tag.display_name,
-                      style: "color: inherit !important;" %>
-          <% if @tool.user == current_user %>
-            <%= button_to "×",
-                          remove_tag_tool_path(@tool, tag_id: tag.id),
-                          method: :delete,
-                          class: "btn btn-sm p-0 border-0 bg-transparent text-white",
-                          style: "font-size: 1.2em; line-height: 1;",
-                          title: t("tools.actions.remove_tag") %>
-          <% end %>
-        </span>
+        <%= render_tag_link(tag) %>
       <% end %>
     </div>
+    <% if @all_tool_tags.count > @tool_tags.count %>
+      <p class="text-muted small mt-2 mb-0">
+        <%= t("tools.show.showing_top_tags", count: @tool_tags.count, total: @all_tool_tags.count) %>
+        <button class="btn btn-link btn-sm p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#all-tags">
+          <%= t("tools.show.show_all_tags") %>
+        </button>
+      </p>
+      <div id="all-tags" class="collapse mt-2">
+        <div class="d-flex flex-wrap gap-2">
+          <% @all_tool_tags.each do |tag| %>
+            <% unless @tool_tags.map(&:id).include?(tag.id) %>
+              <span class="badge <%= tag_badge_class(tag.tag_type) %>">
+                <%= tag.display_name %>
+              </span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
   <% else %>
     <p class="text-muted mb-0"><%= t("tools.show.no_tags") %></p>
   <% end %>
 </div>
 
 <div class="d-flex gap-2">
-  <% if @tool.user == current_user %>
-    <%= link_to t("actions.edit"), edit_tool_path(@tool), class: "btn btn-outline-primary" %>
-    <%= button_to t("actions.delete"), tool_path(@tool), method: :delete,
-                  data: { turbo_confirm: t("tools.confirmations.destroy") },
-                  class: "btn btn-outline-danger" %>
-    <% end %>
-    <%= link_to t("actions.back"), tools_path, class: "btn btn-secondary" %>
-  </div>
+  <%# TODO: Re-enable edit/delete when we decide on permissions (admin-only or open editing) %>
+  <%= link_to t("actions.back"), tools_path, class: "btn btn-secondary" %>
+</div>
   <hr class="my-5">
   <div class="mb-4">
     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -170,12 +154,7 @@
               <% else %>
                 <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
               <% end %>
-              <% if @tool.user == current_user %>
-                <%= button_to t("comments.actions.toggle_resolve"),
-                            resolve_tool_comment_path(@tool, flag),
-                            method: :patch,
-                            class: "btn btn-sm btn-outline-primary" %>
-              <% end %>
+              <%# TODO: Re-enable flag resolution when we decide on permissions %>
             </div>
           </div>
         <% end %>
@@ -229,12 +208,7 @@
               <% else %>
                 <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
               <% end %>
-              <% if @tool.user == current_user %>
-                <%= button_to t("comments.actions.toggle_resolve"),
-                            resolve_tool_comment_path(@tool, bug),
-                            method: :patch,
-                            class: "btn btn-sm btn-outline-primary" %>
-              <% end %>
+              <%# TODO: Re-enable bug resolution when we decide on permissions %>
             </div>
           </div>
         <% end %>

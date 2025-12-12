@@ -1,0 +1,26 @@
+<%# Update the follow button - replace the entire container to ensure structure consistency %>
+<%= turbo_stream.replace dom_id(@user, 'follow') do %>
+  <div id="<%= dom_id(@user, 'follow') %>" class="follow-button-container">
+    <% if current_user.follows?(@user) %>
+      <%= button_to unfollow_user_path(@user.username),
+          method: :delete,
+          class: "btn btn-outline-secondary",
+          data: { turbo: true } do %>
+        <%= t("profiles.follow.unfollow") %>
+      <% end %>
+    <% else %>
+      <%= button_to follow_user_path(@user.username),
+          method: :post,
+          class: "btn btn-primary",
+          data: { turbo: true } do %>
+        <%= t("profiles.follow.follow") %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+
+<%# Update the followers count - use update to only change the innerHTML %>
+<%= turbo_stream.update "followers-count" do %>
+  <%= @user.followers.count %>
+<% end %>
+

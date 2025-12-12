@@ -17,6 +17,7 @@ Rails.application.routes.draw do
       end
     end
     root to: "pages#home"
+    get "dashboard" => "dashboard#show", as: :dashboard
     resources :tags
     resources :tools do
       resources :comments, only: [:create, :destroy] do
@@ -29,6 +30,17 @@ Rails.application.routes.draw do
       post :favorite, on: :member, to: "tools#favorite"
       post :follow, on: :member, to: "tools#follow"
     end
+    resources :submissions do
+      resources :comments, only: [:create, :destroy] do
+        patch :resolve, on: :member
+        post :upvote, on: :member
+      end
+      post :add_tag, on: :member
+      delete :remove_tag, on: :member
+      post :upvote, on: :member, to: "submissions#upvote"
+      post :follow, on: :member, to: "submissions#follow"
+      post :validate_url, on: :collection
+    end
     # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
     # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -37,13 +49,19 @@ Rails.application.routes.draw do
 
     # Defines the root path route ("/")
     # root "posts#index"
-    get "profile" => "profiles#show", as: :profile
+    get "u/:username" => "profiles#show", as: :profile, constraints: { username: /[^\/]+/ }
+    post "u/:username/follow" => "profiles#follow", as: :follow_user
+    delete "u/:username/unfollow" => "profiles#unfollow", as: :unfollow_user
 
     resources :lists do
       post :add_tool, on: :member
       delete :remove_tool, on: :member
+      delete :remove_submission, on: :member
+      post :follow, on: :member, to: "lists#follow"
+      delete :unfollow, on: :member, to: "lists#unfollow"
       collection do
         post :add_tool_to_multiple
+        post :add_submission_to_multiple
       end
     end
   end

@@ -10,9 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_09_001000) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_12_021951) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_trgm"
   enable_extension "plpgsql"
+  enable_extension "vector"
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -53,7 +55,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_001000) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.bigint "tool_id", null: false
     t.bigint "user_id", null: false
     t.text "comment", null: false
     t.integer "comment_type", default: 0, null: false
@@ -62,9 +63,33 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_001000) do
     t.boolean "solved", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "commentable_type", null: false
+    t.bigint "commentable_id", null: false
+    t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable"
     t.index ["parent_id"], name: "index_comments_on_parent_id"
-    t.index ["tool_id"], name: "index_comments_on_tool_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "follows", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "followable_type", null: false
+    t.bigint "followable_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["followable_type", "followable_id"], name: "index_follows_on_followable"
+    t.index ["followable_type", "followable_id"], name: "index_follows_on_followable_type_and_followable_id"
+    t.index ["user_id", "followable_type", "followable_id"], name: "index_follows_on_user_id_and_followable_type_and_followable_id", unique: true
+    t.index ["user_id"], name: "index_follows_on_user_id"
+  end
+
+  create_table "list_submissions", force: :cascade do |t|
+    t.bigint "list_id", null: false
+    t.bigint "submission_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["list_id", "submission_id"], name: "index_list_submissions_on_list_id_and_submission_id", unique: true
+    t.index ["list_id"], name: "index_list_submissions_on_list_id"
+    t.index ["submission_id"], name: "index_list_submissions_on_submission_id"
   end
 
   create_table "list_tools", force: :cascade do |t|
@@ -87,6 +112,29 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_001000) do
     t.index ["user_id"], name: "index_lists_on_user_id"
   end
 
+  create_table "submission_tags", force: :cascade do |t|
+    t.bigint "submission_id", null: false
+    t.bigint "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["submission_id", "tag_id"], name: "index_submission_tags_on_submission_id_and_tag_id", unique: true
+    t.index ["submission_id"], name: "index_submission_tags_on_submission_id"
+    t.index ["tag_id"], name: "index_submission_tags_on_tag_id"
+  end
+
+  create_table "submission_tools", force: :cascade do |t|
+    t.bigint "submission_id", null: false
+    t.bigint "tool_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["submission_id", "tool_id"], name: "index_submission_tools_on_submission_id_and_tool_id", unique: true
+    t.index ["submission_id"], name: "index_submission_tools_on_submission_id"
+    t.index ["tool_id"], name: "index_submission_tools_on_tool_id"
+  end
+
+# Could not dump table "submissions" because of following StandardError
+#   Unknown type 'vector(1536)' for column 'embedding'
+
   create_table "tags", force: :cascade do |t|
     t.string "tag_name", null: false
     t.text "tag_description"
@@ -108,17 +156,21 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_001000) do
     t.index ["tool_id"], name: "index_tool_tags_on_tool_id"
   end
 
-  create_table "tools", force: :cascade do |t|
+# Could not dump table "tools" because of following StandardError
+#   Unknown type 'vector(1536)' for column 'embedding'
+
+  create_table "user_submissions", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "tool_name", null: false
-    t.text "tool_description"
-    t.string "tool_url"
-    t.text "author_note"
-    t.integer "visibility", default: 0, null: false
+    t.bigint "submission_id", null: false
+    t.datetime "read_at"
+    t.boolean "upvote", default: false, null: false
+    t.boolean "favorite", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["tool_name"], name: "index_tools_on_tool_name"
-    t.index ["user_id"], name: "index_tools_on_user_id"
+    t.index ["submission_id", "upvote"], name: "index_user_submissions_on_submission_id_and_upvote", where: "(upvote = true)"
+    t.index ["submission_id"], name: "index_user_submissions_on_submission_id"
+    t.index ["user_id", "submission_id"], name: "index_user_submissions_on_user_id_and_submission_id", unique: true
+    t.index ["user_id"], name: "index_user_submissions_on_user_id"
   end
 
   create_table "user_tools", force: :cascade do |t|
@@ -127,7 +179,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_001000) do
     t.datetime "read_at"
     t.boolean "upvote", default: false, null: false
     t.boolean "favorite", default: false, null: false
-    t.boolean "subscribe", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["tool_id"], name: "index_user_tools_on_tool_id"
@@ -155,15 +206,24 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_001000) do
   add_foreign_key "comment_upvotes", "comments"
   add_foreign_key "comment_upvotes", "users"
   add_foreign_key "comments", "comments", column: "parent_id"
-  add_foreign_key "comments", "tools"
   add_foreign_key "comments", "users"
+  add_foreign_key "follows", "users"
+  add_foreign_key "list_submissions", "lists"
+  add_foreign_key "list_submissions", "submissions"
   add_foreign_key "list_tools", "lists"
   add_foreign_key "list_tools", "tools"
   add_foreign_key "lists", "users"
+  add_foreign_key "submission_tags", "submissions"
+  add_foreign_key "submission_tags", "tags"
+  add_foreign_key "submission_tools", "submissions"
+  add_foreign_key "submission_tools", "tools"
+  add_foreign_key "submissions", "submissions", column: "duplicate_of_id"
+  add_foreign_key "submissions", "users"
   add_foreign_key "tags", "tags", column: "parent_id"
   add_foreign_key "tool_tags", "tags"
   add_foreign_key "tool_tags", "tools"
-  add_foreign_key "tools", "users"
+  add_foreign_key "user_submissions", "submissions"
+  add_foreign_key "user_submissions", "users"
   add_foreign_key "user_tools", "tools"
   add_foreign_key "user_tools", "users"
 end

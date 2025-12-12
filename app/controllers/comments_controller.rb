@@ -1,27 +1,27 @@
 class CommentsController < ApplicationController
-  before_action :set_tool
+  before_action :set_commentable
   before_action :set_comment, only: %i[destroy resolve upvote]
   before_action :authorize_comment_owner!, only: %i[destroy]
-  before_action :authorize_tool_owner!, only: %i[resolve]
+  before_action :authorize_commentable_owner!, only: %i[resolve]
 
   def create
-    @comment = @tool.comments.new(comment_params.merge(user: current_user))
+    @comment = @commentable.comments.new(comment_params.merge(user: current_user))
 
     if @comment.save
-      redirect_to tool_path(@tool, anchor: anchor_for(@comment)), notice: t("comments.flash.created")
+      redirect_to commentable_path(@commentable, anchor: anchor_for(@comment)), notice: t("comments.flash.created")
     else
-      redirect_to tool_path(@tool), alert: @comment.errors.full_messages.to_sentence
+      redirect_to commentable_path(@commentable), alert: @comment.errors.full_messages.to_sentence
     end
   end
 
   def destroy
     @comment.destroy
-    redirect_to tool_path(@tool), notice: t("comments.flash.deleted")
+    redirect_to commentable_path(@commentable), notice: t("comments.flash.deleted")
   end
 
   def resolve
     @comment.update(solved: !@comment.solved)
-    redirect_to tool_path(@tool), notice: t("comments.flash.resolved")
+    redirect_to commentable_path(@commentable), notice: t("comments.flash.resolved")
   end
 
   def upvote
@@ -30,34 +30,45 @@ class CommentsController < ApplicationController
     if upvote_record.persisted?
       # Already upvoted, remove upvote
       upvote_record.destroy
-      redirect_to tool_path(@tool, anchor: anchor_for(@comment)), notice: t("comments.flash.upvote_removed")
+      redirect_to commentable_path(@commentable, anchor: anchor_for(@comment)), notice: t("comments.flash.upvote_removed")
     else
       # Not upvoted, add upvote
       upvote_record.save
-      redirect_to tool_path(@tool, anchor: anchor_for(@comment)), notice: t("comments.flash.upvoted")
+      redirect_to commentable_path(@commentable, anchor: anchor_for(@comment)), notice: t("comments.flash.upvoted")
     end
   end
 
   private
 
-  def set_tool
-    @tool = Tool.find(params[:tool_id])
+  # Set commentable based on route params (tool_id or submission_id)
+  def set_commentable
+    if params[:tool_id].present?
+      @commentable = Tool.find(params[:tool_id])
+    elsif params[:submission_id].present?
+      @commentable = Submission.find(params[:submission_id])
+    else
+      redirect_to root_path, alert: t("comments.flash.invalid_parent")
+    end
   end
 
   def set_comment
-    @comment = @tool.comments.find(params[:id])
+    @comment = @commentable.comments.find(params[:id])
   end
 
   def authorize_comment_owner!
-    return if @comment.user == current_user || @tool.user == current_user
+    # Allow comment owner or commentable owner to delete
+    commentable_owner = @commentable.is_a?(Submission) ? @commentable.user : nil
+    return if @comment.user == current_user || commentable_owner == current_user
 
-    redirect_to tool_path(@tool), alert: t("comments.flash.unauthorized")
+    redirect_to commentable_path(@commentable), alert: t("comments.flash.unauthorized")
   end
 
-  def authorize_tool_owner!
-    return if @tool.user == current_user
+  def authorize_commentable_owner!
+    # Only submission owners can resolve flags/bugs (tools are community-owned)
+    return if @commentable.is_a?(Submission) && @commentable.user == current_user
+    return if @commentable.is_a?(Tool) # Tools are community-owned, anyone can resolve
 
-    redirect_to tool_path(@tool), alert: t("comments.flash.unauthorized")
+    redirect_to commentable_path(@commentable), alert: t("comments.flash.unauthorized")
   end
 
   def comment_params
@@ -68,6 +79,18 @@ class CommentsController < ApplicationController
     return "comment-#{comment.parent_id}" if comment.parent_id.present?
 
     "comment-#{comment.id}"
+  end
+
+  # Helper to get the correct path for the commentable
+  def commentable_path(commentable, options = {})
+    case commentable
+    when Tool
+      tool_path(commentable, options)
+    when Submission
+      submission_path(commentable, options)
+    else
+      root_path
+    end
   end
 end
 

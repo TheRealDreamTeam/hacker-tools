@@ -1,0 +1,48 @@
+<% state_upvote   = submission_interaction_button_state(submission, current_user, :upvote) %>
+<% state_follow   = submission_interaction_button_state(submission, current_user, :follow) %>
+
+<div id="<%= dom_id(submission, 'interactions') %>" class="interaction-buttons d-flex align-items-start gap-3 flex-wrap">
+  <div class="interaction-item d-flex flex-column align-items-center gap-1">
+    <%= button_to upvote_submission_path(submission),
+                  method: :post,
+                  class: state_upvote[:btn_class],
+                  title: t("submissions.actions.upvote"),
+                  aria: { label: t("submissions.actions.upvote") } do %>
+      <i class="<%= state_upvote[:icon_class] %> <%= state_upvote[:active] ? 'text-primary' : 'text-secondary' %>"></i>
+    <% end %>
+    <span class="interaction-count" title="<%= t('submissions.actions.upvote') %>" aria-label="<%= t('submissions.actions.upvote') %>">
+      <%= submission.upvote_count %>
+    </span>
+  </div>
+
+  <div class="interaction-item d-flex flex-column align-items-center gap-1">
+    <%= button_to follow_submission_path(submission),
+                  method: :post,
+                  class: state_follow[:btn_class],
+                  title: t("submissions.actions.follow"),
+                  aria: { label: t("submissions.actions.follow") } do %>
+      <i class="<%= state_follow[:icon_class] %> <%= state_follow[:active] ? 'text-secondary' : 'text-secondary' %>"></i>
+    <% end %>
+    <span class="interaction-count" title="<%= t('submissions.actions.follow') %>" aria-label="<%= t('submissions.actions.follow') %>">
+      <%= submission.follower_count %>
+    </span>
+  </div>
+
+  <% if user_signed_in? && current_user.lists.any? %>
+    <div class="interaction-item d-flex flex-column align-items-center gap-1">
+      <button type="button" 
+              class="btn btn-outline-secondary btn-sm" 
+              data-controller="add-to-list-button"
+              data-action="click->add-to-list-button#open"
+              data-add-to-list-button-submission-id-value="<%= submission.id %>"
+              data-add-to-list-button-submission-name-value="<%= submission.submission_name.presence || submission.submission_url %>"
+              data-add-to-list-button-lists-value="<%= current_user.lists.map { |l| { id: l.id, name: l.list_name, has_submission: l.submissions.include?(submission) } }.to_json %>">
+        <i class="bi bi-list-ul"></i>
+      </button>
+      <span class="interaction-count">
+        <%= submission.lists.where(user: current_user).count %>
+      </span>
+    </div>
+  <% end %>
+</div>
+

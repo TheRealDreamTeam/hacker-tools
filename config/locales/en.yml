@@ -71,10 +71,19 @@ en:
   # Navigation and common actions
   navigation:
     home: "Home"
+    tools: "Tools"
+    new_tool: "New Tool"
+    submissions: "Submissions"
+    new_submission: "New Submission"
+    tags: "Tags"
+    profile: "Profile"
+    dashboard: "Dashboard"
+    account: "Account"
     about: "About"
     contact: "Contact"
     messages: "Messages"
     login: "Login"
+    sign_up: "Sign up"
     logout: "Log out"
     toggle_navigation: "Toggle navigation"
     dropdown_menu: "dropdown menu"
@@ -137,6 +146,81 @@ en:
       title: "Profile"
       no_bio: "No bio yet. Edit your account to add one."
       edit_account: "Edit Account"
+      joined: "Joined"
+      followers: "Followers"
+      following: "Following"
+      user_not_found: "User not found"
+      tabs:
+        posts: "Posts"
+        submissions: "Submissions"
+        comments: "Comments"
+        upvotes: "Upvotes"
+        lists: "Lists"
+        no_posts: "No public tools yet."
+        no_submissions: "No submissions yet."
+        no_comments: "No comments yet."
+        no_upvotes: "No upvoted tools yet."
+        no_lists: "No public lists yet."
+        by_user: "by %{username}"
+        tools_count: "%{count} tools"
+    follow:
+      follow: "Follow"
+      unfollow: "Unfollow"
+      followed: "You are now following %{username}"
+      unfollowed: "You are no longer following %{username}"
+      cannot_follow_self: "You cannot follow yourself"
+
+  dashboard:
+    title: "Dashboard"
+    subtitle: "Your private view of activity across tools, lists, and discussions."
+    metrics:
+      tools: "Tools"
+      submissions: "Submissions"
+      lists: "Lists"
+      comments: "Comments"
+      favorites: "Favorites"
+      follows: "Follows"
+    sections:
+      shared:
+        by_user: "by %{username}"
+      tools:
+        title: "My Tools"
+        view_all: "View all"
+        empty: "No tools yet."
+      submissions:
+        title: "My Submissions"
+        view_all: "View all"
+        empty: "No submissions yet."
+      lists:
+        title: "My Lists"
+        view_all: "View all"
+        empty: "No lists yet."
+        tools_count: "%{count} tools"
+      discussions:
+        title: "My Discussions"
+        link: "Recent tools"
+        empty: "No comments yet."
+      favorites:
+        title: "Favorites"
+        link: "Browse"
+        empty: "No favorites yet."
+        badge: "Favorited"
+      follows:
+        title: "Follows"
+        link: "Browse"
+        empty: "No follows yet."
+        badge: "Following"
+        tabs:
+          tools: "Tools"
+          lists: "Lists"
+          tags: "Tags"
+          users: "Users"
+        empty_tools: "No followed tools yet."
+        empty_lists: "No followed lists yet."
+        empty_tags: "No followed tags yet."
+        empty_users: "No followed users yet."
+        no_description: "No description"
+        no_bio: "No bio"
   
   # Account Settings (custom, independent from Devise)
   account_settings:
@@ -259,6 +343,18 @@ en:
       title: "Update lists"
       select_message: "Select lists to add this tool to, or unselect to remove:"
       submit_button: "Update lists"
+    show:
+      not_found: "List not found"
+      access_denied: "You don't have permission to view this list"
+      by_user: "by %{username}"
+      add_item: "Add item"
+    follow:
+      follow: "Follow"
+      unfollow: "Unfollow"
+      followed: "You are now following %{list_name}"
+      unfollowed: "You are no longer following %{list_name}"
+      cannot_follow_own: "You cannot follow your own list"
+      list_not_found: "List not found"
 
   footer:
     about: "About"

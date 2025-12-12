@@ -3,28 +3,58 @@
 
   <p>
     <strong>Visibility:</strong>
-    <%= @list.visibility == 0 ? "Private" : "Public" %>
+    <%= @list.visibility_private? ? "Private" : "Public" %>
+    <% unless user_signed_in? && @list.user == current_user %>
+      • <%= t("lists.show.by_user", username: link_to(@list.user.username, profile_path(@list.user.username), class: "text-decoration-none")).html_safe %>
+    <% end %>
   </p>
 
   <div class="mb-3">
+    <% if user_signed_in? && @list.user == current_user %>
     <%= link_to "Back to lists", lists_path, class: "btn btn-secondary" %>
     <%= link_to "Edit", edit_list_path(@list), class: "btn btn-primary ms-2" %>
-    <%= link_to "Add tool", tools_path, class: "btn btn-outline-primary ms-2" %>
+    <%= link_to t("lists.show.add_item"), root_path, class: "btn btn-outline-primary ms-2" %>
+    <% else %>
+      <%= link_to "Back", :back, class: "btn btn-secondary" %>
+      <%= link_to t("profiles.show.tabs.by_user", username: @list.user.username), profile_path(@list.user.username), class: "btn btn-outline-secondary ms-2" %>
+    <% end %>
   </div>
 
-  <h2 class="h5 mb-3">Tools in this list</h2>
-  <% if @list.tools.any? %>
+  <h2 class="h5 mb-3">Items in this list</h2>
+  
+  <% if @list.tools.any? || @list.submissions.any? %>
     <ul class="list-group">
       <% @list.tools.each do |tool| %>
         <li class="list-group-item d-flex justify-content-between align-items-center">
-          <%= link_to tool.tool_name, tool_path(tool) %>
-          <%= button_to "Remove", remove_tool_list_path(@list, tool_id: tool.id), 
-                        method: :delete, 
-                        class: "btn btn-sm btn-outline-danger" %>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-info" style="font-size: 0.75rem;">Tool</span>
+            <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
+          </div>
+          <% if user_signed_in? && @list.user == current_user %>
+            <%= button_to "Remove", remove_tool_list_path(@list, tool_id: tool.id), 
+                          method: :delete, 
+                          class: "btn btn-sm btn-outline-danger" %>
+          <% end %>
+        </li>
+      <% end %>
+      
+      <% @list.submissions.each do |submission| %>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary" style="font-size: 0.75rem;">Submission</span>
+            <%= link_to submission.submission_name.presence || submission.submission_url, 
+                        submission_path(submission), 
+                        class: "text-decoration-none" %>
+          </div>
+          <% if user_signed_in? && @list.user == current_user %>
+            <%= button_to "Remove", remove_submission_list_path(@list, submission_id: submission.id), 
+                          method: :delete, 
+                          class: "btn btn-sm btn-outline-danger" %>
+          <% end %>
         </li>
       <% end %>
     </ul>
   <% else %>
-    <p class="text-muted">No tools in this list yet.</p>
+    <p class="text-muted">No items in this list yet.</p>
   <% end %>
 </div>
