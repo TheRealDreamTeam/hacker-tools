@@ -10,8 +10,8 @@
     <div class="col-12 col-md-4 col-xl-2">
       <div class="card h-100">
         <div class="card-body">
-          <p class="text-muted mb-1"><%= t("dashboard.metrics.tools") %></p>
-          <p class="h4 mb-0"><%= @user.tools.count %></p>
+          <p class="text-muted mb-1"><%= t("dashboard.metrics.submissions") %></p>
+          <p class="h4 mb-0"><%= @user.submissions.completed.count %></p>
         </div>
       </div>
     </div>
@@ -53,24 +53,24 @@
     <div class="col-12 col-xl-6">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <span class="fw-semibold"><%= t("dashboard.sections.tools.title") %></span>
-          <%= link_to t("dashboard.sections.tools.view_all"), tools_path, class: "small" %>
+          <span class="fw-semibold"><%= t("dashboard.sections.submissions.title") %></span>
+          <%= link_to t("dashboard.sections.submissions.view_all"), submissions_path, class: "small" %>
         </div>
         <div class="card-body">
-          <% if @recent_tools.any? %>
+          <% if @recent_submissions.any? %>
             <ul class="list-group list-group-flush">
-              <% @recent_tools.each do |tool| %>
+              <% @recent_submissions.each do |submission| %>
                 <li class="list-group-item px-0 d-flex justify-content-between align-items-start">
                   <div>
-                    <div class="fw-semibold"><%= link_to tool.tool_name, tool_path(tool) %></div>
-                    <div class="text-muted small"><%= l(tool.created_at, format: :short) %></div>
+                    <div class="fw-semibold"><%= link_to submission.submission_name.presence || submission.submission_url, submission_path(submission) %></div>
+                    <div class="text-muted small"><%= l(submission.created_at, format: :short) %></div>
                   </div>
-                  <span class="badge bg-light text-dark"><%= tool.visibility.humanize %></span>
+                  <span class="badge bg-primary"><%= t("submissions.types.#{submission.submission_type}") %></span>
                 </li>
               <% end %>
             </ul>
           <% else %>
-            <p class="text-muted mb-0"><%= t("dashboard.sections.tools.empty") %></p>
+            <p class="text-muted mb-0"><%= t("dashboard.sections.submissions.empty") %></p>
           <% end %>
         </div>
       </div>
@@ -113,7 +113,13 @@
               <% @recent_comments.each do |comment| %>
                 <li class="list-group-item px-0">
                   <div class="d-flex justify-content-between align-items-center">
-                    <div class="fw-semibold"><%= link_to comment.tool.tool_name, tool_path(comment.tool) %></div>
+                    <div class="fw-semibold">
+                      <% if comment.commentable_type == "Tool" %>
+                        <%= link_to comment.commentable.tool_name, tool_path(comment.commentable) %>
+                      <% elsif comment.commentable_type == "Submission" %>
+                        <%= link_to comment.commentable.submission_name.presence || comment.commentable.submission_url, submission_path(comment.commentable) %>
+                      <% end %>
+                    </div>
                     <div class="text-muted small"><%= l(comment.created_at, format: :short) %></div>
                   </div>
                   <div class="text-muted small"><%= truncate(comment.comment, length: 120) %></div>

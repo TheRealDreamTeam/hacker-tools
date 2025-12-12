@@ -5,15 +5,17 @@ class DashboardController < ApplicationController
 
     # Lightweight, paged-ready slices for the dashboard cards. Keep queries small to
     # avoid slowing the landing experience; paginate per section later if needed.
-    @recent_tools = @user.tools.order(created_at: :desc).limit(5)
+    # Users now submit content (submissions) about tools, not own tools
+    @recent_submissions = @user.submissions.completed.order(created_at: :desc).limit(5)
     @recent_lists = @user.lists.order(created_at: :desc).limit(5)
-    @recent_comments = @user.comments.includes(:tool).order(created_at: :desc).limit(5)
-    @favorited_tools = @user.favorited_tools.includes(:user).order(created_at: :desc).limit(5)
+    # Comments can be on both Tools and Submissions (polymorphic)
+    @recent_comments = @user.comments.includes(:commentable).order(created_at: :desc).limit(5)
+    @favorited_tools = @user.favorited_tools.order(created_at: :desc).limit(5)
     
     # Load all follow types for the tabbed interface
     # Each follow type is loaded separately to allow efficient querying and proper associations
-    # Tools and Lists have user associations, so we include them to avoid N+1 queries
-    @followed_tools = @user.followed_tools.includes(:user).order(created_at: :desc).limit(5)
+    # Tools are community-owned (no user association), Lists have user associations
+    @followed_tools = @user.followed_tools.order(created_at: :desc).limit(5)
     @followed_lists = @user.followed_lists.includes(:user).order(created_at: :desc).limit(5)
     # Tags don't have user associations, so no includes needed
     @followed_tags = @user.followed_tags.order(created_at: :desc).limit(5)

@@ -175,6 +175,7 @@ en:
     subtitle: "Your private view of activity across tools, lists, and discussions."
     metrics:
       tools: "Tools"
+      submissions: "Submissions"
       lists: "Lists"
       comments: "Comments"
       favorites: "Favorites"
@@ -186,6 +187,10 @@ en:
         title: "My Tools"
         view_all: "View all"
         empty: "No tools yet."
+      submissions:
+        title: "My Submissions"
+        view_all: "View all"
+        empty: "No submissions yet."
       lists:
         title: "My Lists"
         view_all: "View all"
