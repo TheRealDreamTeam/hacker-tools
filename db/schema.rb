@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_11_233230) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_12_000156) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
@@ -122,6 +122,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_233230) do
     t.index ["tag_id"], name: "index_submission_tags_on_tag_id"
   end
 
+  create_table "submission_tools", force: :cascade do |t|
+    t.bigint "submission_id", null: false
+    t.bigint "tool_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["submission_id", "tool_id"], name: "index_submission_tools_on_submission_id_and_tool_id", unique: true
+    t.index ["submission_id"], name: "index_submission_tools_on_submission_id"
+    t.index ["tool_id"], name: "index_submission_tools_on_tool_id"
+  end
+
 # Could not dump table "submissions" because of following StandardError
 #   Unknown type 'vector(1536)' for column 'embedding'
 
@@ -199,8 +209,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_11_233230) do
   add_foreign_key "lists", "users"
   add_foreign_key "submission_tags", "submissions"
   add_foreign_key "submission_tags", "tags"
+  add_foreign_key "submission_tools", "submissions"
+  add_foreign_key "submission_tools", "tools"
   add_foreign_key "submissions", "submissions", column: "duplicate_of_id"
-  add_foreign_key "submissions", "tools"
   add_foreign_key "submissions", "users"
   add_foreign_key "tags", "tags", column: "parent_id"
   add_foreign_key "tool_tags", "tags"

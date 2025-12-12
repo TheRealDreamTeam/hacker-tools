@@ -2,8 +2,9 @@ class Submission < ApplicationRecord
   # User ownership - submissions belong to users
   belongs_to :user
   
-  # Tool association - submissions can be about tools (optional)
-  belongs_to :tool, optional: true
+  # Tool associations - submissions can be about multiple tools (many-to-many)
+  has_many :submission_tools, dependent: :destroy
+  has_many :tools, through: :submission_tools
   
   # Duplicate detection - self-referential
   belongs_to :duplicate_of, class_name: "Submission", optional: true

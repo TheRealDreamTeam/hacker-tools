@@ -24,9 +24,9 @@
           <%= link_to @submission.submission_url, @submission.submission_url, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none" %>
         </p>
       <% end %>
-      <% if @submission.tool.present? %>
+      <% if @submission.tools.any? %>
         <p class="mb-0 text-secondary">
-          <%= t("submissions.about_tool", tool: link_to(@submission.tool.tool_name, tool_path(@submission.tool), class: "text-decoration-none")).html_safe %>
+          <%= t("submissions.about_tools", tools: @submission.tools.map { |t| link_to(t.tool_name, tool_path(t), class: "text-decoration-none") }.join(", ").html_safe) %>
         </p>
       <% end %>
     </div>

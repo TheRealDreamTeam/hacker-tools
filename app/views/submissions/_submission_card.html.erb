@@ -27,9 +27,9 @@
       <%= truncate(submission.submission_description.presence || submission.author_note, length: 140) %>
     </p>
     
-    <% if submission.tool.present? %>
+    <% if submission.tools.any? %>
       <p class="small mb-2 text-secondary">
-        <%= t("submissions.about_tool", tool: link_to(submission.tool.tool_name, tool_path(submission.tool), class: "text-decoration-none")).html_safe %>
+        <%= t("submissions.about_tools", tools: submission.tools.map { |t| link_to(t.tool_name, tool_path(t), class: "text-decoration-none") }.join(", ").html_safe) %>
       </p>
     <% end %>
     

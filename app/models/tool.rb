@@ -6,7 +6,8 @@ class Tool < ApplicationRecord
   has_one_attached :picture
 
   # Associations
-  has_many :submissions, dependent: :destroy # User-submitted content about this tool
+  has_many :submission_tools, dependent: :destroy
+  has_many :submissions, through: :submission_tools # User-submitted content about this tool
   has_many :comments, as: :commentable, dependent: :destroy
   has_many :tool_tags, dependent: :destroy
   has_many :tags, through: :tool_tags

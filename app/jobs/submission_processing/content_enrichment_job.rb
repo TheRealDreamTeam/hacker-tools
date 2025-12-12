@@ -99,47 +99,34 @@ module SubmissionProcessing
       high_confidence_tools = detected_tools.select { |t| t["confidence"] && t["confidence"] > 0.7 }
       return if high_confidence_tools.empty?
       
-      # Find or create all high-confidence tools
-      tool_records = []
+      # Find or create all high-confidence tools and link them to the submission
+      linked_tools = []
       high_confidence_tools.each do |tool_data|
         tool_name = tool_data["name"]
         existing_tool = Tool.find_by("LOWER(tool_name) = ?", tool_name.downcase)
         
-        if existing_tool
-          tool_records << { tool: existing_tool, data: tool_data }
+        tool_record = if existing_tool
           Rails.logger.info "Found existing tool: #{tool_name}"
+          existing_tool
         else
           # Create new tool if it doesn't exist
           new_tool = Tool.create!(
             tool_name: tool_name,
             tool_description: "Auto-detected from submission"
           )
-          tool_records << { tool: new_tool, data: tool_data }
           Rails.logger.info "Created new tool: #{tool_name}"
+          new_tool
+        end
+        
+        # Link submission to this tool (many-to-many relationship)
+        unless submission.tools.include?(tool_record)
+          submission.tools << tool_record
+          linked_tools << tool_name
+          Rails.logger.info "Linked submission #{submission.id} to tool #{tool_record.id} (#{tool_name}, confidence: #{tool_data["confidence"]})"
         end
       end
       
-      # Select the best tool to link:
-      # 1. Highest confidence
-      # 2. If tie, prefer non-platform tools (platforms like GitHub are less specific)
-      # 3. If still tie, prefer the first one
-      primary_tool_record = tool_records.max_by do |record|
-        data = record[:data]
-        confidence = data["confidence"] || 0
-        category = data["category"] || ""
-        
-        # Boost non-platform tools (platforms are usually hosting/services, less specific)
-        confidence_boost = category == "platform" ? -0.1 : 0
-        
-        confidence + confidence_boost
-      end
-      
-      # Link submission to the selected tool
-      if primary_tool_record && submission.tool_id.nil?
-        primary_tool = primary_tool_record[:tool]
-        submission.update!(tool_id: primary_tool.id)
-        Rails.logger.info "Linked submission #{submission.id} to tool #{primary_tool.id} (#{primary_tool.tool_name}, confidence: #{primary_tool_record[:data]["confidence"]})"
-      end
+      Rails.logger.info "Linked submission #{submission.id} to #{linked_tools.count} tools: #{linked_tools.join(', ')}" if linked_tools.any?
     rescue StandardError => e
       Rails.logger.error "Tool detection error for submission #{submission.id}: #{e.message}"
     end
