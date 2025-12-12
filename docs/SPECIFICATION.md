@@ -535,12 +535,13 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Components**: Home page view (`pages/home.html.erb`)
 - **Layout & UX**:
   - Divider under navbar, then an 8-column wide primary search bar (large input + search button)
+  - **Unified Search**: Searches both Tools and Submissions simultaneously using hybrid search (full-text + semantic)
   - Category toggle bar for `Trending`, `New & Hot`, and `Most Upvoted` lists (JS-ready to switch lists without reload)
-  - Each category panel renders up to 10 live tools:
-    - Trending: most upvoted in the last 30 days (by `user_tools.upvote`)
-    - New & Hot: tools from last 7 days ranked by upvotes
+  - Each category panel renders up to 10 live items (mixed Tools and Submissions):
+    - Trending: most upvoted in the last 30 days (by `user_tools.upvote` or `user_submissions.upvote`)
+    - New & Hot: items from last 7 days ranked by upvotes
     - Most Upvoted: highest upvotes all time
-    - Left (≈5 cols @ ≥md): star, ordinalized position, tool description or fallback, tags (or sample tags), stretched-link to `/tools/:id`
+    - Left (≈5 cols @ ≥md): star, ordinalized position, description or fallback, tags (or sample tags), stretched-link to item
     - Right (≈7 cols @ ≥md): logo stub plus inline upvote button showing “▲ X upvotes”; signed-in users increment inline, guests see an alert to sign in
 - **Styling**:
   - Bootstrap grid-first layout, responsive down to mobile
