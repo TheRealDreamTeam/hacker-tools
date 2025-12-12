@@ -144,6 +144,11 @@ module SubmissionProcessing
       end
       
       Rails.logger.info "Linked submission #{submission.id} to #{linked_tools.count} tools: #{linked_tools.join(', ')}" if linked_tools.any?
+      
+      # Broadcast tools update if any tools were linked
+      if linked_tools.any?
+        broadcast_tools_update(submission)
+      end
     rescue StandardError => e
       Rails.logger.error "Tool detection error for submission #{submission.id}: #{e.message}"
     end
@@ -215,6 +220,11 @@ module SubmissionProcessing
       end
       
       Rails.logger.info "Assigned #{assigned_count} tags to submission #{submission.id}"
+      
+      # Broadcast tags update if any tags were assigned
+      if assigned_count > 0
+        broadcast_tags_update(submission)
+      end
     rescue StandardError => e
       Rails.logger.error "Tag generation error for submission #{submission.id}: #{e.message}"
     end

@@ -215,7 +215,48 @@ class ToolDiscoveryJob < ApplicationJob
     
     # Try to parse as URI to validate format
     uri = URI.parse(url_string)
-    uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
+    return false unless uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
+    
+    # Check for fake/domain parking domains
+    domain = uri.host&.downcase
+    return false if domain.blank?
+    
+    # Blacklist known domain parking/fake domains
+    fake_domains = %w[
+      fakelink.com
+      example.com
+      placeholder.com
+      domain.com
+      hugedomains.com
+      godaddy.com
+      namecheap.com
+      sedo.com
+      afternic.com
+    ]
+    
+    # Check if domain matches any fake domain (exact match or subdomain)
+    if fake_domains.any? { |fake| domain == fake || domain.end_with?(".#{fake}") }
+      Rails.logger.warn "Rejected fake/domain parking URL: #{url_string}"
+      return false
+    end
+    
+    # Check for domain parking indicators in the URL path
+    # Many parking pages have paths like /for-sale, /buy-now, etc.
+    parking_paths = %w[
+      for-sale
+      buy-now
+      purchase
+      domain-sale
+      domain-for-sale
+      this-domain
+    ]
+    
+    if parking_paths.any? { |path| uri.path&.downcase&.include?(path) }
+      Rails.logger.warn "Rejected URL with parking page indicators: #{url_string}"
+      return false
+    end
+    
+    true
   rescue URI::InvalidURIError
     false
   end

@@ -1,0 +1,6 @@
+<%# Tools section partial for Turbo Stream updates %>
+<% if submission.tools.any? %>
+  <p class="mb-0 text-secondary">
+    <%= raw t("submissions.about_tools", tools: submission.tools.map { |t| link_to(t.tool_name, tool_path(t), class: "text-decoration-none") }.join(", ").html_safe) %>
+  </p>
+<% end %>

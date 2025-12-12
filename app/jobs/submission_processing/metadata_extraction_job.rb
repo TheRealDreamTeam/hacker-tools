@@ -34,12 +34,14 @@ module SubmissionProcessing
         title = extract_title(doc)
         if title.present? && title.length > 3 # Only update if we got a meaningful title
           submission.update!(submission_name: title)
+          broadcast_title_update(submission)
         end
         
         # Extract description
         description = extract_description(doc)
         if description.present? && description.length > 10 # Only update if we got a meaningful description
           submission.update!(submission_description: description)
+          broadcast_description_update(submission)
         end
         
         # Extract Open Graph image
@@ -109,6 +111,43 @@ module SubmissionProcessing
       return twitter_image if twitter_image.present?
       
       nil
+    end
+
+    # Broadcast title update via Turbo Stream
+    def broadcast_title_update(submission)
+      Turbo::StreamsChannel.broadcast_update_to(
+        "submission_#{submission.id}",
+        target: "submission-title",
+        html: submission.submission_name.presence || submission.submission_url
+      )
+      # Also update status badges (remove processing badge if completed)
+      broadcast_status_badges_update(submission)
+    rescue StandardError => e
+      Rails.logger.warn "Failed to broadcast title update: #{e.message}"
+    end
+
+    # Broadcast description update via Turbo Stream
+    def broadcast_description_update(submission)
+      Turbo::StreamsChannel.broadcast_update_to(
+        "submission_#{submission.id}",
+        target: "submission-description",
+        partial: "submissions/description_content",
+        locals: { submission: submission }
+      )
+    rescue StandardError => e
+      Rails.logger.warn "Failed to broadcast description update: #{e.message}"
+    end
+
+    # Broadcast status badges update
+    def broadcast_status_badges_update(submission)
+      Turbo::StreamsChannel.broadcast_update_to(
+        "submission_#{submission.id}",
+        target: "submission-status-badges",
+        partial: "submissions/status_badges",
+        locals: { submission: submission }
+      )
+    rescue StandardError => e
+      Rails.logger.warn "Failed to broadcast status badges update: #{e.message}"
     end
   end
 end

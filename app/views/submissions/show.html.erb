@@ -7,10 +7,10 @@
   
   <div class="d-flex justify-content-between align-items-start mb-3">
     <div>
-      <h1 class="h3 mb-2">
+      <h1 class="h3 mb-2" id="submission-title">
         <%= @submission.submission_name.presence || @submission.submission_url %>
       </h1>
-      <div class="d-flex align-items-center gap-2 mb-2">
+      <div class="d-flex align-items-center gap-2 mb-2" id="submission-status-badges">
         <span class="badge bg-primary">
           <%= t("submissions.types.#{@submission.submission_type}") %>
         </span>
@@ -30,11 +30,13 @@
           <%= link_to @submission.submission_url, @submission.submission_url, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none" %>
         </p>
       <% end %>
-      <% if @submission.tools.any? %>
-        <p class="mb-0 text-secondary">
-          <%= raw t("submissions.about_tools", tools: @submission.tools.map { |t| link_to(t.tool_name, tool_path(t), class: "text-decoration-none") }.join(", ").html_safe) %>
-        </p>
-      <% end %>
+      <div id="submission-tools-section">
+        <% if @submission.tools.any? %>
+          <p class="mb-0 text-secondary">
+            <%= raw t("submissions.about_tools", tools: @submission.tools.map { |t| link_to(t.tool_name, tool_path(t), class: "text-decoration-none") }.join(", ").html_safe) %>
+          </p>
+        <% end %>
+      </div>
     </div>
     <div class="d-flex gap-2">
       <% if @submission.icon.attached? %>
@@ -47,9 +49,9 @@
     <%= render "interaction_buttons", submission: @submission %>
   </div>
   
-  <div class="mb-4">
+  <div class="mb-4" id="submission-description-section">
     <h2 class="h5"><%= t("submissions.show.description") %></h2>
-    <p><%= simple_format(@submission.submission_description.presence || @submission.author_note) %></p>
+    <p id="submission-description"><%= simple_format(@submission.submission_description.presence || @submission.author_note) %></p>
   </div>
   
   <% if @submission.author_note.present? && @submission.submission_description.present? %>
@@ -73,17 +75,7 @@
       <%# TODO: Re-enable manual tag management in future if needed %>
     </div>
     <div id="submission-tags">
-      <% if @submission_tags.any? %>
-        <div class="d-flex flex-wrap gap-2">
-          <% @submission_tags.each do |tag| %>
-            <span class="badge <%= tag_badge_class(tag.tag_type) %>">
-              <%= tag.display_name %>
-            </span>
-          <% end %>
-        </div>
-      <% else %>
-        <p class="text-muted mb-0"><%= t("submissions.show.no_tags") %></p>
-      <% end %>
+      <%= render "tags_section", submission: @submission %>
     </div>
   </div>
 

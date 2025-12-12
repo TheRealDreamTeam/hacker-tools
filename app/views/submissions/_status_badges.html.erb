@@ -1,0 +1,8 @@
+<span class="badge bg-primary">
+  <%= t("submissions.types.#{submission.submission_type}") %>
+</span>
+<% if submission.status != "completed" %>
+  <span class="badge bg-warning text-dark">
+    <%= t("submissions.statuses.#{submission.status}") %>
+  </span>
+<% end %>
