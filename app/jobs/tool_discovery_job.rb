@@ -55,7 +55,7 @@ class ToolDiscoveryJob < ApplicationJob
     # Skip if tool already has a URL and description (already enriched)
     return nil if tool.tool_url.present? && tool.tool_description.present? && tool.tool_description != "Auto-detected from submission"
 
-    discovery_tool = ToolDiscoveryTool.new
+    discovery_tool = RubyLlmTools::ToolDiscoveryTool.new
     result = discovery_tool.execute(tool_name: tool.tool_name)
 
     # Only proceed if we got meaningful results with reasonable confidence

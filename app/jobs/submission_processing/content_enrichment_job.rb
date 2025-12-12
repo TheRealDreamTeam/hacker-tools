@@ -40,7 +40,7 @@ module SubmissionProcessing
       return if submission.submission_url.blank?
       
       # Use RubyLLM classification tool (use :: prefix to look in root namespace)
-      tool = ::SubmissionTypeClassificationTool.new
+      tool = RubyLlmTools::SubmissionTypeClassificationTool.new
       result = tool.execute(
         url: submission.submission_url,
         title: submission.submission_name,
@@ -83,7 +83,7 @@ module SubmissionProcessing
 
     # Detect tools and link submission to them
     def detect_and_link_tools(submission)
-      tool = ::SubmissionToolDetectionTool.new
+      tool = RubyLlmTools::SubmissionToolDetectionTool.new
       result = tool.execute(
         title: submission.submission_name,
         description: submission.submission_description,
@@ -155,7 +155,7 @@ module SubmissionProcessing
 
     # Generate and assign tags
     def generate_and_assign_tags(submission)
-      tool = ::SubmissionTagGenerationTool.new
+      tool = RubyLlmTools::SubmissionTagGenerationTool.new
       result = tool.execute(
         title: submission.submission_name,
         description: submission.submission_description,
