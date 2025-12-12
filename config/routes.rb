@@ -39,6 +39,7 @@ Rails.application.routes.draw do
       delete :remove_tag, on: :member
       post :upvote, on: :member, to: "submissions#upvote"
       post :follow, on: :member, to: "submissions#follow"
+      post :validate_url, on: :collection
     end
     # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

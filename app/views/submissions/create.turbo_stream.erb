@@ -1,0 +1,3 @@
+<%# Redirect to submission show page with Turbo Stream subscription %>
+<%= turbo_stream_from "submission_#{@submission.id}" %>
+<%= turbo_stream.action :redirect, url: submission_path(@submission) %>

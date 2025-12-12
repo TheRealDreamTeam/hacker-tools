@@ -22,7 +22,8 @@ class SubmissionProcessingJob < ApplicationJob
     
     begin
       # Phase 1: Duplicate check and Safety check (parallel)
-      # TODO: Add safety check job in future
+      broadcast_phase_update(submission, "validating", "Validating submission...")
+      
       duplicate_check = SubmissionProcessing::DuplicateCheckJob.new
       duplicate_result = duplicate_check.perform(submission_id)
       
@@ -31,18 +32,35 @@ class SubmissionProcessingJob < ApplicationJob
           status: :rejected,
           duplicate_of_id: duplicate_result[:duplicate_id]
         )
-        broadcast_status_update(submission, :rejected)
+        broadcast_status_update(submission, :rejected, "This URL has already been submitted.")
         Rails.logger.info "Submission #{submission_id} rejected as duplicate"
         return
       end
       
+      # Run safety check
+      safety_check = SubmissionProcessing::SafetyCheckJob.new
+      safety_result = safety_check.perform(submission_id)
+      
+      unless safety_result[:safe]
+        submission.update!(
+          status: :rejected,
+          metadata: submission.metadata.merge(rejection_reason: safety_result[:reason])
+        )
+        broadcast_status_update(submission, :rejected, safety_result[:reason] || "Content validation failed")
+        Rails.logger.info "Submission #{submission_id} rejected: #{safety_result[:reason]}"
+        return
+      end
+      
       # Phase 2: Metadata extraction
+      broadcast_phase_update(submission, "extracting", "Extracting metadata...")
       SubmissionProcessing::MetadataExtractionJob.perform_now(submission_id)
       
       # Phase 3: Classification, Tool detection, Tag generation
+      broadcast_phase_update(submission, "enriching", "Enriching content...")
       SubmissionProcessing::ContentEnrichmentJob.perform_now(submission_id)
       
       # Phase 4: Embedding generation
+      broadcast_phase_update(submission, "generating_embedding", "Generating embedding...")
       SubmissionProcessing::EmbeddingGenerationJob.perform_now(submission_id)
       
       # Phase 5: Relationship discovery (stub - Phase 2)
@@ -53,7 +71,15 @@ class SubmissionProcessingJob < ApplicationJob
         status: :completed,
         processed_at: Time.current
       )
-      broadcast_status_update(submission, :completed)
+      broadcast_status_update(submission, :completed, "Processing complete!")
+      
+      # Broadcast redirect instruction
+      Turbo::StreamsChannel.broadcast_action_to(
+        "submission_#{submission.id}",
+        action: :redirect,
+        target: "submission-form-container",
+        url: submission_path(submission)
+      )
       
       Rails.logger.info "Completed processing pipeline for submission #{submission_id}"
     rescue StandardError => e
@@ -73,19 +99,37 @@ class SubmissionProcessingJob < ApplicationJob
   private
 
   # Broadcast status update via Turbo Stream
-  # Note: Status badge partial not yet implemented - broadcasts disabled for now
-  # TODO: Create status badge partial and enable broadcasts when UI is ready
-  def broadcast_status_update(submission, status)
-    # Status badge UI not yet implemented - skip broadcast for now
-    # Turbo::StreamsChannel.broadcast_update_to(
-    #   "submission_#{submission.id}",
-    #   target: "submission-status-#{submission.id}",
-    #   partial: "submissions/status_badge",
-    #   locals: { submission: submission }
-    # )
+  def broadcast_status_update(submission, status, message = nil)
+    Turbo::StreamsChannel.broadcast_update_to(
+      "submission_#{submission.id}",
+      target: "submission-processing-status-container",
+      partial: "submissions/processing_status",
+      locals: { 
+        submission: submission, 
+        status: status,
+        message: message
+      }
+    )
   rescue StandardError => e
     # Don't fail the job if broadcast fails
     Rails.logger.warn "Failed to broadcast status update: #{e.message}"
+  end
+
+  # Broadcast phase update (for intermediate steps)
+  def broadcast_phase_update(submission, phase, message)
+    Turbo::StreamsChannel.broadcast_update_to(
+      "submission_#{submission.id}",
+      target: "submission-processing-status-container",
+      partial: "submissions/processing_status",
+      locals: { 
+        submission: submission, 
+        status: :processing,
+        phase: phase,
+        message: message
+      }
+    )
+  rescue StandardError => e
+    Rails.logger.warn "Failed to broadcast phase update: #{e.message}"
   end
 end
 

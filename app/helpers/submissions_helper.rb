@@ -24,4 +24,34 @@ module SubmissionsHelper
       icon_class: icon_class
     }
   end
+
+  # Get alert class for processing status
+  def processing_status_alert_class(status)
+    case status.to_sym
+    when :processing
+      "alert-info"
+    when :completed
+      "alert-success"
+    when :rejected, :failed
+      "alert-danger"
+    else
+      "alert-secondary"
+    end
+  end
+
+  # Get title for processing status
+  def processing_status_title(status)
+    case status.to_sym
+    when :processing
+      "Processing..."
+    when :completed
+      "Processing Complete!"
+    when :rejected
+      "Submission Rejected"
+    when :failed
+      "Processing Failed"
+    else
+      "Processing"
+    end
+  end
 end

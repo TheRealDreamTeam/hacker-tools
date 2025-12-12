@@ -89,12 +89,21 @@ class SubmissionsController < ApplicationController
     @submission = current_user.submissions.new(submission_params)
     
     if @submission.save
+      # Subscribe to Turbo Stream updates for this submission
+      # This allows real-time updates during processing
+      
       # Queue processing pipeline job
       SubmissionProcessingJob.perform_later(@submission.id)
       
       respond_to do |format|
-        format.html { redirect_to @submission, notice: t("submissions.create.success") }
-        format.turbo_stream { redirect_to @submission, status: :see_other, notice: t("submissions.create.success") }
+        format.html { 
+          # For HTML, show the submission page with processing status
+          redirect_to @submission, notice: t("submissions.create.success")
+        }
+        format.turbo_stream { 
+          # For Turbo Stream, render the show page with subscription
+          render :create
+        }
       end
     else
       respond_to do |format|
@@ -203,6 +212,101 @@ class SubmissionsController < ApplicationController
     toggle_interaction_flag(:upvote, :submission_upvote)
   end
 
+  # POST /submissions/validate_url
+  # Validates URL in real-time as user types
+  # Checks for duplicates, safety, and finds similar submissions
+  def validate_url
+    url = params[:url]&.strip
+    
+    unless url.present?
+      render json: { error: "URL is required" }, status: :bad_request
+      return
+    end
+    
+    # Validate URL format
+    begin
+      uri = URI.parse(url)
+      unless uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
+        render json: { error: "Invalid URL format" }, status: :bad_request
+        return
+      end
+    rescue URI::InvalidURIError
+      render json: { error: "Invalid URL format" }, status: :bad_request
+      return
+    end
+    
+    # Create temporary submission for validation (don't save to DB)
+    temp_submission = current_user.submissions.new(submission_url: url)
+    temp_submission.valid? # Trigger normalization
+    
+    # Check for exact duplicate
+    duplicate = Submission.where(normalized_url: temp_submission.normalized_url)
+                          .where.not(user_id: current_user.id)
+                          .first
+    
+    if duplicate
+      render json: {
+        duplicate: true,
+        duplicate_id: duplicate.id,
+        duplicate_path: submission_path(duplicate)
+      }
+      return
+    end
+    
+    # Find similar submissions manually (don't use job since submission isn't saved)
+    similar_submissions = find_similar_submissions_for_url(temp_submission.normalized_url)
+    
+    # Run safety check (Stage 1 only for speed - programmatic checks)
+    safety_result = perform_programmatic_safety_check(temp_submission)
+    
+    # Prepare response
+    response = {
+      duplicate: false,
+      safe: safety_result[:safe] != false,
+      similar_submissions: []
+    }
+    
+    # Add similar submissions if found
+    if similar_submissions.any?
+      response[:similar_submissions] = similar_submissions.map do |submission|
+        {
+          id: submission.id,
+          name: submission.submission_name || submission.submission_url,
+          url: submission.submission_url,
+          path: submission_path(submission)
+        }
+      end
+      
+      # Use RAG to explain similarity (optional - can be slow)
+      # Note: This method may not exist yet - it's planned for future enhancement
+      if params[:explain_similarity] == "true" && similar_submissions.any?
+        begin
+          if SubmissionRagService.respond_to?(:explain_similarity)
+            explanation = SubmissionRagService.explain_similarity(
+              url,
+              similar_submissions,
+              {}
+            )
+            response[:explanation] = explanation[:explanation] if explanation
+          end
+        rescue StandardError => e
+          Rails.logger.warn "RAG explanation failed: #{e.message}"
+        end
+      end
+    end
+    
+    # Add safety rejection reason if unsafe
+    unless response[:safe]
+      response[:reason] = safety_result[:reason] || "Content validation failed"
+    end
+    
+    render json: response
+  rescue StandardError => e
+    Rails.logger.error "URL validation error: #{e.message}"
+    Rails.logger.error e.backtrace.first(5).join("\n")
+    render json: { error: "Validation failed. Please try again." }, status: :internal_server_error
+  end
+
   private
 
   def set_submission
@@ -259,6 +363,51 @@ class SubmissionsController < ApplicationController
     respond_to do |format|
       format.turbo_stream { render "submissions/interaction_update" }
       format.html { redirect_back fallback_location: submission_path(@submission), notice: t("submissions.flash.#{i18n_key}") }
+    end
+  end
+
+  # Find similar submissions for a given normalized URL
+  def find_similar_submissions_for_url(normalized_url)
+    return [] if normalized_url.blank?
+    
+    # Method 1: URL similarity using trigram
+    similar = Submission.where.not(user_id: current_user.id)
+                        .where("similarity(normalized_url, ?) > 0.6", normalized_url)
+                        .order(Arel.sql("similarity(normalized_url, '#{normalized_url}') DESC"))
+                        .limit(5)
+    similar.to_a
+  rescue StandardError => e
+    Rails.logger.warn "Similar submissions search failed: #{e.message}"
+    []
+  end
+
+  # Perform programmatic safety check (Stage 1 only)
+  def perform_programmatic_safety_check(submission)
+    url = submission.submission_url
+    return { safe: true } if url.blank?
+    
+    begin
+      uri = URI.parse(url)
+      unless uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
+        return { safe: false, reason: "Invalid URL format" }
+      end
+      
+      # Check for malicious patterns
+      malicious_patterns = [
+        /\.exe$/i,
+        /\.zip$/i,
+        /\.rar$/i,
+        /javascript:/i,
+        /data:text\/html/i
+      ]
+      
+      if malicious_patterns.any? { |pattern| url.match?(pattern) }
+        return { safe: false, reason: "URL contains suspicious patterns" }
+      end
+      
+      { safe: true }
+    rescue URI::InvalidURIError
+      { safe: false, reason: "Invalid URL format" }
     end
   end
 end

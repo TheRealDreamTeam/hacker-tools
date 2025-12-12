@@ -3,8 +3,11 @@
     <h1 class="h3 m-0"><%= t("submissions.new.title") %></h1>
     <%= link_to t("actions.back"), submissions_path, class: "btn btn-secondary" %>
   </div>
-  <div id="submission-form-container">
+  <div id="submission-form-container" data-submission-form-target="formContainer">
     <%= render "form", submission: @submission %>
+    
+    <%# Processing status container (updated via Turbo Streams) %>
+    <div id="submission-processing-status-container"></div>
   </div>
 </div>
 

@@ -1,13 +1,57 @@
-<%= simple_form_for(@submission) do |f| %>
-  <div class="row g-3">
+<%= simple_form_for(@submission, 
+    html: { 
+      data: { 
+        controller: "submission-form",
+        submission_form_validate_url_value: validate_url_submissions_path,
+        submission_form_submission_id_value: @submission.id || nil
+      }
+    }
+  ) do |f| %>
+  
+  <%# Subscribe to Turbo Stream updates if submission exists %>
+  <% if @submission.persisted? %>
+    <%= turbo_stream_from "submission_#{@submission.id}" %>
+  <% end %>
+  
+  <%# Processing status will be inserted here via Turbo Streams %>
+  <div id="submission-processing-status-container"></div>
+
+  <div class="row g-3" data-submission-form-target="formContainer">
     <div class="col-12">
-      <%= f.input :submission_url, label: t("submissions.form.submission_url"), required: true,
-                  hint: t("submissions.form.submission_url_hint") %>
+      <%= f.input :submission_url, 
+          label: t("submissions.form.submission_url"), 
+          required: true,
+          hint: t("submissions.form.submission_url_hint"),
+          input_html: { 
+            data: { 
+              submission_form_target: "urlInput",
+              action: "input->submission-form#urlChanged"
+            }
+          } %>
+    </div>
+
+    <%# Validation messages %>
+    <div class="col-12" data-submission-form-target="validationMessage" style="display: none;"></div>
+
+    <%# Similar submissions warning %>
+    <div class="col-12" data-submission-form-target="similarSubmissions" style="display: none;"></div>
+
+    <%# Processing status %>
+    <div class="col-12" data-submission-form-target="processingStatus" style="display: none;">
+      <div class="alert alert-info">
+        <div class="spinner-border spinner-border-sm me-2" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <span data-submission-form-target="statusText">Processing...</span>
+      </div>
     </div>
 
     <div class="col-12">
       <%= f.input :author_note, as: :text, label: t("submissions.form.author_note"),
-                  input_html: { rows: 3 },
+                  input_html: { 
+                    rows: 3,
+                    data: { submission_form_target: "authorNoteInput" }
+                  },
                   hint: t("submissions.form.author_note_hint") %>
     </div>
 
@@ -17,7 +61,9 @@
   </div>
 
   <div class="mt-4 d-flex gap-2">
-    <%= f.button :submit, class: "btn btn-primary" %>
+    <%= f.button :submit, 
+        class: "btn btn-primary",
+        data: { submission_form_target: "submitButton" } %>
     <%= link_to t("actions.cancel"), submissions_path, class: "btn btn-outline-secondary" %>
   </div>
 <% end %>
