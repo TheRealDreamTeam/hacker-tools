@@ -46,6 +46,14 @@
     
     <!-- Canonical URL -->
     <link rel="canonical" href="<%= request.original_url %>">
+
+    <%# Disable Turbo Drive snapshot cache for selected pages (e.g., home) so that
+        navigating back always re-renders from the server and reflects the
+        latest read/interaction state. Keep this scoped narrowly to avoid
+        losing Turbo's performance benefits elsewhere. %>
+    <% if controller_name == "pages" && action_name == "home" %>
+      <meta name="turbo-cache-control" content="no-cache">
+    <% end %>
     
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>

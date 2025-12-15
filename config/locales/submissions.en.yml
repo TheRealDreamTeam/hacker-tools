@@ -78,6 +78,10 @@ en:
         already_following: "You are already following this submission."
       submission_upvote: "Upvote toggled."
       submission_favorite: "Favorite toggled."
+    follow:
+      success: "You are now following this submission."
+      unfollowed: "You are no longer following this submission."
+      already_following: "You are already following this submission."
     create:
       success: "Submission created successfully."
     update:

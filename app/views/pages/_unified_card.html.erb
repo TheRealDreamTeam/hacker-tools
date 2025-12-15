@@ -3,18 +3,24 @@
 <% if item[:type] == :tool %>
   <% tool = item[:item] %>
   <% upvotes = item[:engagement] %>
-  <div class="card mb-3 position-relative card-hover">
-    <div class="card-body">
+  <div class="card mb-3 position-relative card-hover"
+       data-controller="tool-card"
+       data-tool-card-url-value="<%= tool_path(tool) %>"
+       data-action="click->tool-card#navigate">
+    <div class="card-body position-relative">
+      <%# Global read/eye icon anchored in the top-right corner of the card for signed-in users %>
+      <% if user_signed_in? %>
+        <span class="position-absolute top-0 end-0 mt-2 me-2">
+          <%= render "tools/read_state", tool: tool %>
+        </span>
+      <% end %>
       <div class="row align-items-center">
         <!-- Left content: star, title, description, tags -->
         <div class="col-12 col-md-5">
-          <div class="d-flex justify-content-between align-items-start mb-1 position-relative">
-            <h5 class="card-title mb-0 <%= 'pe-4' if user_signed_in? %> flex-grow-1">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <h5 class="card-title mb-0 flex-grow-1">
               <%= link_to "#{index + 1}. #{tool.tool_name}", tool_path(tool), class: "text-decoration-none" %>
             </h5>
-            <% if user_signed_in? %>
-              <%= render "tools/read_state", tool: tool, classes: "ms-2 mt-1 flex-shrink-0" %>
-            <% end %>
           </div>
           <div class="d-flex align-items-center gap-2 mb-2">
             <span class="badge bg-primary" style="font-size: 0.75rem;">
@@ -55,20 +61,26 @@
 <% else %>
   <% submission = item[:item] %>
   <% upvotes = item[:engagement] %>
-  <div class="card mb-3 position-relative card-hover">
-    <div class="card-body">
+  <div class="card mb-3 position-relative card-hover"
+       data-controller="tool-card"
+       data-tool-card-url-value="<%= submission_path(submission) %>"
+       data-action="click->tool-card#navigate">
+    <div class="card-body position-relative">
+      <%# Global read/eye icon anchored in the top-right corner of the card for signed-in users %>
+      <% if user_signed_in? %>
+        <span class="position-absolute top-0 end-0 mt-2 me-2">
+          <%= render "submissions/read_state", submission: submission %>
+        </span>
+      <% end %>
       <div class="row align-items-center">
         <!-- Left content: number, title, description, tags -->
         <div class="col-12 col-md-5">
           <div class="d-flex justify-content-between align-items-start mb-1 position-relative">
-            <h5 class="card-title mb-0 <%= 'pe-4' if user_signed_in? %> flex-grow-1">
+            <h5 class="card-title mb-0 flex-grow-1">
               <%= link_to "#{index + 1}. #{submission.submission_name.presence || submission.submission_url}", 
                           submission_path(submission), 
                           class: "text-decoration-none" %>
             </h5>
-            <% if user_signed_in? %>
-              <%= render "submissions/read_state", submission: submission, classes: "ms-2 mt-1 flex-shrink-0" %>
-            <% end %>
           </div>
           <div class="d-flex align-items-center gap-2 mb-2">
             <span class="badge bg-primary" style="font-size: 0.75rem;">

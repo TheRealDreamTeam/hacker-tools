@@ -123,6 +123,13 @@ class ToolsController < ApplicationController
       # Use find_or_create_by to handle race conditions gracefully
       # The unique index at database level prevents duplicates
       current_user.follows.find_or_create_by!(followable: @tool)
+
+      # Mark tool as read for this user on first successful follow so the eye
+      # icon reflects that they've interacted with the tool.
+      user_tool = ensure_user_tool
+      if user_tool.read_at.nil?
+        user_tool.update(read_at: Time.current)
+      end
     end
 
     respond_to do |format|
@@ -173,12 +180,20 @@ class ToolsController < ApplicationController
     end
   end
 
+  # Track that the current user has viewed this tool and broadcast a Turbo Stream
+  # update so any open pages (like the home page unified cards) can update the
+  # "read" eye icon in real time without requiring a manual refresh.
   def touch_read_interaction
     return unless current_user
 
     user_tool = ensure_user_tool
-    user_tool.read_at ||= Time.current
-    user_tool.save if user_tool.changed?
+    # Only set read_at the first time we see this tool to preserve the original
+    # "first viewed" timestamp. This method intentionally does not broadcast,
+    # keeping logic simple: other pages will pick up the state on their next
+    # render/navigation.
+    if user_tool.read_at.nil?
+      user_tool.update(read_at: Time.current)
+    end
   end
 
   def ensure_user_tool
@@ -198,5 +213,6 @@ class ToolsController < ApplicationController
       format.html { redirect_back fallback_location: tool_path(@tool), notice: t("tools.flash.#{i18n_key}") }
     end
   end
+
 end
 

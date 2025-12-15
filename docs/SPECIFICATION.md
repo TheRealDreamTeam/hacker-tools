@@ -209,7 +209,17 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Attributes**: `read_at` (datetime), `upvote` (boolean), `favorite` (boolean), foreign keys to user/tool
 - **Associations**: `belongs_to :user`; `belongs_to :tool`
 - **Validations**: Uniqueness on `[user_id, tool_id]`.
-- **Behavior**: Created/touched on tool show (sets `read_at`), toggled via upvote/favorite buttons on home, tools index, and tool show.
+- **Behavior**: Created on first interaction; `read_at` is set the first time a user visits a tool show page and preserved as the "first viewed" timestamp. Upvote/favorite toggles reuse the same record. When `read_at` is first set, a Turbo Stream broadcast updates the tool read/eye state for that user across open pages (home unified cards, tools index, etc.).
+
+#### Tool read state UI
+- **Purpose**: Indicate whether the current user has viewed a tool and when it was first viewed.
+- **Components**:
+  - `ToolsHelper#read_state(tool, current_user)` returns icon class, visited flag, and timestamp based on `UserTool#read_at`.
+  - `tools/_read_state.html.erb` renders the eye icon span with a stable DOM id (`dom_id(tool, "read_state")`).
+- **Behavior**:
+  - On `ToolsController#show`, `touch_read_interaction` ensures a `UserTool` exists and sets `read_at` if nil. When set, `broadcast_read_state_update` sends a Turbo Stream update on the `"user_tools_read_state_<user_id>"` stream to replace the read_state span via the shared partial.
+  - `pages/home.html.erb` and `tools/index.html.erb` subscribe to `"user_tools_read_state_<current_user.id>"` with `turbo_stream_from` so the eye icon updates in real time after visiting a tool (no manual refresh needed).
+  - `tools/interaction_update.turbo_stream.erb` also replaces the same `read_state` span when interactions (upvote/favorite/follow) are toggled, keeping the UI consistent on the active page.
 
 ### Follow (polymorphic)
 - **Purpose**: Unified following system for users, tools, lists, and tags.
@@ -566,8 +576,12 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
     - Trending: most upvoted in the last 30 days (by `user_tools.upvote` or `user_submissions.upvote`)
     - New & Hot: items from last 7 days ranked by upvotes
     - Most Upvoted: highest upvotes all time
-    - Left (≈5 cols @ ≥md): star, ordinalized position, description or fallback, tags (or sample tags), stretched-link to item
-    - Right (≈7 cols @ ≥md): logo stub plus inline upvote button showing “▲ X upvotes”; signed-in users increment inline, guests see an alert to sign in
+    - Left (≈5 cols @ ≥md): star, ordinalized position, description or fallback, tags (or sample tags); entire card is clickable via a Stimulus `tool-card` controller, while interaction buttons and tag links remain independent.
+    - Right (≈7 cols @ ≥md): logo stub plus inline upvote/interaction buttons showing engagement; signed-in users increment inline, guests see an alert to sign in.
+- **Realtime read state UX**:
+  - For signed-in users, both tool and submission cards on the home page render an eye icon in the top-right corner of each card, using shared `*_read_state` partials with stable DOM ids (`dom_id(tool, "read_state")` / `dom_id(submission, "read_state")`).
+  - When a user first views a tool or submission show page, `touch_read_interaction` in the respective controller sets `read_at` on the join model (`UserTool`/`UserSubmission`) and broadcasts a Turbo Stream update to a per-user channel (`user_tools_read_state_<user_id>` / `user_submissions_read_state_<user_id>`).
+  - `pages/home.html.erb` subscribes to both channels with `turbo_stream_from`, so the eye icons on all visible cards update from gray to green in real time without manual refresh after the first visit.
 - **Styling**:
   - Bootstrap grid-first layout, responsive down to mobile
   - Buttons and cards use design-system spacing/shadows with a noticeable hover lift (`card-hover`)

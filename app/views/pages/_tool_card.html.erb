@@ -8,7 +8,9 @@
             <%= link_to "#{index + 1}. #{tool.tool_name}", tool_path(tool), class: "text-decoration-none" %>
             <%# Tools are community-owned, no owner to display %>
           </h5>
-          <%= render "tools/read_state", tool: tool, classes: "position-absolute top-0 end-0 mt-1 me-1" %>
+          <span class="position-absolute top-0 end-0 mt-1 me-1">
+            <%= render "tools/read_state", tool: tool %>
+          </span>
         </div>
         <p class="card-text text-muted mb-2"><%= tool.tool_description.presence || t("pages.home.card.description", index: index + 1) %></p>
         <div class="d-flex flex-wrap gap-2" data-controller="tooltip">

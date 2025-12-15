@@ -6,7 +6,10 @@
     <div class="row row-cols-1 row-cols-md-2 g-3">
       <% @tools.each do |tool| %>
         <div class="col">
-          <div class="card h-100 shadow-sm">
+          <div class="card h-100 shadow-sm position-relative"
+               data-controller="tool-card"
+               data-tool-card-url-value="<%= tool_path(tool) %>"
+               data-action="click->tool-card#navigate">
             <div class="card-body">
               <div class="d-flex align-items-center justify-content-between">
                 <h2 class="h5 mb-1">
