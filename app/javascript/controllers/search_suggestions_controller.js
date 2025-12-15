@@ -79,10 +79,13 @@ export default class extends Controller {
 
   // Hide on blur from the input
   hide() {
-    if (this.hasPanelTarget) {
+    if (!this.hasPanelTarget) return
+
+    // Defer clearing so click events on suggestions can still fire
+    setTimeout(() => {
       this.panelTarget.innerHTML = ""
       this.lastRequestedQuery = ""
-    }
+    }, 0)
   }
 }
 

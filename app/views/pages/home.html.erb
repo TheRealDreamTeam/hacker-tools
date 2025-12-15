@@ -75,7 +75,7 @@
                                   class: "form-control form-control-lg",
                                   placeholder: t("pages.home.search_placeholder"),
                                   aria: { label: t("pages.home.search_placeholder") },
-                                  data: { "search-suggestions-target": "input", action: "input->search-suggestions#onInput blur->search-suggestions#hide" } %>
+                                  data: { "search-suggestions-target": "input", action: "input->search-suggestions#onInput" } %>
           </div>
           <div class="col-12 col-md-3 d-grid">
             <%= form.submit t("actions.search"), class: "btn btn-primary btn-lg" %>
