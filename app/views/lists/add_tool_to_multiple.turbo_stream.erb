@@ -3,6 +3,10 @@
   <%= render "tools/interaction_buttons", tool: @tool %>
 <% end %>
 
+<%= turbo_stream.replace dom_id(@tool, "read_state") do %>
+  <%= render "tools/read_state", tool: @tool %>
+<% end %>
+
 <%# Append flash message %>
 <% if notice %>
   <%= turbo_stream.append "flash-messages" do %>

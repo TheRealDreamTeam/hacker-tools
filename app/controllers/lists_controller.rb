@@ -210,6 +210,16 @@ class ListsController < ApplicationController
         format.html { redirect_to redirect_location, notice: notice_message }
         format.turbo_stream { 
           @tool = tool
+
+          # Mark tool as read for this user if it was just added to at least one
+          # list, so the read eye icon reflects that they've interacted with it.
+          if added_count > 0 && current_user
+            user_tool = tool.user_tool_for(current_user) || tool.user_tools.find_or_create_by(user: current_user)
+            if user_tool.read_at.nil?
+              user_tool.update(read_at: Time.current)
+            end
+          end
+
           flash.now[:notice] = notice_message
           render "lists/add_tool_to_multiple"
         }
@@ -281,6 +291,17 @@ class ListsController < ApplicationController
         format.html { redirect_to redirect_location, notice: notice_message }
         format.turbo_stream { 
           @submission = submission
+
+          # Mark submission as read for this user if it was just added to at
+          # least one list, so the read eye icon reflects that they've
+          # interacted with it.
+          if added_count > 0 && current_user
+            user_submission = submission.user_submission_for(current_user) || submission.user_submissions.find_or_create_by(user: current_user)
+            if user_submission.read_at.nil?
+              user_submission.update(read_at: Time.current)
+            end
+          end
+
           flash.now[:notice] = notice_message
           render "lists/add_submission_to_multiple"
         }

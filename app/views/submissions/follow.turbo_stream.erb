@@ -1,4 +1,8 @@
 <%= turbo_stream.replace dom_id(@submission, "interactions") do %>
-  <%= render "interaction_buttons", submission: @submission %>
+  <%= render "submissions/interaction_buttons", submission: @submission %>
+<% end %>
+
+<%= turbo_stream.replace dom_id(@submission, "read_state") do %>
+  <%= render "submissions/read_state", submission: @submission %>
 <% end %>
 
