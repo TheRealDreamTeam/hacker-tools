@@ -5,7 +5,7 @@ import { Controller } from "@hotwired/stimulus"
 // It reads data from the button that triggers it and populates the modal dynamically
 // The controller is attached to the modal element itself so it can manage form submissions
 export default class extends Controller {
-  static targets = ["modal", "title", "toolId", "submissionId", "form", "body", "listGroup"]
+  static targets = ["modal", "title", "toolId", "submissionId", "form", "body", "listGroup", "selectMessage", "noListsMessage", "submitButton"]
 
   connect() {
     // Initialize Bootstrap modal instance
@@ -188,6 +188,32 @@ export default class extends Controller {
 
     // Clear existing list items
     this.listGroupTarget.innerHTML = ""
+
+    // Check if user has any lists
+    if (!lists || lists.length === 0) {
+      // Show "no lists" message and hide form elements
+      if (this.hasSelectMessageTarget) {
+        this.selectMessageTarget.classList.add("d-none")
+      }
+      if (this.hasNoListsMessageTarget) {
+        this.noListsMessageTarget.classList.remove("d-none")
+      }
+      if (this.hasSubmitButtonTarget) {
+        this.submitButtonTarget.classList.add("d-none")
+      }
+      return
+    }
+
+    // Hide "no lists" message and show form elements
+    if (this.hasSelectMessageTarget) {
+      this.selectMessageTarget.classList.remove("d-none")
+    }
+    if (this.hasNoListsMessageTarget) {
+      this.noListsMessageTarget.classList.add("d-none")
+    }
+    if (this.hasSubmitButtonTarget) {
+      this.submitButtonTarget.classList.remove("d-none")
+    }
 
     // Create list items for each list
     lists.forEach(list => {

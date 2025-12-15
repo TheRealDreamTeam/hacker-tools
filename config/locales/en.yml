@@ -57,7 +57,7 @@ en:
         most_upvoted: "Most Upvoted"
       list_placeholder: "Tool cards for the selected category will appear here."
       ads:
-
+        supporting_text: "Supporting the community"
       card:
         title: "%{ordinal} Tool %{index}"
         description: "Description placeholder for tool %{index}."
@@ -343,6 +343,8 @@ en:
       title: "Update lists"
       select_message: "Select lists to add this tool to, or unselect to remove:"
       submit_button: "Update lists"
+      no_lists_message: "You don't have any lists yet. Create your first list to get started!"
+      create_list_button: "Create new list"
     show:
       not_found: "List not found"
       access_denied: "You don't have permission to view this list"
