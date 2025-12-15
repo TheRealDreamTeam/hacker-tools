@@ -1,5 +1,5 @@
 class PagesController < ApplicationController
-  skip_before_action :authenticate_user!, only: [ :home, :newest_articles, :roadmap, :about_us ]
+  skip_before_action :authenticate_user!, only: [ :home, :newest_articles, :user_guide, :about_us ]
 
   def home
     @query = params[:query]&.strip
@@ -29,9 +29,9 @@ class PagesController < ApplicationController
     # This page can be extended to show actual articles/blog posts in the future
   end
 
-  def roadmap
-    # Display product roadmap
-    # This page shows planned features and improvements
+  def user_guide
+    # Display user guide
+    # This page provides guidance on how to best use HackerTools
   end
 
   def about_us

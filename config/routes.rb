@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     root to: "pages#home"
     get "dashboard" => "dashboard#show", as: :dashboard
     get "newest_articles" => "pages#newest_articles", as: :newest_articles
-    get "roadmap" => "pages#roadmap", as: :roadmap
+    get "user_guide" => "pages#user_guide", as: :user_guide
     get "about_us" => "pages#about_us", as: :about_us
     resources :tags
     resources :tools do

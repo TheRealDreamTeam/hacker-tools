@@ -37,10 +37,10 @@
           <% end %>
         </div>
         <div class="col-12 col-md-4">
-          <%= link_to roadmap_path, class: "card text-decoration-none card-hover h-100 overflow-hidden article-card" do %>
+          <%= link_to user_guide_path, class: "card text-decoration-none card-hover h-100 overflow-hidden article-card" do %>
             <div class="card-body d-flex align-items-center justify-content-center position-relative" style="min-height: 120px; background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=200&fit=crop'); background-size: cover; background-position: center;">
               <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(240, 147, 251, 0.8) 0%, rgba(245, 87, 108, 0.8) 100%);"></div>
-              <h5 class="card-title mb-0 text-black fw-bold position-relative z-1 text-center">Roadmap:<br>A guide on how to best use HackerTools</h5>
+              <h5 class="card-title mb-0 text-black fw-bold position-relative z-1 text-center"><%= t("pages.home.hero.articles.user_guide") %></h5>
             </div>
           <% end %>
         </div>
