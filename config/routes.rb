@@ -18,6 +18,9 @@ Rails.application.routes.draw do
     end
     root to: "pages#home"
     get "dashboard" => "dashboard#show", as: :dashboard
+    get "newest_articles" => "pages#newest_articles", as: :newest_articles
+    get "roadmap" => "pages#roadmap", as: :roadmap
+    get "about_us" => "pages#about_us", as: :about_us
     resources :tags
     resources :tools do
       resources :comments, only: [:create, :destroy] do
