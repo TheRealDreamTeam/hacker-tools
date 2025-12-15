@@ -1,0 +1,8 @@
+<%= turbo_stream.replace "search-suggestions" do %>
+  <%= render "search/suggestions_panel",
+             query: @query,
+             results: @results,
+             selected_categories: @selected_categories %>
+<% end %>
+
+

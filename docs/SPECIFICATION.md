@@ -16,6 +16,31 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ## Core Features
 
+### Search & Discovery
+- **Status**: In Progress (Dedicated search page)
+- **Description**: Dedicated search page aggregates results across tools, submissions, tags, users, and public lists with per-category pagination and filters.
+- **User Stories**:
+  - As a visitor, I want to search across all content types and filter by category so I can find the most relevant items quickly.
+  - As a visitor, I want results ordered by relevance and then recency so fresh, matching items show first.
+  - As a visitor, I want pagination per category so I can browse deeper without losing my filters.
+  - As a visitor, I can search while unauthenticated and access public tools, tags, profiles, and public lists.
+- **Technical Implementation**:
+  - Route: `GET /search` (locale-scoped).
+  - Controller: `SearchController#show` delegates to `GlobalSearchService` for full-page results; `SearchController#suggestions` serves Turbo Stream typeahead suggestions.
+  - Service: `GlobalSearchService` wraps existing hybrid search for tools/submissions and simple relevance+recency queries for tags/users/public lists; buffered hybrid ranking uses semantic + keyword matches for tools/submissions.
+  - Params: `query`, `categories[]` (defaults to all), per-category pages (`tools_page`, `submissions_page`, `tags_page`, `users_page`, `lists_page`), `per_page`.
+  - Sorting: relevance first (keyword/semantic for tools/submissions; prefix match for tags/users/lists), then recency.
+  - Pagination: per-category paging with “load more” links; buffer limits cap fetched hybrid results (tools/submissions).
+  - Suggestions: `GET /search/suggestions` returns a Turbo Stream that replaces a shared `search-suggestions` container with lightweight, per-category keyword-only suggestions (semantic disabled) on both home and search pages.
+- **UI/UX Considerations**:
+  - Search form redirects from home to `/search` (home no longer filters inline).
+  - Typeahead suggestions appear below the search input on both home and search pages once the user types at least 3 characters, grouped by category and honoring the current category filters.
+  - Filter panel with category checkboxes; default selects all.
+  - Results grouped by category with counts, empty states, and “load more” per category.
+  - Mobile-friendly card/list layout; uses existing cards for tools/submissions; lightweight rows for tags/users/lists.
+- **Access Control**:
+  - Unauthenticated users can search and view tool index/show, tag index/show, public user profiles, and public lists.
+
 ### Submission System
 - **Status**: Complete (Phase 1, Week 1)
 - **Description**: Users submit content (articles, guides, repos, etc.) about tools. Tools are community-owned entities, submissions are user-contributed content.

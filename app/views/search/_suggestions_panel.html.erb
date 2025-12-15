@@ -1,0 +1,76 @@
+<%# Suggestions dropdown shown under the search input on home and search pages %>
+<%# Uses keyword/full-text search only (no semantic) for fast typeahead %>
+<% any_items = results.values.any? { |res| res.items.present? } %>
+
+<% if query.blank? || !any_items %>
+  <%# No suggestions to show - panel will be empty %>
+<% else %>
+  <div class="card shadow-sm position-absolute w-100 mt-1" style="z-index: 1050;">
+    <div class="card-body py-2">
+      <% selected_categories.each do |category| %>
+        <% result = results[category] %>
+        <% next if result.blank? || result.items.blank? %>
+        <% heading = t("search.categories.#{category}") %>
+
+        <div class="mb-2">
+          <p class="text-muted small mb-1 fw-semibold"><%= heading %></p>
+          <div class="list-group list-group-flush">
+            <% case category %>
+            <% when :tools %>
+              <% result.items.each do |tool| %>
+                <%= link_to tool_path(tool), class: "list-group-item list-group-item-action py-1 small" do %>
+                  <strong><%= tool.tool_name %></strong>
+                  <% if tool.tool_description.present? %>
+                    <span class="text-muted">— <%= truncate(tool.tool_description, length: 80) %></span>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% when :submissions %>
+              <% result.items.each do |submission| %>
+                <%= link_to submission_path(submission), class: "list-group-item list-group-item-action py-1 small" do %>
+                  <strong><%= submission.submission_name.presence || submission.submission_url %></strong>
+                  <% if submission.submission_description.present? %>
+                    <span class="text-muted">— <%= truncate(submission.submission_description, length: 80) %></span>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% when :tags %>
+              <% result.items.each do |tag| %>
+                <%= link_to tag_path(tag), class: "list-group-item list-group-item-action py-1 small" do %>
+                  <strong><%= tag.tag_name %></strong>
+                  <% if tag.tag_description.present? %>
+                    <span class="text-muted">— <%= truncate(tag.tag_description, length: 80) %></span>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% when :users %>
+              <% result.items.each do |user| %>
+                <%= link_to profile_path(user.username), class: "list-group-item list-group-item-action py-1 small" do %>
+                  <strong><%= user.username %></strong>
+                  <% if user.user_bio.present? %>
+                    <span class="text-muted">— <%= truncate(user.user_bio, length: 80) %></span>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% when :lists %>
+              <% result.items.each do |list| %>
+                <%= link_to list_path(list), class: "list-group-item list-group-item-action py-1 small" do %>
+                  <strong><%= list.list_name %></strong>
+                  <span class="text-muted">
+                    — <%= t("search.lists.stats", tools: list.tools.size, followers: list.follower_count) %>
+                  </span>
+                <% end %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="card-footer py-1 text-end bg-light">
+      <%= link_to t("search.suggestions.view_all", query: query),
+                  search_path(query:, categories: selected_categories.map(&:to_s)),
+                  class: "small text-decoration-none" %>
+    </div>
+  </div>
+<% end %>
+
