@@ -578,10 +578,17 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
     - Most Upvoted: highest upvotes all time
     - Left (≈5 cols @ ≥md): star, ordinalized position, description or fallback, tags (or sample tags); entire card is clickable via a Stimulus `tool-card` controller, while interaction buttons and tag links remain independent.
     - Right (≈7 cols @ ≥md): logo stub plus inline upvote/interaction buttons showing engagement; signed-in users increment inline, guests see an alert to sign in.
-- **Realtime read state UX**:
-  - For signed-in users, both tool and submission cards on the home page render an eye icon in the top-right corner of each card, using shared `*_read_state` partials with stable DOM ids (`dom_id(tool, "read_state")` / `dom_id(submission, "read_state")`).
-  - When a user first views a tool or submission show page, `touch_read_interaction` in the respective controller sets `read_at` on the join model (`UserTool`/`UserSubmission`) and broadcasts a Turbo Stream update to a per-user channel (`user_tools_read_state_<user_id>` / `user_submissions_read_state_<user_id>`).
-  - `pages/home.html.erb` subscribes to both channels with `turbo_stream_from`, so the eye icons on all visible cards update from gray to green in real time without manual refresh after the first visit.
+- **Unified card components**:
+  - Tool cards share a common layout partial (`pages/_tool_card.html.erb`) reused on the home page unified lists, the tools index (`tools/index.html.erb`), and the search results (`search/show.html.erb`). All tool cards:
+    - Use a Bootstrap `card` wrapper with `card-hover`, left column for title/description/tags, right column for logo and interaction buttons, and a top-right eye icon rendered via `tools/_read_state`.
+    - Are fully clickable via the `tool-card` Stimulus controller, while upvote/favorite/follow/add-to-list buttons and tag links remain independent.
+  - Submission cards share a common layout partial (`submissions/_submission_card.html.erb`) reused on the home page unified lists and search results. They:
+    - Use a consistent card layout (title, type/status badges, description, tools/tags, author, interaction buttons) and show the eye icon in the top-right corner via `submissions/_read_state`.
+    - Accept an optional `index` local to prefix titles with an ordinal (used on the home unified lists).
+- **Read state UX**:
+  - For signed-in users, tool and submission cards render an eye icon in the top-right corner of each card, using shared `*_read_state` partials with stable DOM ids and simple span wrappers for positioning.
+  - When a user first views a tool or submission show page, `touch_read_interaction` in the respective controller sets `read_at` on the join model (`UserTool`/`UserSubmission`) if it is nil.
+  - When a user interacts (upvote, favorite, follow, add-to-list), the relevant controller actions ensure `read_at` is set and the Turbo Stream responses (`tools/interaction_update`, `submissions/interaction_update`, list add-to-multiple templates, and submission follow templates) replace both the interaction buttons and the `read_state` span on the current page so the eye icon updates immediately.
 - **Styling**:
   - Bootstrap grid-first layout, responsive down to mobile
   - Buttons and cards use design-system spacing/shadows with a noticeable hover lift (`card-hover`)

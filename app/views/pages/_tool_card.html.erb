@@ -1,4 +1,7 @@
-<div class="card mb-3 position-relative card-hover">
+<div class="card mb-3 position-relative card-hover"
+     data-controller="tool-card"
+     data-tool-card-url-value="<%= tool_path(tool) %>"
+     data-action="click->tool-card#navigate">
   <div class="card-body">
     <div class="row align-items-center">
       <!-- Left content: star, title, description, tags -->
