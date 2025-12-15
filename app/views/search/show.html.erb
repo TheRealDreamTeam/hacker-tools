@@ -1,0 +1,129 @@
+<div class="container py-4">
+  <div class="d-flex flex-column gap-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <%= form_with url: search_path,
+                      method: :get,
+                      local: true,
+                      data: { controller: "search-filters search-suggestions",
+                              "search-suggestions-url-value": search_suggestions_path },
+                      role: "search" do |form| %>
+          <div class="row g-3 align-items-end">
+            <div class="col-12 col-lg-9">
+              <div class="position-relative">
+                <%= form.label :query, t("search.form.label"), class: "form-label fw-semibold" %>
+                <%= form.search_field :query,
+                                      value: @query,
+                                      class: "form-control form-control-lg",
+                                      placeholder: t("search.form.placeholder"),
+                                      aria: { label: t("search.form.placeholder") },
+                                      data: { "search-suggestions-target": "input", action: "input->search-suggestions#onInput blur->search-suggestions#hide" } %>
+                <div id="search-suggestions" data-search-suggestions-target="panel"></div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-3 d-grid gap-2">
+              <%= form.submit t("actions.search"), class: "btn btn-primary btn-lg" %>
+              <%= link_to t("search.form.reset"), search_path, class: "btn btn-outline-secondary btn-sm" %>
+            </div>
+          </div>
+
+          <div class="border-top mt-3 pt-3">
+            <p class="fw-semibold mb-2"><%= t("search.filters.title") %></p>
+            <div class="d-flex flex-wrap gap-3 align-items-center">
+              <% all_selected = (@selected_categories.sort == @all_categories.sort) %>
+              <div class="form-check form-check-inline">
+                <%= check_box_tag "categories_all",
+                                  "all",
+                                  all_selected,
+                                  id: "search-category-all",
+                                  class: "form-check-input",
+                                  data: { action: "change->search-filters#toggleAll" } %>
+                <%= label_tag "search-category-all", t("search.filters.select_all"), class: "form-check-label" %>
+              </div>
+              <% @all_categories.each do |category| %>
+                <% id = "search-category-#{category}" %>
+                <div class="form-check form-check-inline">
+                  <%= check_box_tag "categories[]",
+                                    category,
+                                    @selected_categories.include?(category),
+                                    id: id,
+                                    class: "form-check-input" %>
+                  <%= label_tag id, t("search.categories.#{category}"), class: "form-check-label" %>
+                </div>
+              <% end %>
+              <div class="ms-auto">
+                <button type="button"
+                        class="btn btn-outline-primary btn-sm"
+                        data-action="click->search-filters#submit">
+                  <%= t("search.filters.apply") %>
+                </button>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @query.blank? %>
+      <div class="alert alert-info mb-0" role="status">
+        <%= t("search.empty_query") %>
+      </div>
+    <% else %>
+      <% base_params = { query: @query, categories: @selected_categories.map(&:to_s), per_page: @per_page } %>
+      <% existing_pages = @page_params.transform_values { |value| value.presence }.compact %>
+
+      <% @selected_categories.each do |category| %>
+        <% result = @results[category] %>
+        <% heading = t("search.categories.#{category}") %>
+        <% start_index = (result.page - 1) * result.per_page %>
+        <% anchor_id = "#{category}-results" %>
+
+        <div class="card shadow-sm" id="<%= anchor_id %>">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-semibold"><%= heading %> (<%= result.total_count %>)</span>
+            <span class="text-muted small"><%= t("search.sorted_by") %></span>
+          </div>
+          <div class="card-body">
+            <% if result.items.any? %>
+              <div class="d-flex flex-column gap-3">
+                <% case category %>
+                <% when :tools %>
+                  <% result.items.each_with_index do |tool, idx| %>
+                    <%= render "pages/tool_card", tool: tool, index: start_index + idx %>
+                  <% end %>
+                <% when :submissions %>
+                  <% result.items.each do |submission| %>
+                    <%= render "submissions/submission_card", submission: submission %>
+                  <% end %>
+                <% when :tags %>
+                  <% result.items.each do |tag| %>
+                    <%= render "search/tag_result", tag: tag %>
+                  <% end %>
+                <% when :users %>
+                  <% result.items.each do |user| %>
+                    <%= render "search/user_result", user: user %>
+                  <% end %>
+                <% when :lists %>
+                  <% result.items.each do |list| %>
+                    <%= render "search/list_result", list: list %>
+                  <% end %>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="text-muted mb-0"><%= t("search.empty_state", category: heading.downcase, query: @query) %></p>
+            <% end %>
+          </div>
+          <% if result.has_more? %>
+            <% load_more_params = base_params.merge(existing_pages).merge("#{category}_page": result.page + 1) %>
+            <div class="card-footer bg-transparent">
+              <%= link_to t("search.load_more", category: heading.downcase),
+                          search_path(load_more_params.merge(anchor: anchor_id)),
+                          class: "btn btn-outline-primary btn-sm" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+

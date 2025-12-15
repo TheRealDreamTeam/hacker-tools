@@ -1,0 +1,12 @@
+<div class="d-flex justify-content-between align-items-start border rounded p-3">
+  <div>
+    <h6 class="mb-1">
+      <%= link_to tag.tag_name, tag_path(tag), class: "text-decoration-none" %>
+    </h6>
+    <% if tag.tag_description.present? %>
+      <p class="mb-0 text-muted small"><%= truncate(tag.tag_description, length: 120) %></p>
+    <% end %>
+  </div>
+  <span class="badge bg-light text-primary border"><%= tag.tag_type %></span>
+</div>
+

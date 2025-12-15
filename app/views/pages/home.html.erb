@@ -61,27 +61,28 @@
   <!-- Hero search bar centered within 8-grid width on large screens -->
   <div class="row justify-content-center mb-4">
     <div class="col-12 col-lg-8">
-      <%= form_with url: root_path,
-                    method: :get,
-                    local: false,
-                    data: { turbo_stream: true },
-                    role: "search",
-                    class: "row g-2 align-items-center" do |form| %>
-        <div class="col-12 col-md-9">
-          <%= form.search_field :query,
-                                value: params[:query],
-                                id: "tool-search-input",
-                                class: "form-control form-control-lg",
-                                placeholder: t("pages.home.search_placeholder"),
-                                aria: { label: t("pages.home.search_placeholder") },
-                                data: { action: "input->home-page#debounceSearch" } %>
-        </div>
-        <div class="col-12 col-md-3 d-grid">
-          <%= form.submit t("actions.search"), class: "btn btn-primary btn-lg" %>
-        </div>
-        <!-- Hidden field to preserve category selection -->
-        <%= hidden_field_tag :category, params[:category] || "trending" %>
-      <% end %>
+      <div class="position-relative">
+        <%= form_with url: search_path,
+                      method: :get,
+                      local: true,
+                      role: "search",
+                      data: { controller: "search-suggestions", "search-suggestions-url-value": search_suggestions_path },
+                      class: "row g-2 align-items-center" do |form| %>
+          <div class="col-12 col-md-9">
+            <%= form.search_field :query,
+                                  value: params[:query],
+                                  id: "tool-search-input",
+                                  class: "form-control form-control-lg",
+                                  placeholder: t("pages.home.search_placeholder"),
+                                  aria: { label: t("pages.home.search_placeholder") },
+                                  data: { "search-suggestions-target": "input", action: "input->search-suggestions#onInput blur->search-suggestions#hide" } %>
+          </div>
+          <div class="col-12 col-md-3 d-grid">
+            <%= form.submit t("actions.search"), class: "btn btn-primary btn-lg" %>
+          </div>
+        <% end %>
+        <div id="search-suggestions" data-search-suggestions-target="panel"></div>
+      </div>
     </div>
   </div>
 
