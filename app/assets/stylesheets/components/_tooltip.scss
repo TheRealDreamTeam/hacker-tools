@@ -1,0 +1,40 @@
+// Custom tooltip styling with muted/dus colors
+// Override Bootstrap's default tooltip colors to be more subtle and muted
+
+.tooltip {
+  // Use lighter gray background with black text for better readability
+  .tooltip-inner {
+    background-color: rgba(240, 240, 240, 0.95); // Light gray background - lighter and more subtle
+    color: rgba(0, 0, 0, 0.9); // Black text for better contrast and readability
+    font-size: 0.875rem; // 14px - readable but not too large
+    padding: 0.5rem 0.75rem; // Comfortable padding
+    border-radius: 0.5rem; // 8px - slightly rounded but not too much
+    line-height: 1.4; // Better readability
+    max-width: 300px; // Prevent tooltips from being too wide
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); // Subtle shadow for depth
+    border: 1px solid rgba(200, 200, 200, 0.5); // Subtle border for definition
+  }
+
+  // Arrow styling - match the light background color
+  // Bootstrap 5 uses .tooltip-arrow with ::before pseudo-element
+  .tooltip-arrow::before {
+    border-color: transparent; // Reset default
+  }
+
+  // Different arrow colors for different placements
+  &[data-popper-placement^="top"] .tooltip-arrow::before {
+    border-top-color: rgba(240, 240, 240, 0.95);
+  }
+
+  &[data-popper-placement^="bottom"] .tooltip-arrow::before {
+    border-bottom-color: rgba(240, 240, 240, 0.95);
+  }
+
+  &[data-popper-placement^="left"] .tooltip-arrow::before {
+    border-left-color: rgba(240, 240, 240, 0.95);
+  }
+
+  &[data-popper-placement^="right"] .tooltip-arrow::before {
+    border-right-color: rgba(240, 240, 240, 0.95);
+  }
+}

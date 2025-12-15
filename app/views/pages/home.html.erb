@@ -22,7 +22,7 @@
   <div class="row justify-content-center mb-4">
     <div class="col-12 col-lg-8">
       <div class="text-center mb-4">
-        <p class="lead text-muted mb-3"><%= t("pages.home.hero.heading") %></p>
+        <p class="lead text-muted mb-3" data-controller="wave-text" data-wave-text-interval-value="60000" data-wave-text-wave-speed-value="0.8" data-wave-text-amplitude-value="15" data-wave-text-wave-duration-value="2000"><%= t("pages.home.hero.heading") %></p>
         <p class="text-muted mb-4 hero-subheading"><%= t("pages.home.hero.subheading") %></p>
       </div>
       
@@ -91,14 +91,14 @@
   <!-- Category toggles to swap tool lists without full reload (JS-ready) -->
   <div class="row justify-content-center mb-4">
     <div class="col-12 col-lg-8">
-      <div class="btn-group w-100" role="group" aria-label="<%= t('pages.home.category_aria_label') %>">
-        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'trending' %> category-toggle" data-category="trending" aria-pressed="<%= @category == 'trending' %>">
+      <div class="btn-group w-100" role="group" aria-label="<%= t('pages.home.category_aria_label') %>" data-controller="tooltip">
+        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'trending' %> category-toggle" data-category="trending" aria-pressed="<%= @category == 'trending' %>" data-bs-toggle="tooltip" data-bs-title="<%= t('pages.home.categories.tooltips.trending') %>" data-bs-placement="top">
           <%= t("pages.home.categories.trending") %>
         </button>
-        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'new' %> category-toggle" data-category="new" aria-pressed="<%= @category == 'new' %>">
+        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'new' %> category-toggle" data-category="new" aria-pressed="<%= @category == 'new' %>" data-bs-toggle="tooltip" data-bs-title="<%= t('pages.home.categories.tooltips.new_hot') %>" data-bs-placement="top">
           <%= t("pages.home.categories.new_hot") %>
         </button>
-        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'upvoted' %> category-toggle" data-category="upvoted" aria-pressed="<%= @category == 'upvoted' %>">
+        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'upvoted' %> category-toggle" data-category="upvoted" aria-pressed="<%= @category == 'upvoted' %>" data-bs-toggle="tooltip" data-bs-title="<%= t('pages.home.categories.tooltips.most_upvoted') %>" data-bs-placement="top">
           <%= t("pages.home.categories.most_upvoted") %>
         </button>
       </div>

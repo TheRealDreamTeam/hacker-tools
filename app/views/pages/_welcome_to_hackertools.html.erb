@@ -4,7 +4,7 @@
     <div class="mb-4">
       <div class="d-flex align-items-center justify-content-between mb-2">
         <h2 class="h3 mb-0"><%= t("pages.newest_articles.welcome_post.title") %></h2>
-        <span class="badge bg-primary"><%= t("pages.newest_articles.welcome_post.date") %></span>
+        <span class="badge bg-primary"><%= l(Date.current, format: "%B %Y") %></span>
       </div>
     </div>
     

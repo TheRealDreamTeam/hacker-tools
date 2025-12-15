@@ -44,7 +44,7 @@ en:
       description: "Search less. Build more."
       hero:
         heading: "Search less. Build more."
-        subheading: "Your peer-powered guide to the most relevant dev tools. Because staying up to date shouldn't cost you time."
+        subheading: "Stop wasting time hunting for tools and lost links. Browse curated tools, community-submitted articles and guides, and save your favorites. Share with the community and follow what’s gaining real traction in development."
         articles:
           newest: "Newest Blogposts"
           guide: "Here is a guide to best use HackerTools"
@@ -56,6 +56,10 @@ en:
         trending: "Trending"
         new_hot: "New & Hot"
         most_upvoted: "Most Upvoted"
+        tooltips:
+          trending: "Tools and submissions with the most upvotes in the last 30 days."
+          new_hot: "Tools and submissions created in the last 7 days. Sorted by upvotes."
+          most_upvoted: "All-time most upvoted tools and submissions."
       list_placeholder: "Tool cards for the selected category will appear here."
       ads:
         supporting_text: "Supporting the community"
@@ -70,7 +74,7 @@ en:
         upvote_guest_alert: "Please sign in before you can upvote."
     newest_articles:
       title: "Posts from Admin"
-      subtitle: "✨ Stay updated with the latest news, updates, and insights from the HackerTools team. ✨"
+      subtitle: "Stay updated with the latest news, updates, and insights from the HackerTools team. ✨"
       intro: "This is our articles section! Here you'll find the latest updates, announcements, and insights from the HackerTools team. We're committed to keeping our community informed about platform improvements, new features, and best practices for discovering and sharing development tools."
       coming_soon: "We're working on bringing you regular articles and updates. Check back soon for the latest content!"
       what_to_expect:
