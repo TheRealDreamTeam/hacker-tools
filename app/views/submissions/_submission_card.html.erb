@@ -1,4 +1,6 @@
-<div class="card mb-3 position-relative card-hover"
+<%# Submissions always have orange border and subtle orange background %>
+<div class="card mb-3 position-relative card-hover border-start border-4 border-warning"
+     style="background-color: #fff8f0;"
      data-controller="tool-card"
      data-tool-card-url-value="<%= submission_path(submission) %>"
      data-action="click->tool-card#navigate">
@@ -59,15 +61,8 @@
         </p>
       </div>
 
-      <!-- Right content: icon + interaction buttons aligned on the same row -->
+      <!-- Right content: interaction buttons aligned on the same row -->
       <div class="col-12 col-md-7 d-flex justify-content-md-end justify-content-start align-items-center gap-3 mt-3 mt-md-0">
-        <div class="border rounded-circle bg-light d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
-          <% if submission.icon.attached? %>
-            <%= image_tag submission.icon, alt: submission.submission_name, class: "rounded-circle", style: "width: 64px; height: 64px; object-fit: cover;" %>
-          <% else %>
-            <span class="text-muted small"><%= t("pages.home.card.logo_placeholder") %></span>
-          <% end %>
-        </div>
         <%= render "submissions/interaction_buttons", submission: submission %>
       </div>
     </div>
