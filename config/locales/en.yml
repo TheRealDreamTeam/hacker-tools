@@ -48,7 +48,7 @@ en:
         articles:
           newest: "Newest Blogposts"
           guide: "Here is a guide to best use HackerTools"
-          user_guide: "User Guide: A guide on how to best use HackerTools"
+          user_guide: "User Guide: HackerTools"
           about_us: "About us"
       search_placeholder: "Search tools, tags, or lists"
       category_aria_label: "Tool category filters"
@@ -69,15 +69,35 @@ en:
         upvotes: "%{count} upvotes"
         upvote_guest_alert: "Please sign in before you can upvote."
     newest_articles:
-      title: "Newest Articles from Admin"
-      subtitle: "Stay updated with the latest news, updates, and insights from the HackerTools team."
-      intro: "Welcome to our articles section! Here you'll find the latest updates, announcements, and insights from the HackerTools team. We're committed to keeping our community informed about platform improvements, new features, and best practices for discovering and sharing development tools."
+      title: "Posts from Admin"
+      subtitle: "✨ Stay updated with the latest news, updates, and insights from the HackerTools team. ✨"
+      intro: "This is our articles section! Here you'll find the latest updates, announcements, and insights from the HackerTools team. We're committed to keeping our community informed about platform improvements, new features, and best practices for discovering and sharing development tools."
       coming_soon: "We're working on bringing you regular articles and updates. Check back soon for the latest content!"
       what_to_expect:
         title: "What to Expect"
         item_1: "Platform updates and new feature announcements"
         item_2: "Tips and best practices for tool discovery"
         item_3: "Community highlights and success stories"
+      welcome_post:
+        title: "🎉 Welcome to HackerTools"
+        date: "December 2024"
+        content: |
+          🚀 We're excited to welcome you to HackerTools, a community-driven platform designed to help developers discover the best tools for their projects.
+          
+          💡 Our mission is simple: reduce the time developers spend searching for tools so they can focus on what they do best—building amazing things. Through our peer-powered platform, you can discover, share, and discuss development tools with fellow developers.
+          
+          ⭐ Here's what makes HackerTools special:
+          
+          • 🔍 Community-Driven Discovery: The best tools rise to the top through upvoting and community engagement
+          • 📚 Comprehensive Tool Information: Find detailed information, submissions, and discussions about each tool
+          • 📋 Easy Organization: Create lists to organize your favorite tools and share them with the community
+          • 💬 Active Discussions: Engage with the community through comments, flags, and bug reports
+          
+          🎯 Whether you're looking for the latest frontend framework, a new database tool, or a helpful development utility, HackerTools is here to help you find exactly what you need.
+          
+          🏁 Get started by browsing trending tools, creating an account to upvote and favorite tools, or submitting your own tool discoveries. Together, we're building a better way to discover development tools.
+          
+          Happy tool hunting!
     user_guide:
       title: "User Guide"
       subtitle: "Learn how to make the most of HackerTools and discover the best development tools."
@@ -157,7 +177,7 @@ en:
       subtitle: "Learn more about HackerTools and our mission to help developers discover the best tools."
       mission:
         title: "Our Mission"
-        content: "HackerTools was born from a simple observation: developers spend too much time searching for the right tools instead of building amazing things. Our mission is to create a peer-powered platform where developers can discover, share, and discuss the best development tools, making it easier to stay up-to-date with the rapidly evolving tech landscape."
+        content: "HackerTools was born from a simple observation: developers spend too much time searching for the right tools instead of building amazing things. Our mission is to create a peer-powered platform where developers can discover, share, and discuss the best development tools, making it easier to stay up-to-date with the rapidly evolving tech landscape. Through upvoting and community engagement, the best tools naturally rise to the top, helping everyone make informed decisions about which tools to use."
       what_we_do:
         title: "What We Do"
         feature_1:
@@ -183,9 +203,9 @@ en:
         value_4:
           title: "Open and Transparent"
           description: "We believe in open communication and transparency with our community"
-      contact:
-        title: "Get in Touch"
-        message: "Have questions, suggestions, or feedback? We'd love to hear from you! Reach out through our platform or check out our user guide to learn how to make the most of HackerTools."
+      learn_more:
+        title: "Learn More"
+        message: "Still have questions? Check out our user guide to learn how to make the most of HackerTools."
   
   # Navigation and common actions
   navigation:

@@ -19,40 +19,17 @@
           <div class="col-12 col-lg-10">
             <div class="mb-4">
               <h1 class="h2 mb-3"><%= t("pages.newest_articles.title") %></h1>
-              <p class="text-muted lead"><%= t("pages.newest_articles.subtitle") %></p>
+              <p class="text-primary lead fw-semibold"><%= t("pages.newest_articles.subtitle") %></p>
             </div>
 
-            <div class="card shadow-sm mb-4">
-              <div class="card-body">
-                <div class="mb-4">
-                  <p class="text-muted mb-0"><%= t("pages.newest_articles.intro") %></p>
-                </div>
-
-                <!-- Placeholder for articles - can be extended with actual article/blog system -->
-                <div class="alert alert-info">
-                  <i class="bi bi-info-circle me-2"></i>
-                  <%= t("pages.newest_articles.coming_soon") %>
-                </div>
-
-                <div class="mt-4">
-                  <h3 class="h5 mb-3"><%= t("pages.newest_articles.what_to_expect.title") %></h3>
-                  <ul class="list-unstyled">
-                    <li class="mb-2">
-                      <i class="bi bi-check-circle text-primary me-2"></i>
-                      <%= t("pages.newest_articles.what_to_expect.item_1") %>
-                    </li>
-                    <li class="mb-2">
-                      <i class="bi bi-check-circle text-primary me-2"></i>
-                      <%= t("pages.newest_articles.what_to_expect.item_2") %>
-                    </li>
-                    <li class="mb-2">
-                      <i class="bi bi-check-circle text-primary me-2"></i>
-                      <%= t("pages.newest_articles.what_to_expect.item_3") %>
-                    </li>
-                  </ul>
-                </div>
+            <div class="mb-4">
+              <div class="alert alert-info border-0 shadow-sm">
+                <p class="mb-0"><%= t("pages.newest_articles.intro") %></p>
               </div>
             </div>
+
+            <!-- Blog Posts -->
+            <%= render "pages/welcome_to_hackertools" %>
           </div>
         </div>
       </div>
