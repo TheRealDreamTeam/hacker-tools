@@ -1,7 +1,6 @@
 <% state = read_state(tool, current_user) %>
-<% extra_classes = local_assigns[:classes] %>
 <span id="<%= dom_id(tool, 'read_state') %>"
-      class="<%= [state[:icon_class], extra_classes].compact.join(' ') %>"
+      class="<%= state[:icon_class] %>"
       title="<%= state[:read_at].present? ? l(state[:read_at], format: :long) : state[:title] %>"
       aria-label="<%= state[:read_at].present? ? l(state[:read_at], format: :long) : state[:title] %>"></span>
 

@@ -197,6 +197,13 @@ class SubmissionsController < ApplicationController
       # Not following - follow
       current_user.follows.create!(followable: @submission)
       flash[:notice] = t("submissions.follow.success")
+
+      # Mark submission as read for this user on first successful follow so the
+      # eye icon reflects that they've interacted with the submission.
+      user_submission = ensure_user_submission
+      if user_submission.read_at.nil?
+        user_submission.update(read_at: Time.current)
+      end
     end
     
     respond_to do |format|
@@ -351,8 +358,13 @@ class SubmissionsController < ApplicationController
     return unless current_user
 
     user_submission = ensure_user_submission
-    user_submission.read_at ||= Time.current
-    user_submission.save if user_submission.changed?
+    # Only set read_at the first time we see this submission to preserve the
+    # original "first viewed" timestamp. This method intentionally does not
+    # broadcast, keeping logic simple: other pages will pick up the state on
+    # their next render/navigation.
+    if user_submission.read_at.nil?
+      user_submission.update(read_at: Time.current)
+    end
   end
 
   def ensure_user_submission

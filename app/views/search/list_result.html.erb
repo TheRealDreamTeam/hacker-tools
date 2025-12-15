@@ -1,0 +1,15 @@
+<div class="d-flex justify-content-between align-items-start border rounded p-3">
+  <div>
+    <h6 class="mb-1">
+      <%= link_to list.list_name, list_path(list), class: "text-decoration-none" %>
+    </h6>
+    <p class="mb-1 text-muted small">
+      <%= t("search.lists.by_user", username: link_to(list.user.username, profile_path(list.user.username), class: "text-decoration-none")).html_safe %>
+    </p>
+    <p class="mb-0 text-muted small">
+      <%= t("search.lists.stats", tools: list.tools.count, followers: list.follower_count) %>
+    </p>
+  </div>
+  <span class="badge bg-light text-primary border"><%= t("search.lists.visibility") %></span>
+</div>
+

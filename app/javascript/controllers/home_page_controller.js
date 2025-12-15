@@ -74,16 +74,10 @@ export default class extends Controller {
       const handler = () => {
         const category = btn.dataset.category
         showCategory(category)
-        // Update hidden field in search form
-        const categoryInput = this.element.querySelector('input[name="category"]')
-        if (categoryInput) {
-          categoryInput.value = category
-        }
-        // Submit form to update results
-        const form = btn.closest('.container').querySelector('form')
-        if (form) {
-          form.requestSubmit()
-        }
+        // Persist selected category in URL without reloading
+        const url = new URL(window.location.href)
+        url.searchParams.set("category", category)
+        window.history.replaceState({}, "", url)
       }
       
       btn.addEventListener("click", handler)

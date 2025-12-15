@@ -5,18 +5,15 @@ class PagesController < ApplicationController
     @query = params[:query]&.strip
     @category = params[:category] || "trending"
 
-    # If search query is present, use unified search
+    # Redirect searches to dedicated search page
     if @query.present?
-      search_results = UnifiedSearchService.search(@query, limit: 10)
-      @trending_items = combine_and_rank_items(search_results[:tools], search_results[:submissions])
-      @new_hot_items = @trending_items # Use same results for search
-      @most_upvoted_items = @trending_items # Use same results for search
-    else
-      # Get mixed results for each category
-      @trending_items = get_trending_items
-      @new_hot_items = get_new_hot_items
-      @most_upvoted_items = get_most_upvoted_items
+      return redirect_to search_path(query: @query), status: :see_other
     end
+
+    # Get mixed results for each category
+    @trending_items = get_trending_items
+    @new_hot_items = get_new_hot_items
+    @most_upvoted_items = get_most_upvoted_items
 
     respond_to do |format|
       format.html

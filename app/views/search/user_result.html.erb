@@ -1,0 +1,20 @@
+<div class="d-flex align-items-center border rounded p-3 gap-3">
+  <div class="flex-shrink-0">
+    <% if user.avatar.attached? %>
+      <%= image_tag user.avatar, class: "rounded-circle", style: "width: 48px; height: 48px; object-fit: cover;", alt: user.username %>
+    <% else %>
+      <div class="rounded-circle bg-light d-flex align-items-center justify-content-center text-muted" style="width: 48px; height: 48px;">
+        <span class="fw-semibold"><%= user.username.first.upcase %></span>
+      </div>
+    <% end %>
+  </div>
+  <div class="flex-grow-1">
+    <h6 class="mb-1">
+      <%= link_to user.username, profile_path(user.username), class: "text-decoration-none" %>
+    </h6>
+    <% if user.user_bio.present? %>
+      <p class="mb-0 text-muted small"><%= truncate(user.user_bio, length: 120) %></p>
+    <% end %>
+  </div>
+</div>
+

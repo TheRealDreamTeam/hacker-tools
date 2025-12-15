@@ -245,6 +245,33 @@ en:
     search: "Search"
     confirm: "Confirm"
   
+  search:
+    title: "Search"
+    form:
+      label: "Search"
+      placeholder: "Search tools, submissions, tags, users, or lists"
+      reset: "Clear search"
+    filters:
+      title: "Filter categories"
+      select_all: "Select all"
+      apply: "Apply filters"
+    categories:
+      tools: "Tools"
+      submissions: "Submissions"
+      tags: "Tags"
+      users: "Users"
+      lists: "Lists"
+    sorted_by: "Sorted by relevance, then recency"
+    empty_query: "Enter a search term to see results across tools, submissions, tags, users, and public lists."
+    empty_state: "No %{category} found for \"%{query}\"."
+    load_more: "Load more %{category}"
+    lists:
+      by_user: "by %{username}"
+      stats: "%{tools} tools | %{followers} followers"
+      visibility: "Public list"
+    suggestions:
+      view_all: "View all results for \"%{query}\""
+
   # Common messages
   messages:
     success: "Success"

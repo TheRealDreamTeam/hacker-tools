@@ -17,6 +17,8 @@ Rails.application.routes.draw do
       end
     end
     root to: "pages#home"
+    get "search" => "search#show", as: :search
+    get "search/suggestions" => "search#suggestions", as: :search_suggestions
     get "dashboard" => "dashboard#show", as: :dashboard
     get "newest_articles" => "pages#newest_articles", as: :newest_articles
     get "user_guide" => "pages#user_guide", as: :user_guide

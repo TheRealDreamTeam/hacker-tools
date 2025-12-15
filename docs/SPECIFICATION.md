@@ -16,6 +16,31 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 
 ## Core Features
 
+### Search & Discovery
+- **Status**: In Progress (Dedicated search page)
+- **Description**: Dedicated search page aggregates results across tools, submissions, tags, users, and public lists with per-category pagination and filters.
+- **User Stories**:
+  - As a visitor, I want to search across all content types and filter by category so I can find the most relevant items quickly.
+  - As a visitor, I want results ordered by relevance and then recency so fresh, matching items show first.
+  - As a visitor, I want pagination per category so I can browse deeper without losing my filters.
+  - As a visitor, I can search while unauthenticated and access public tools, tags, profiles, and public lists.
+- **Technical Implementation**:
+  - Route: `GET /search` (locale-scoped).
+  - Controller: `SearchController#show` delegates to `GlobalSearchService` for full-page results; `SearchController#suggestions` serves Turbo Stream typeahead suggestions.
+  - Service: `GlobalSearchService` wraps existing hybrid search for tools/submissions and simple relevance+recency queries for tags/users/public lists; buffered hybrid ranking uses semantic + keyword matches for tools/submissions.
+  - Params: `query`, `categories[]` (defaults to all), per-category pages (`tools_page`, `submissions_page`, `tags_page`, `users_page`, `lists_page`), `per_page`.
+  - Sorting: relevance first (keyword/semantic for tools/submissions; prefix match for tags/users/lists), then recency.
+  - Pagination: per-category paging with “load more” links; buffer limits cap fetched hybrid results (tools/submissions).
+  - Suggestions: `GET /search/suggestions` returns a Turbo Stream that replaces a shared `search-suggestions` container with lightweight, per-category keyword-only suggestions (semantic disabled) on both home and search pages.
+- **UI/UX Considerations**:
+  - Search form redirects from home to `/search` (home no longer filters inline).
+  - Typeahead suggestions appear below the search input on both home and search pages once the user types at least 3 characters, grouped by category and honoring the current category filters.
+  - Filter panel with category checkboxes; default selects all.
+  - Results grouped by category with counts, empty states, and “load more” per category.
+  - Mobile-friendly card/list layout; uses existing cards for tools/submissions; lightweight rows for tags/users/lists.
+- **Access Control**:
+  - Unauthenticated users can search and view tool index/show, tag index/show, public user profiles, and public lists.
+
 ### Submission System
 - **Status**: Complete (Phase 1, Week 1)
 - **Description**: Users submit content (articles, guides, repos, etc.) about tools. Tools are community-owned entities, submissions are user-contributed content.
@@ -184,7 +209,17 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - **Attributes**: `read_at` (datetime), `upvote` (boolean), `favorite` (boolean), foreign keys to user/tool
 - **Associations**: `belongs_to :user`; `belongs_to :tool`
 - **Validations**: Uniqueness on `[user_id, tool_id]`.
-- **Behavior**: Created/touched on tool show (sets `read_at`), toggled via upvote/favorite buttons on home, tools index, and tool show.
+- **Behavior**: Created on first interaction; `read_at` is set the first time a user visits a tool show page and preserved as the "first viewed" timestamp. Upvote/favorite toggles reuse the same record. When `read_at` is first set, a Turbo Stream broadcast updates the tool read/eye state for that user across open pages (home unified cards, tools index, etc.).
+
+#### Tool read state UI
+- **Purpose**: Indicate whether the current user has viewed a tool and when it was first viewed.
+- **Components**:
+  - `ToolsHelper#read_state(tool, current_user)` returns icon class, visited flag, and timestamp based on `UserTool#read_at`.
+  - `tools/_read_state.html.erb` renders the eye icon span with a stable DOM id (`dom_id(tool, "read_state")`).
+- **Behavior**:
+  - On `ToolsController#show`, `touch_read_interaction` ensures a `UserTool` exists and sets `read_at` if nil. When set, `broadcast_read_state_update` sends a Turbo Stream update on the `"user_tools_read_state_<user_id>"` stream to replace the read_state span via the shared partial.
+  - `pages/home.html.erb` and `tools/index.html.erb` subscribe to `"user_tools_read_state_<current_user.id>"` with `turbo_stream_from` so the eye icon updates in real time after visiting a tool (no manual refresh needed).
+  - `tools/interaction_update.turbo_stream.erb` also replaces the same `read_state` span when interactions (upvote/favorite/follow) are toggled, keeping the UI consistent on the active page.
 
 ### Follow (polymorphic)
 - **Purpose**: Unified following system for users, tools, lists, and tags.
@@ -541,8 +576,19 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
     - Trending: most upvoted in the last 30 days (by `user_tools.upvote` or `user_submissions.upvote`)
     - New & Hot: items from last 7 days ranked by upvotes
     - Most Upvoted: highest upvotes all time
-    - Left (≈5 cols @ ≥md): star, ordinalized position, description or fallback, tags (or sample tags), stretched-link to item
-    - Right (≈7 cols @ ≥md): logo stub plus inline upvote button showing “▲ X upvotes”; signed-in users increment inline, guests see an alert to sign in
+    - Left (≈5 cols @ ≥md): star, ordinalized position, description or fallback, tags (or sample tags); entire card is clickable via a Stimulus `tool-card` controller, while interaction buttons and tag links remain independent.
+    - Right (≈7 cols @ ≥md): logo stub plus inline upvote/interaction buttons showing engagement; signed-in users increment inline, guests see an alert to sign in.
+- **Unified card components**:
+  - Tool cards share a common layout partial (`pages/_tool_card.html.erb`) reused on the home page unified lists, the tools index (`tools/index.html.erb`), and the search results (`search/show.html.erb`). All tool cards:
+    - Use a Bootstrap `card` wrapper with `card-hover`, left column for title/description/tags, right column for logo and interaction buttons, and a top-right eye icon rendered via `tools/_read_state`.
+    - Are fully clickable via the `tool-card` Stimulus controller, while upvote/favorite/follow/add-to-list buttons and tag links remain independent.
+  - Submission cards share a common layout partial (`submissions/_submission_card.html.erb`) reused on the home page unified lists and search results. They:
+    - Use a consistent card layout (title, type/status badges, description, tools/tags, author, interaction buttons) and show the eye icon in the top-right corner via `submissions/_read_state`.
+    - Accept an optional `index` local to prefix titles with an ordinal (used on the home unified lists).
+- **Read state UX**:
+  - For signed-in users, tool and submission cards render an eye icon in the top-right corner of each card, using shared `*_read_state` partials with stable DOM ids and simple span wrappers for positioning.
+  - When a user first views a tool or submission show page, `touch_read_interaction` in the respective controller sets `read_at` on the join model (`UserTool`/`UserSubmission`) if it is nil.
+  - When a user interacts (upvote, favorite, follow, add-to-list), the relevant controller actions ensure `read_at` is set and the Turbo Stream responses (`tools/interaction_update`, `submissions/interaction_update`, list add-to-multiple templates, and submission follow templates) replace both the interaction buttons and the `read_state` span on the current page so the eye icon updates immediately.
 - **Styling**:
   - Bootstrap grid-first layout, responsive down to mobile
   - Buttons and cards use design-system spacing/shadows with a noticeable hover lift (`card-hover`)
