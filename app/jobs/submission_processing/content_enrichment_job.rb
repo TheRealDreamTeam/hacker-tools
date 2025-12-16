@@ -155,13 +155,21 @@ module SubmissionProcessing
 
     # Generate and assign tags
     def generate_and_assign_tags(submission)
+      # Get existing tags to help LLM prefer them over creating new ones
+      # Limit to most common/relevant tags to avoid overwhelming the context
+      existing_tags = Tag.order(tag_type_id: :asc, tag_type: :asc, tag_name: :asc)
+                        .limit(200)
+                        .pluck(:tag_name, :tag_type)
+                        .map { |name, type| { name: name, type: type } }
+      
       tool = RubyLlmTools::SubmissionTagGenerationTool.new
       result = tool.execute(
         title: submission.submission_name,
         description: submission.submission_description,
         author_note: submission.author_note,
         submission_type: submission.submission_type,
-        url: submission.submission_url
+        url: submission.submission_url,
+        existing_tags: existing_tags
       )
       
       generated_tags = result[:tags] || []
@@ -194,13 +202,24 @@ module SubmissionProcessing
           # If tag doesn't exist, create it with the specified tag_type
           unless tag
             begin
+              # Map old category names to new tag structure
+              tag_type_mapping = map_category_to_tag_type(tag_category)
+              
+              # Use LLM-generated description if available, otherwise use a fallback
+              tag_description = tag_data["description"].presence || "Auto-generated from submission"
+              
               tag = Tag.create!(
                 tag_name: normalized_name,
-                tag_type: tag_category,
-                tag_description: "Auto-generated from submission"
+                tag_slug: normalized_name.parameterize,
+                tag_type_id: tag_type_mapping[:tag_type_id],
+                tag_type: tag_type_mapping[:tag_type],
+                tag_type_slug: tag_type_mapping[:tag_type_slug],
+                tag_description: tag_description,
+                color: tag_type_mapping[:color] || "yellow",
+                icon: tag_type_mapping[:icon] || "📝"
               )
-            rescue ActiveRecord::RecordInvalid => e
-              # If creation fails (e.g., race condition), try to find it again
+            rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => e
+              # If creation fails (e.g., race condition, unique constraint violation), try to find it again
               Rails.logger.warn "Tag creation failed for '#{normalized_name}': #{e.message}. Retrying find..."
               tag = Tag.find_by("LOWER(tag_name) = ?", normalized_name)
               unless tag
@@ -227,26 +246,82 @@ module SubmissionProcessing
       end
     rescue StandardError => e
       Rails.logger.error "Tag generation error for submission #{submission.id}: #{e.message}"
+      Rails.logger.error e.backtrace.first(10).join("\n")
     end
 
     # Assign submission tags to all linked tools
+    # Only assigns tags that are appropriate for tools (e.g., programming languages, frameworks, platforms)
+    # Excludes submission-specific tags (e.g., content-type tags like "games", "learning", "tutorial")
     def assign_tags_to_linked_tools(submission)
       return if submission.tools.empty? || submission.tags.empty?
 
+      # Tag types that are appropriate for tools (describe the tool itself)
+      # These tags describe technologies, platforms, frameworks, etc. that the tool represents
+      tool_appropriate_tag_type_slugs = [
+        "programming-language",
+        "programming-language-version",
+        "framework",
+        "framework-version",
+        "platform",
+        "dev-tool",
+        "database",
+        "cloud-platform",
+        "cloud-service",
+        "topic",
+        "task"
+      ].freeze
+
+      # Tag types that are submission-specific and should NOT be assigned to tools
+      # These tags describe the submission's format/context (e.g., "games", "learning", "tutorial")
+      submission_specific_tag_type_slugs = [
+        "content-type",  # e.g., games, learning, tutorial, course, articles, videos
+        "level"          # e.g., beginner, intermediate, advanced
+      ].freeze
+
+      # Specific tag names that describe submission format/context and should NOT be assigned to tools
+      # These are tags that describe HOW the content is presented, not WHAT the tool is
+      submission_format_tag_names = [
+        "games", "learning", "tutorial", "course", "articles", "guides", 
+        "documentation", "videos", "podcasts", "code snippets", "websites",
+        "social posts", "discussions", "talks", "cheatsheets"
+      ].freeze
+
+      # Filter tags to only include those appropriate for tools
+      tool_appropriate_tags = submission.tags.select do |tag|
+        tag_type_slug = tag.tag_type_slug
+        
+        # If tag type is in the tool-appropriate list, check if it's not submission-specific
+        if tool_appropriate_tag_type_slugs.include?(tag_type_slug)
+          !submission_specific_tag_type_slugs.include?(tag_type_slug)
+        # If tag type is content-type, only include if it's NOT a submission format tag
+        elsif tag_type_slug == "content-type"
+          !submission_format_tag_names.include?(tag.tag_name.downcase)
+        else
+          false
+        end
+      end
+
+      return if tool_appropriate_tags.empty?
+
       assigned_count = 0
       submission.tools.each do |tool|
-        submission.tags.each do |tag|
+        tool_appropriate_tags.each do |tag|
           unless tool.tags.include?(tag)
             tool.tags << tag
             assigned_count += 1
-            Rails.logger.info "Assigned tag '#{tag.tag_name}' to tool #{tool.id} (#{tool.tool_name}) from submission #{submission.id}"
+            Rails.logger.info "Assigned tag '#{tag.tag_name}' (#{tag.tag_type_slug}) to tool #{tool.id} (#{tool.tool_name}) from submission #{submission.id}"
           end
         end
       end
 
-      Rails.logger.info "Assigned #{assigned_count} tag(s) to #{submission.tools.count} tool(s) from submission #{submission.id}"
+      if assigned_count > 0
+        Rails.logger.info "Assigned #{assigned_count} tool-appropriate tag(s) to #{submission.tools.count} tool(s) from submission #{submission.id}"
+      else
+        Rails.logger.debug "No tool-appropriate tags to assign from submission #{submission.id} (filtered out #{submission.tags.count - tool_appropriate_tags.count} submission-specific tags)"
+      end
     rescue StandardError => e
       Rails.logger.error "Error assigning tags to tools for submission #{submission.id}: #{e.message}"
+      Rails.logger.error e.backtrace.first(10).join("\n")
     end
 
     # Filter out hardware items (cables, physical devices, etc.) that are not software tools
@@ -428,6 +503,23 @@ module SubmissionProcessing
       )
     rescue StandardError => e
       Rails.logger.warn "Failed to broadcast tools update: #{e.message}"
+    end
+
+    # Map old category names to new tag structure
+    # Maps legacy category values to new tag_type_id, tag_type, tag_type_slug, color, and icon
+    def map_category_to_tag_type(category)
+      mapping = {
+        "category" => { tag_type_id: 2, tag_type: "Content Type", tag_type_slug: "content-type", color: "yellow", icon: "📝" },
+        "language" => { tag_type_id: 3, tag_type: "Programming Language", tag_type_slug: "programming-language", color: "grey", icon: "⌨️" },
+        "framework" => { tag_type_id: 5, tag_type: "Framework", tag_type_slug: "framework", color: "green", icon: "🧩" },
+        "library" => { tag_type_id: 2, tag_type: "Content Type", tag_type_slug: "content-type", color: "yellow", icon: "📝" },
+        "version" => { tag_type_id: 4, tag_type: "Language Version", tag_type_slug: "programming-language-version", color: "grey", icon: "🔢" },
+        "platform" => { tag_type_id: 1, tag_type: "Platform", tag_type_slug: "platform", color: "black", icon: "🔗" },
+        "other" => { tag_type_id: 2, tag_type: "Content Type", tag_type_slug: "content-type", color: "yellow", icon: "📝" }
+      }
+      
+      # Default to "other" if category not found
+      mapping[category.to_s.downcase] || mapping["other"]
     end
   end
 end

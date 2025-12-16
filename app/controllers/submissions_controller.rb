@@ -94,7 +94,7 @@ class SubmissionsController < ApplicationController
 
     # Load tags for the submission and all available tags grouped by type
     @submission_tags = @submission.tags.includes(:parent)
-    @available_tags = Tag.includes(:parent).order(tag_type: :asc, tag_name: :asc)
+    @available_tags = Tag.includes(:parent).order(tag_type_id: :asc, tag_type: :asc, tag_name: :asc)
   end
 
   # GET /submissions/new

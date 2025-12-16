@@ -72,7 +72,7 @@
       <h3 class="h6 mb-3"><%= t("tools.show.select_tag") %></h3>
       <% @available_tags.group_by(&:tag_type).each do |tag_type, tags| %>
         <div class="mb-3">
-          <strong class="text-muted"><%= t("tags.tag_types.#{tag_type}") %>:</strong>
+          <strong class="text-muted"><%= tag_type %>:</strong>
           <div class="d-flex flex-wrap gap-2 mt-2">
             <% tags.each do |tag| %>
               <% unless @tool_tags.include?(tag) %>
@@ -104,7 +104,19 @@
         <div class="d-flex flex-wrap gap-2">
           <% @all_tool_tags.each do |tag| %>
             <% unless @tool_tags.map(&:id).include?(tag.id) %>
-              <span class="badge <%= tag_badge_class(tag.tag_type) %>">
+              <% 
+                badge_style = ""
+                if tag.color.present?
+                  color_hex = color_name_to_hex(tag.color)
+                  badge_style = "background-color: #{color_hex};"
+                  if ["black", "navy", "purple", "indigo", "blue"].include?(tag.color.downcase)
+                    badge_style += " color: #ffffff;"
+                  else
+                    badge_style += " color: #000000;"
+                  end
+                end
+              %>
+              <span class="badge <%= tag_badge_class(tag) %>" style="<%= badge_style %>">
                 <%= tag.display_name %>
               </span>
             <% end %>
