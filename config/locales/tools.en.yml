@@ -35,6 +35,7 @@ en:
       showing_top_tags: "Showing top %{count} of %{total} tags"
       show_all_tags: "Show all tags"
       interactions_hint: "Upvote, favorite, or follow this tool."
+      related_submissions_title: "Related Submissions"
       comments_title: "Discussion"
       flags_title: "Flags"
       bugs_title: "Bugs"

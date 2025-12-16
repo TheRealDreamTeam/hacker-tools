@@ -4,6 +4,14 @@ en:
       title: "Submissions"
       new_submission: "New Submission"
       empty_state: "No submissions yet. Create the first one!"
+      sort:
+        label: "Sort By:"
+        newest: "Newest"
+        alphabetical: "Alphabetical"
+        most_upvoted: "Most Upvoted"
+        trending: "Trending"
+        new_hot: "New & Hot"
+        most_followed: "Most Followed"
     new:
       title: "Create Submission"
     edit:
