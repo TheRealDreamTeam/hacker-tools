@@ -52,6 +52,16 @@
   }
 }
 
+// Hero subheading - larger text size for better visibility
+.hero-subheading {
+  font-size: 1.25rem; // 20px - larger than default body text
+  line-height: 1.6;
+  
+  @media (max-width: 767.98px) {
+    font-size: 1.125rem; // 18px on mobile for readability
+  }
+}
+
 // Make article cards look like list items on mobile - narrow and compact
 @media (max-width: 767.98px) {
   .article-card {

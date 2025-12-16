@@ -9,14 +9,18 @@
         <%= hidden_field_tag :tool_id, nil, data: { add_to_list_modal_target: "toolId" } %>
         <%= hidden_field_tag :submission_id, nil, data: { add_to_list_modal_target: "submissionId", style: "display: none;" } %>
         <div class="modal-body" data-add-to-list-modal-target="body">
-          <p><%= t("lists.add_to_lists.select_message") %></p>
+          <p data-add-to-list-modal-target="selectMessage"><%= t("lists.add_to_lists.select_message") %></p>
           <div class="list-group mt-3" data-add-to-list-modal-target="listGroup">
             <%# Lists will be populated dynamically by Stimulus controller %>
+          </div>
+          <div data-add-to-list-modal-target="noListsMessage" class="d-none">
+            <p class="text-muted"><%= t("lists.add_to_lists.no_lists_message") %></p>
+            <%= link_to t("lists.add_to_lists.create_list_button"), new_list_path, class: "btn btn-primary" %>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= t("actions.cancel") %></button>
-          <%= f.submit t("lists.add_to_lists.submit_button"), class: "btn btn-primary" %>
+          <%= f.submit t("lists.add_to_lists.submit_button"), class: "btn btn-primary", data: { add_to_list_modal_target: "submitButton" } %>
         </div>
       <% end %>
     </div>

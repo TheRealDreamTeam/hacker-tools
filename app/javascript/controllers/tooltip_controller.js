@@ -52,12 +52,17 @@ export default class extends Controller {
         // Get placement from data attribute (data-bs-placement becomes bsPlacement in dataset)
         const placement = element.dataset.bsPlacement || element.getAttribute('data-bs-placement') || 'top'
         
+        // Get delay from data attribute (default 500ms for better UX - delay before showing tooltip)
+        const delayAttr = element.dataset.bsDelay || element.getAttribute('data-bs-delay')
+        const delay = delayAttr ? parseInt(delayAttr, 10) : 500
+        
         // Initialize Bootstrap tooltip
         // Bootstrap will automatically read data-bs-title or title attribute for the tooltip content
         new bootstrap.Tooltip(element, {
           trigger: 'hover',
           placement: placement,
-          html: false
+          html: false,
+          delay: { show: delay, hide: 0 } // Show delay (500ms default), hide immediately
         })
       }
     })

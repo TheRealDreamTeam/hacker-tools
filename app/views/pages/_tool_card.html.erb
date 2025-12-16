@@ -1,4 +1,6 @@
-<div class="card mb-3 position-relative card-hover"
+<%# Tools always have black border and subtle gray background %>
+<div class="card mb-3 position-relative card-hover border-start border-4 border-primary"
+     style="background-color: #f5f5f5;"
      data-controller="tool-card"
      data-tool-card-url-value="<%= tool_path(tool) %>"
      data-action="click->tool-card#navigate">
@@ -35,15 +37,8 @@
         <!-- Removed stretched-link to keep interaction buttons clickable without redirect -->
       </div>
 
-      <!-- Right content: logo + upvotes aligned on the same row -->
+      <!-- Right content: upvotes aligned on the same row -->
       <div class="col-12 col-md-7 d-flex justify-content-md-end justify-content-start align-items-center gap-3 mt-3 mt-md-0">
-        <div class="border rounded-circle bg-light d-inline-flex align-items-center justify-content-center flex-shrink-0" style="width: 64px; height: 64px;">
-          <% if tool.icon.attached? %>
-            <%= image_tag tool.icon, alt: tool.tool_name, class: "rounded-circle", style: "width: 64px; height: 64px; object-fit: cover;" %>
-          <% else %>
-            <span class="text-muted small"><%= t("pages.home.card.logo_placeholder") %></span>
-          <% end %>
-        </div>
         <%= render "tools/interaction_buttons", tool: tool %>
       </div>
     </div>

@@ -44,10 +44,11 @@ en:
       description: "Search less. Build more."
       hero:
         heading: "Search less. Build more."
-        subheading: "Your peer-powered guide to the most relevant dev tools. Because staying up to date shouldn't cost you time."
+        subheading: "Stop wasting time hunting for tools and lost links. Browse curated tools, community-submitted articles and guides, and save your favorites. Share with the community and follow what’s gaining real traction in development."
         articles:
-          newest: "<Newest article from admin>"
-          roadmaps: "Roadmaps"
+          newest: "Newest Blogposts"
+          guide: "Here is a guide to best use HackerTools"
+          user_guide: "User Guide: HackerTools"
           about_us: "About us"
       search_placeholder: "Search tools, tags, or lists"
       category_aria_label: "Tool category filters"
@@ -55,9 +56,13 @@ en:
         trending: "Trending"
         new_hot: "New & Hot"
         most_upvoted: "Most Upvoted"
+        tooltips:
+          trending: "Tools and submissions with the most upvotes in the last 30 days."
+          new_hot: "Tools and submissions created in the last 7 days. Sorted by upvotes."
+          most_upvoted: "All-time most upvoted tools and submissions."
       list_placeholder: "Tool cards for the selected category will appear here."
       ads:
-
+        supporting_text: "Supporting the community"
       card:
         title: "%{ordinal} Tool %{index}"
         description: "Description placeholder for tool %{index}."
@@ -67,6 +72,144 @@ en:
         logo_placeholder: "Logo"
         upvotes: "%{count} upvotes"
         upvote_guest_alert: "Please sign in before you can upvote."
+    newest_articles:
+      title: "Posts from Admin"
+      subtitle: "Stay updated with the latest news, updates, and insights from the HackerTools team. ✨"
+      intro: "This is our articles section! Here you'll find the latest updates, announcements, and insights from the HackerTools team. We're committed to keeping our community informed about platform improvements, new features, and best practices for discovering and sharing development tools."
+      coming_soon: "We're working on bringing you regular articles and updates. Check back soon for the latest content!"
+      what_to_expect:
+        title: "What to Expect"
+        item_1: "Platform updates and new feature announcements"
+        item_2: "Tips and best practices for tool discovery"
+        item_3: "Community highlights and success stories"
+      welcome_post:
+        title: "🎉 Welcome to HackerTools"
+        date: "December 2024"
+        content: |
+          🚀 We're excited to welcome you to HackerTools, a community-driven platform designed to help developers discover the best tools for their projects.
+          
+          💡 Our mission is simple: reduce the time developers spend searching for tools so they can focus on what they do best—building amazing things. Through our peer-powered platform, you can discover, share, and discuss development tools with fellow developers.
+          
+          ⭐ Here's what makes HackerTools special:
+          
+          • 🔍 Community-Driven Discovery: The best tools rise to the top through upvoting and community engagement
+          • 📚 Comprehensive Tool Information: Find detailed information, submissions, and discussions about each tool
+          • 📋 Easy Organization: Create lists to organize your favorite tools and share them with the community
+          • 💬 Active Discussions: Engage with the community through comments, flags, and bug reports
+          
+          🎯 Whether you're looking for the latest frontend framework, a new database tool, or a helpful development utility, HackerTools is here to help you find exactly what you need.
+          
+          🏁 Get started by browsing trending tools, creating an account to upvote and favorite tools, or submitting your own tool discoveries. Together, we're building a better way to discover development tools.
+          
+          Happy tool hunting!
+    user_guide:
+      title: "User Guide"
+      subtitle: "Learn how to make the most of HackerTools and discover the best development tools."
+      intro: "This guide will help you navigate HackerTools effectively. Learn how to discover tools, share submissions, and engage with the community to get the most out of the platform."
+      sections:
+        basics:
+          badge: "Basics"
+          title: "Understanding Tools and Submissions"
+          description: "Learn the core concepts of HackerTools"
+          tool_explanation: "Tools are community-owned entities representing technologies, frameworks, or services (like React, Git, Docker, or PostgreSQL). They serve as topics that users can discover and discuss. Tools are not owned by individual users - they belong to the entire community."
+          submission_explanation: "Submissions are user-contributed content about tools. When you find an interesting article, guide, repository, or other resource related to a tool, you can submit it to share with the community. Submissions help others discover valuable resources and learn more about tools."
+          submission_types_title: "Types of Submissions"
+          submission_types_description: "You can submit various types of content:"
+          bullet_article: "📝"
+          bullet_guide: "📚"
+          bullet_documentation: "📖"
+          bullet_github_repo: "💻"
+          bullet_social_post: "🐦"
+          bullet_code_snippet: "💾"
+          bullet_website: "🌐"
+          bullet_video: "🎥"
+          bullet_podcast: "🎙️"
+          bullet_other: "📦"
+          type_article: "Articles - Blog posts, tutorials, and written content"
+          type_guide: "Guides - Step-by-step how-to guides and tutorials"
+          type_documentation: "Documentation - Official documentation pages"
+          type_github_repo: "GitHub Repos - Code repositories and projects"
+          type_social_post: "Social Posts - Twitter/X, LinkedIn posts, etc."
+          type_code_snippet: "Code Snippets - Code examples and gists"
+          type_website: "Websites - Company or product websites"
+          type_video: "Videos - YouTube, Vimeo, or other video content"
+          type_podcast: "Podcasts - Podcast episodes about tools"
+          type_other: "Other - Any other relevant content"
+        getting_started:
+          badge: "Getting Started"
+          title: "Getting Started"
+          description: "Essential features to help you begin your journey"
+          bullet_1: "🚀"
+          bullet_2: "✨"
+          bullet_3: "🔍"
+          item_1: "Browse trending tools and submissions"
+          item_2: "Create an account to upvote and favorite"
+          item_3: "Search for tools by name, tag, or category"
+        discovery:
+          badge: "Discovery"
+          title: "Discovering Tools"
+          description: "Find the tools you need quickly and efficiently"
+          bullet_1: "🔎"
+          bullet_2: "🏷️"
+          bullet_3: "⭐"
+          item_1: "Use the search bar to find specific tools"
+          item_2: "Browse by categories and tags"
+          item_3: "Check trending and most upvoted tools"
+        community:
+          badge: "Community"
+          title: "Engaging with the Community"
+          description: "Connect with other developers and share knowledge"
+          bullet_1: "💝"
+          bullet_2: "👍"
+          bullet_3: "📋"
+          item_1: "Contribute with your submissions - sharing is caring"
+          item_2: "Upvote tools you find useful"
+          item_3: "Create lists to organize your favorite tools"
+        hierarchy:
+          title: "Platform Hierarchy"
+          description: "Understanding how Tools, Submissions, and Discussions connect"
+          tool_label: "Tool"
+          tool_description: "Community-owned entity (e.g., React, Git, Docker)"
+          submission_label: "Submission"
+          submission_description: "User-contributed content about a tool"
+          discussion_label: "Discussion"
+          discussion_description: "Comments, flags, bugs on tools or submissions"
+          interactions_label: "Interactions"
+          interactions_description: "Upvoting, favorites, lists for endorsing and organizing tools or submissions"
+    about_us:
+      title: "About Us"
+      subtitle: "Learn more about HackerTools and our mission to help developers discover the best tools."
+      mission:
+        title: "Our Mission"
+        content: "HackerTools was born from a simple observation: developers spend too much time searching for the right tools instead of building amazing things. Our mission is to create a peer-powered platform where developers can discover, share, and discuss the best development tools, making it easier to stay up-to-date with the rapidly evolving tech landscape. Through upvoting and community engagement, the best tools naturally rise to the top, helping everyone make informed decisions about which tools to use."
+      what_we_do:
+        title: "What We Do"
+        feature_1:
+          title: "Tool Discovery"
+          description: "Find the best development tools curated by the community"
+        feature_2:
+          title: "Community Driven"
+          description: "Share and discuss tools with fellow developers"
+        feature_3:
+          title: "Stay Updated"
+          description: "Keep up with trending tools and new releases"
+      values:
+        title: "Our Values"
+        value_1:
+          title: "Community First"
+          description: "We believe in the power of community-driven content and collaboration"
+        value_2:
+          title: "Quality Over Quantity"
+          description: "We focus on curating high-quality tools and resources"
+        value_3:
+          title: "Continuous Improvement"
+          description: "We're always working to make the platform better based on user feedback"
+        value_4:
+          title: "Open and Transparent"
+          description: "We believe in open communication and transparency with our community"
+      learn_more:
+        title: "Learn More"
+        message: "Still have questions? Check out our user guide to learn how to make the most of HackerTools."
   
   # Navigation and common actions
   navigation:
@@ -370,6 +513,8 @@ en:
       title: "Update lists"
       select_message: "Select lists to add this tool to, or unselect to remove:"
       submit_button: "Update lists"
+      no_lists_message: "You don't have any lists yet. Create your first list to get started!"
+      create_list_button: "Create new list"
     show:
       not_found: "List not found"
       access_denied: "You don't have permission to view this list"
@@ -386,7 +531,6 @@ en:
   footer:
     about: "About"
     guidelines: "Guidelines"
-    roadmap: "Roadmap"
     github: "GitHub"
     privacy: "Privacy"
     terms: "Terms"
