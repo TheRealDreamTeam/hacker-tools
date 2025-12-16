@@ -10,18 +10,18 @@ class CommentsController < ApplicationController
     if @comment.save
       redirect_to commentable_path(@commentable, anchor: anchor_for(@comment)), notice: t("comments.flash.created")
     else
-      redirect_to commentable_path(@commentable), alert: @comment.errors.full_messages.to_sentence
+      redirect_to commentable_path(@commentable, anchor: "discussion-section"), alert: @comment.errors.full_messages.to_sentence
     end
   end
 
   def destroy
     @comment.destroy
-    redirect_to commentable_path(@commentable), notice: t("comments.flash.deleted")
+    redirect_to commentable_path(@commentable, anchor: "discussion-section"), notice: t("comments.flash.deleted")
   end
 
   def resolve
     @comment.update(solved: !@comment.solved)
-    redirect_to commentable_path(@commentable), notice: t("comments.flash.resolved")
+    redirect_to commentable_path(@commentable, anchor: "discussion-section"), notice: t("comments.flash.resolved")
   end
 
   def upvote
@@ -30,11 +30,11 @@ class CommentsController < ApplicationController
     if upvote_record.persisted?
       # Already upvoted, remove upvote
       upvote_record.destroy
-      redirect_to commentable_path(@commentable, anchor: anchor_for(@comment)), notice: t("comments.flash.upvote_removed")
+      redirect_to commentable_path(@commentable, anchor: anchor_for(@comment) || "discussion-section"), notice: t("comments.flash.upvote_removed")
     else
       # Not upvoted, add upvote
       upvote_record.save
-      redirect_to commentable_path(@commentable, anchor: anchor_for(@comment)), notice: t("comments.flash.upvoted")
+      redirect_to commentable_path(@commentable, anchor: anchor_for(@comment) || "discussion-section"), notice: t("comments.flash.upvoted")
     end
   end
 
