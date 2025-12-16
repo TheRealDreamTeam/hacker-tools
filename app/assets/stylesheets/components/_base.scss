@@ -180,6 +180,26 @@ h6,
   margin-top: 0.1rem;
 }
 
+// Related tools on submission show page - make interaction buttons 2% smaller to fit on one line
+.submission-show-related-tools {
+  .interaction-buttons .btn {
+    width: calc(64px * 0.98); // 2% smaller
+    height: calc(64px * 0.98); // 2% smaller
+    
+    i {
+      font-size: calc(2rem * 0.98); // 2% smaller icon
+    }
+  }
+  
+  .interaction-buttons .interaction-item {
+    width: calc(64px * 0.98); // 2% smaller
+  }
+  
+  .interaction-buttons .interaction-count {
+    font-size: calc(0.95rem * 0.98); // 2% smaller text
+  }
+}
+
 // All form inputs should have consistent height and rounded corners
 .form-control:not(textarea),
 .form-select,
