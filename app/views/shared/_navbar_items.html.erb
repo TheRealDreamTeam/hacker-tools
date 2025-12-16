@@ -2,12 +2,28 @@
 <% unless devise_controller? %>
   <% if user_signed_in? %>
   <li class="nav-item">
-    <%= link_to t("navigation.submissions"), submissions_path,
+    <%= link_to t("navigation.new_submission"), new_submission_path,
+        class: "nav-link fw-bold",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
+    <%= link_to t("navigation.profile"), profile_path(current_user.username),
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= link_to t("navigation.new_submission"), new_submission_path,
+    <%= link_to t("navigation.favorites"), "#",
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+    <span class="badge bg-secondary ms-1">#TODO</span>
+  </li>
+  <li class="nav-item">
+    <%= link_to t("navigation.dashboard"), dashboard_path,
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
+    <%= link_to t("navigation.submissions"), submissions_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
@@ -17,17 +33,17 @@
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
+    <%= link_to t("navigation.lists"), lists_path,
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
     <%= link_to t("navigation.tags"), tags_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= link_to t("navigation.profile"), profile_path(current_user.username),
-        class: "nav-link",
-        data: { turbo_prefetch: false } %>
-  </li>
-  <li class="nav-item">
-    <%= link_to t("navigation.dashboard"), dashboard_path,
+    <%= link_to t("navigation.settings"), account_settings_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
