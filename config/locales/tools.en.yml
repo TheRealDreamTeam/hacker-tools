@@ -10,6 +10,15 @@ en:
       new_tool: "New tool"
       owner: "by %{owner}"
       empty_state: "No tools yet. Create the first one!"
+      sort:
+        label: "Sort By:"
+        alphabetical: "Alphabetical"
+        newest: "Newest"
+        most_upvoted: "Most Upvoted"
+        trending: "Trending"
+        new_hot: "New & Hot"
+        most_favorited: "Most Favorited"
+        most_followed: "Most Followed"
     new:
       title: "Create tool"
     edit:

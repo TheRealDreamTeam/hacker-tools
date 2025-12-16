@@ -6,7 +6,28 @@ class ToolsController < ApplicationController
 
   # GET /tools
   def index
-    @tools = Tool.includes(:tags, :user_tools).order(created_at: :desc)
+    # Tools index supports multiple sort modes so users can browse by
+    # alphabetic name, recency, engagement, or follows. We keep the default
+    # sort alphabetical to make scanning the catalog predictable.
+    @sort = params[:sort].presence || "alphabetical"
+
+    base_scope = Tool.public_tools.includes(:tags, :user_tools, :follows)
+    @tools = case @sort
+             when "newest"
+               base_scope.recent
+             when "most_upvoted"
+               base_scope.most_upvoted_all_time
+             when "trending"
+               base_scope.trending
+             when "new_hot"
+               base_scope.new_hot
+             when "most_favorited"
+               base_scope.most_favorited
+             when "most_followed"
+               base_scope.most_followed
+             else
+               base_scope.alphabetical
+             end
   end
 
   # GET /tools/:id

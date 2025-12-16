@@ -16,14 +16,42 @@
     <div class="col-12 col-lg-8">
       <div class="container py-4">
         <div class="p-2">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center align-items-start gap-3 mb-4">
     <h1 class="h3 m-0"><%= t("tools.index.title") %></h1>
+
+    <!-- Sorting dropdown: allows users to choose how tools are ordered on the index page -->
+    <div class="d-flex align-items-center gap-2">
+      <label for="tools-sort-select" class="form-label m-0 small text-muted">
+        <%= t("tools.index.sort.label") %>
+      </label>
+      <%= form_with url: tools_path, method: :get, local: true, html: { class: "d-inline-block" } do |f| %>
+        <%= f.select :sort,
+          options_for_select(
+            [
+              [t("tools.index.sort.alphabetical"), "alphabetical"],
+              [t("tools.index.sort.newest"), "newest"],
+              [t("tools.index.sort.most_upvoted"), "most_upvoted"],
+              [t("tools.index.sort.trending"), "trending"],
+              [t("tools.index.sort.new_hot"), "new_hot"],
+              [t("tools.index.sort.most_favorited"), "most_favorited"],
+              [t("tools.index.sort.most_followed"), "most_followed"]
+            ],
+            @sort
+          ),
+          { include_blank: false },
+          {
+            id: "tools-sort-select",
+            class: "form-select form-select-sm",
+            onchange: "this.form.submit()"
+          } %>
+      <% end %>
+    </div>
   </div>
   <% if @tools.any? %>
     <div class="row row-cols-1 row-cols-md-2 g-3">
-      <% @tools.each_with_index do |tool, index| %>
+      <% @tools.each do |tool| %>
         <div class="col">
-          <%= render "pages/tool_card", tool: tool, index: index %>
+          <%= render "pages/tool_card", tool: tool %>
         </div>
       <% end %>
     </div>
