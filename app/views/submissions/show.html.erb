@@ -132,7 +132,7 @@
         <%= link_to t("comments.sort.trending"), submission_path(@submission, sort_by: "trending"), class: "btn btn-outline-secondary #{@sort_by == 'trending' ? 'active' : ''}" %>
       </div>
     </div>
-    <div class="mb-3">
+    <div class="mb-2">
       <%= render "comments/form", commentable: @submission, comment: @new_comment, submit_label: t("comments.actions.post_comment"), placeholder: t("comments.form.comment_placeholder") %>
     </div>
     <% @comments.each do |comment| %>

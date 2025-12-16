@@ -7,56 +7,71 @@
           <p class="mb-2"><%= simple_format(comment.comment) %></p>
           <p class="text-secondary small mb-0"><%= l(comment.created_at, format: :short) %></p>
         </div>
-        <div class="d-flex gap-2 align-items-center">
-          <% if comment.commentable_type == "Tool" %>
-            <%= button_to upvote_tool_comment_path(comment.commentable, comment),
-                          method: :post,
-                          class: "btn btn-sm #{comment.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'}",
-                          title: comment.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
-              <span>↑</span> <span><%= comment.upvote_count %></span>
+        <div class="d-flex flex-column gap-1 align-items-end">
+          <div class="interaction-buttons d-flex gap-2 align-items-center">
+            <% if comment.commentable_type == "Tool" %>
+              <div class="interaction-item d-flex flex-column align-items-center gap-0">
+                <%= button_to upvote_tool_comment_path(comment.commentable, comment),
+                              method: :post,
+                              class: "btn btn-sm #{comment.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'} interaction-btn",
+                              title: comment.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote"),
+                              aria: { label: t("comments.actions.upvote") } do %>
+                  <i class="bi <%= comment.upvoted_by?(current_user) ? 'bi-arrow-up-circle-fill text-primary' : 'bi-arrow-up-circle text-secondary' %>"></i>
+                <% end %>
+                <span class="interaction-count" title="<%= t('comments.actions.upvote') %>" aria-label="<%= t('comments.actions.upvote') %>">
+                  <%= comment.upvote_count %>
+                </span>
+              </div>
+            <% elsif comment.commentable_type == "Submission" %>
+              <div class="interaction-item d-flex flex-column align-items-center gap-0">
+                <%= button_to upvote_submission_comment_path(comment.commentable, comment),
+                              method: :post,
+                              class: "btn btn-sm #{comment.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'} interaction-btn",
+                              title: comment.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote"),
+                              aria: { label: t("comments.actions.upvote") } do %>
+                  <i class="bi <%= comment.upvoted_by?(current_user) ? 'bi-arrow-up-circle-fill text-primary' : 'bi-arrow-up-circle text-secondary' %>"></i>
+                <% end %>
+                <span class="interaction-count" title="<%= t('comments.actions.upvote') %>" aria-label="<%= t('comments.actions.upvote') %>">
+                  <%= comment.upvote_count %>
+                </span>
+              </div>
             <% end %>
-            <% if comment.user == current_user %>
-              <% # Tools are community-owned, so only comment author can delete %>
-              <%= button_to t("comments.actions.delete"), tool_comment_path(comment.commentable, comment),
-                            method: :delete,
-                            data: { turbo_confirm: t("comments.confirmations.delete") },
-                            class: "btn btn-sm btn-outline-danger" %>
+          </div>
+          <div class="d-flex gap-2 align-items-center">
+            <% if (comment.commentable_type == "Tool" && comment.user == current_user) || (comment.commentable_type == "Submission" && (comment.user == current_user || comment.commentable.user == current_user)) %>
+              <% if comment.commentable_type == "Tool" %>
+                <%= button_to t("comments.actions.delete"), tool_comment_path(comment.commentable, comment),
+                              method: :delete,
+                              data: { turbo_confirm: t("comments.confirmations.delete") },
+                              class: "btn btn-sm btn-outline-danger" %>
+              <% elsif comment.commentable_type == "Submission" %>
+                <%= button_to t("comments.actions.delete"), submission_comment_path(comment.commentable, comment),
+                              method: :delete,
+                              data: { turbo_confirm: t("comments.confirmations.delete") },
+                              class: "btn btn-sm btn-outline-danger" %>
+              <% end %>
             <% end %>
-          <% elsif comment.commentable_type == "Submission" %>
-            <%= button_to upvote_submission_comment_path(comment.commentable, comment),
-                          method: :post,
-                          class: "btn btn-sm #{comment.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'}",
-                          title: comment.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
-              <span>↑</span> <span><%= comment.upvote_count %></span>
+            <% if allow_replies %>
+              <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#reply-form-<%= comment.id %>" aria-expanded="false" aria-controls="reply-form-<%= comment.id %>">
+                <%= t("comments.actions.reply") %>
+              </button>
             <% end %>
-            <% if comment.user == current_user || (comment.commentable_type == "Submission" && comment.commentable.user == current_user) %>
-              <%= button_to t("comments.actions.delete"), submission_comment_path(comment.commentable, comment),
-                            method: :delete,
-                            data: { turbo_confirm: t("comments.confirmations.delete") },
-                            class: "btn btn-sm btn-outline-danger" %>
-            <% end %>
-          <% end %>
+          </div>
         </div>
       </div>
+      <% if allow_replies %>
+        <div class="collapse mt-2" id="reply-form-<%= comment.id %>">
+          <%= render "comments/form",
+                      commentable: comment.commentable,
+                      comment: Comment.new(parent: comment, comment_type: :comment),
+                      submit_label: t("comments.actions.reply"),
+                      placeholder: t("comments.form.reply_placeholder"),
+                      show_cancel: true,
+                      collapse_target: "reply-form-#{comment.id}" %>
+        </div>
+      <% end %>
     </div>
   </div>
-
-  <% if allow_replies %>
-    <div class="mt-2 ps-3">
-      <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#reply-form-<%= comment.id %>" aria-expanded="false" aria-controls="reply-form-<%= comment.id %>">
-        <%= t("comments.actions.reply") %>
-      </button>
-      <div class="collapse mt-2" id="reply-form-<%= comment.id %>">
-        <%= render "comments/form",
-                    commentable: comment.commentable,
-                    comment: Comment.new(parent: comment, comment_type: :comment),
-                    submit_label: t("comments.actions.reply"),
-                    placeholder: t("comments.form.reply_placeholder"),
-                    show_cancel: true,
-                    collapse_target: "reply-form-#{comment.id}" %>
-      </div>
-    </div>
-  <% end %>
 
   <% comment.replies.each do |reply| %>
     <%= render "comments/comment", comment: reply, depth: depth + 1, allow_replies: true %>

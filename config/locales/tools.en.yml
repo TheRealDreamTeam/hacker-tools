@@ -97,7 +97,7 @@ en:
       trending: "Trending"
     form:
       placeholder: "Write your comment..."
-      comment_placeholder: "Share your thoughts or questions"
+      comment_placeholder: "Share your thoughts or questions on this tool..."
       reply_placeholder: "Write a reply..."
       flag_placeholder: "Describe what's wrong (e.g., broken URL, outdated info)"
       bug_placeholder: "Describe the bug, what you tried, and any error message"

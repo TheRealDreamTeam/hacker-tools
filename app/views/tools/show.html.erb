@@ -15,241 +15,273 @@
     <!-- Main Content (columns 3-10) - adjusted for wider banners -->
     <div class="col-12 col-lg-8">
       <div class="container py-4">
-<div class="p-2">
-  <div class="d-flex justify-content-between align-items-start mb-3">
-    <div>
-      <h1 class="h3 mb-2"><%= @tool.tool_name %></h1>
-      <p class="text-secondary mb-1 d-flex align-items-center gap-2">
-        <%= render "tools/read_state", tool: @tool %>
-      </p>
-      <% if @tool.tool_url.present? %>
-        <p class="mb-0">
-          <%= link_to @tool.tool_url, @tool.tool_url, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none" %>
-        </p>
-      <% end %>
-    </div>
-    <div class="d-flex gap-2">
-      <% if @tool.icon.attached? %>
-        <%= image_tag @tool.icon, class: "rounded", style: "height: 64px; width: 64px; object-fit: cover;" %>
-      <% end %>
-    </div>
-  </div>
-  <div class="mb-3">
-    <%= render "tools/interaction_buttons", tool: @tool %>
-  </div>
-  <div class="mb-4">
-    <h2 class="h5"><%= t("tools.show.description") %></h2>
-    <p><%= simple_format(@tool.tool_description) %></p>
-  </div>
-  <% if @related_submissions.any? %>
-    <div class="mb-4">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="h5 mb-0"><%= t("tools.show.related_submissions_title") %></h2>
-        <span class="badge bg-secondary"><%= @related_submissions.size %></span>
-      </div>
-      <div class="row row-cols-1 g-3">
-        <% @related_submissions.each do |submission| %>
-          <div class="col">
-            <%= render "submissions/submission_card", submission: submission %>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
-  <% if @tool.picture.attached? %>
-    <div class="mb-4">
-      <h2 class="h5"><%= t("tools.show.picture") %></h2>
-      <%= image_tag @tool.picture, class: "img-fluid rounded" %>
-    </div>
-  <% end %>
-  <div class="mb-4">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <h2 class="h5 mb-0"><%= t("tools.show.tags_title") %></h2>
-    <%# TODO: Re-enable tag management when we decide on permissions (admin-only or open editing) %>
-  </div>
-  <div id="add-tag-form" class="collapse mb-3">
-    <div class="card card-body">
-      <h3 class="h6 mb-3"><%= t("tools.show.select_tag") %></h3>
-      <% @available_tags.group_by(&:tag_type).each do |tag_type, tags| %>
-        <div class="mb-3">
-          <strong class="text-muted"><%= t("tags.tag_types.#{tag_type}") %>:</strong>
-          <div class="d-flex flex-wrap gap-2 mt-2">
-            <% tags.each do |tag| %>
-              <% unless @tool_tags.include?(tag) %>
-                <%= button_to tag.display_name,
-                              add_tag_tool_path(@tool, tag_id: tag.id),
-                              method: :post,
-                              class: "btn btn-sm btn-outline-secondary" %>
+        <div class="p-2">
+          <!-- Top Row: Tool container (left) + Bugs/Flags (right) -->
+          <div class="row g-4 mb-4 align-items-stretch">
+            <!-- Left Column: Tool Container, Tags, Back Button -->
+            <div class="col-12 col-md-6 d-flex flex-column">
+              <div class="card shadow-sm h-100 d-flex flex-column">
+                <div class="card-body d-flex flex-column h-100">
+              <!-- Tool Container -->
+              <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                  <h1 class="h3 mb-2"><%= @tool.tool_name %></h1>
+                  <p class="text-secondary mb-1 d-flex align-items-center gap-2">
+                    <%= render "tools/read_state", tool: @tool %>
+                  </p>
+                  <% if @tool.tool_url.present? %>
+                    <p class="mb-0">
+                      <%= link_to @tool.tool_url, @tool.tool_url, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none" %>
+                    </p>
+                  <% end %>
+                </div>
+                <div class="d-flex gap-2">
+                  <% if @tool.icon.attached? %>
+                    <%= image_tag @tool.icon, class: "rounded", style: "height: 64px; width: 64px; object-fit: cover;" %>
+                  <% end %>
+                </div>
+              </div>
+              <div class="mb-3">
+                <%= render "tools/interaction_buttons", tool: @tool %>
+              </div>
+              <div class="mb-4">
+                <h2 class="h5"><%= t("tools.show.description") %></h2>
+                <p><%= simple_format(@tool.tool_description) %></p>
+              </div>
+              <% if @tool.picture.attached? %>
+                <div class="mb-4">
+                  <h2 class="h5"><%= t("tools.show.picture") %></h2>
+                  <%= image_tag @tool.picture, class: "img-fluid rounded" %>
+                </div>
               <% end %>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  </div>
-  <% if @tool_tags.any? %>
-    <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
-      <% @tool_tags.each do |tag| %>
-        <%= render_tag_link(tag) %>
-      <% end %>
-    </div>
-    <% if @all_tool_tags.count > @tool_tags.count %>
-      <p class="text-muted small mt-2 mb-0">
-        <%= t("tools.show.showing_top_tags", count: @tool_tags.count, total: @all_tool_tags.count) %>
-        <button class="btn btn-link btn-sm p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#all-tags">
-          <%= t("tools.show.show_all_tags") %>
-        </button>
-      </p>
-      <div id="all-tags" class="collapse mt-2">
-        <div class="d-flex flex-wrap gap-2">
-          <% @all_tool_tags.each do |tag| %>
-            <% unless @tool_tags.map(&:id).include?(tag.id) %>
-              <span class="badge <%= tag_badge_class(tag.tag_type) %>">
-                <%= tag.display_name %>
-              </span>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
-  <% else %>
-    <p class="text-muted mb-0"><%= t("tools.show.no_tags") %></p>
-  <% end %>
-</div>
+              
+              <!-- Tags -->
+              <div class="mt-auto">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h2 class="h5 mb-0"><%= t("tools.show.tags_title") %></h2>
+                  <%# TODO: Re-enable tag management when we decide on permissions (admin-only or open editing) %>
+                </div>
+                <div id="add-tag-form" class="collapse mb-3">
+                  <div class="card card-body">
+                    <h3 class="h6 mb-3"><%= t("tools.show.select_tag") %></h3>
+                    <% @available_tags.group_by(&:tag_type).each do |tag_type, tags| %>
+                      <div class="mb-3">
+                        <strong class="text-muted"><%= t("tags.tag_types.#{tag_type}") %>:</strong>
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                          <% tags.each do |tag| %>
+                            <% unless @tool_tags.include?(tag) %>
+                              <%= button_to tag.display_name,
+                                          add_tag_tool_path(@tool, tag_id: tag.id),
+                                          method: :post,
+                                          class: "btn btn-sm btn-outline-secondary" %>
+                            <% end %>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+                <% if @tool_tags.any? %>
+                  <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
+                    <% @tool_tags.each do |tag| %>
+                      <%= render_tag_link(tag) %>
+                    <% end %>
+                  </div>
+                  <% if @all_tool_tags.count > @tool_tags.count %>
+                    <p class="text-muted small mt-2 mb-0">
+                      <%= t("tools.show.showing_top_tags", count: @tool_tags.count, total: @all_tool_tags.count) %>
+                      <button class="btn btn-link btn-sm p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#all-tags">
+                        <%= t("tools.show.show_all_tags") %>
+                      </button>
+                    </p>
+                    <div id="all-tags" class="collapse mt-2">
+                      <div class="d-flex flex-wrap gap-2">
+                        <% @all_tool_tags.each do |tag| %>
+                          <% unless @tool_tags.map(&:id).include?(tag.id) %>
+                            <span class="badge <%= tag_badge_class(tag.tag_type) %>">
+                              <%= tag.display_name %>
+                            </span>
+                          <% end %>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                <% else %>
+                  <p class="text-muted mb-0"><%= t("tools.show.no_tags") %></p>
+                <% end %>
+              </div>
+                </div>
+              </div>
+            </div>
 
-<div class="d-flex gap-2">
-  <%# TODO: Re-enable edit/delete when we decide on permissions (admin-only or open editing) %>
-  <%= link_to t("actions.back"), tools_path, class: "btn btn-secondary" %>
-</div>
-  <hr class="my-5">
-  <div class="mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <h2 class="h5 mb-0"><%= t("tools.show.comments_title") %></h2>
-      <span class="badge bg-secondary"><%= @comments.size %></span>
-    </div>
-    <div class="mb-2">
-      <div class="btn-group btn-group-sm" role="group">
-        <%= link_to t("comments.sort.recent"), tool_path(@tool, sort_by: "recent"), class: "btn btn-outline-secondary #{@sort_by == 'recent' ? 'active' : ''}" %>
-        <%= link_to t("comments.sort.most_upvoted"), tool_path(@tool, sort_by: "most_upvoted"), class: "btn btn-outline-secondary #{@sort_by == 'most_upvoted' ? 'active' : ''}" %>
-        <%= link_to t("comments.sort.trending"), tool_path(@tool, sort_by: "trending"), class: "btn btn-outline-secondary #{@sort_by == 'trending' ? 'active' : ''}" %>
-      </div>
-    </div>
-    <div class="mb-3">
-      <%= render "comments/form", tool: @tool, comment: @new_comment, submit_label: t("comments.actions.post_comment"), placeholder: t("comments.form.comment_placeholder") %>
-    </div>
-    <% @comments.each do |comment| %>
-      <%= render "comments/comment", comment: comment, depth: 0, allow_replies: true %>
-    <% end %>
-  </div>
-  <hr class="my-4">
-  <div class="mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <h2 class="h6 mb-0"><%= t("tools.show.flags_title") %></h2>
-      <button class="btn btn-sm btn-outline-warning" data-bs-toggle="collapse" data-bs-target="#flag-form"><%= t("comments.actions.add_flag") %></button>
-    </div>
-    <div class="mb-2">
-      <div class="btn-group btn-group-sm" role="group">
-        <%= link_to t("comments.sort.recent"), tool_path(@tool, sort_by_flags: "recent"), class: "btn btn-outline-secondary #{@sort_by_flags == 'recent' ? 'active' : ''}" %>
-        <%= link_to t("comments.sort.most_upvoted"), tool_path(@tool, sort_by_flags: "most_upvoted"), class: "btn btn-outline-secondary #{@sort_by_flags == 'most_upvoted' ? 'active' : ''}" %>
-        <%= link_to t("comments.sort.trending"), tool_path(@tool, sort_by_flags: "trending"), class: "btn btn-outline-secondary #{@sort_by_flags == 'trending' ? 'active' : ''}" %>
-      </div>
-    </div>
-    <div id="flag-form" class="collapse mb-3">
-      <div class="card card-body">
-        <%= render "comments/form",
-                 tool: @tool,
-                 comment: @new_flag,
-                 submit_label: t("comments.actions.submit_flag"),
-                 placeholder: t("comments.form.flag_placeholder"),
-                 show_cancel: true,
-                 collapse_target: "flag-form" %>
-      </div>
-    </div>
-    <% if @flags.any? %>
-      <div class="list-group">
-        <% @flags.each do |flag| %>
-          <div class="list-group-item d-flex justify-content-between align-items-start">
-            <div class="flex-grow-1">
-              <p class="mb-1 fw-semibold"><%= display_user_name(flag.user) %></p>
-              <p class="mb-2"><%= simple_format(flag.comment) %></p>
-              <p class="text-secondary small mb-0"><%= l(flag.created_at, format: :short) %></p>
-            </div>
-            <div class="d-flex flex-column align-items-end gap-2">
-              <%= button_to upvote_tool_comment_path(@tool, flag),
-                          method: :post,
-                          class: "btn btn-sm #{flag.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'}",
-                          title: flag.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
-                <span>↑</span> <span><%= flag.upvote_count %></span>
-              <% end %>
-              <% if flag.solved? %>
-                <span class="badge bg-success"><%= t("comments.labels.resolved") %></span>
-              <% else %>
-                <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
-              <% end %>
-              <%# TODO: Re-enable flag resolution when we decide on permissions %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    <% else %>
-      <div class="alert alert-light border"><%= t("comments.empty.flags") %></div>
-    <% end %>
-  </div>
-  <hr class="my-4">
-  <div class="mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-2">
-      <h2 class="h6 mb-0"><%= t("tools.show.bugs_title") %></h2>
-      <button class="btn btn-sm btn-outline-danger" data-bs-toggle="collapse" data-bs-target="#bug-form"><%= t("comments.actions.add_bug") %></button>
-    </div>
-    <div class="mb-2">
-      <div class="btn-group btn-group-sm" role="group">
-        <%= link_to t("comments.sort.recent"), tool_path(@tool, sort_by_bugs: "recent"), class: "btn btn-outline-secondary #{@sort_by_bugs == 'recent' ? 'active' : ''}" %>
-        <%= link_to t("comments.sort.most_upvoted"), tool_path(@tool, sort_by_bugs: "most_upvoted"), class: "btn btn-outline-secondary #{@sort_by_bugs == 'most_upvoted' ? 'active' : ''}" %>
-        <%= link_to t("comments.sort.trending"), tool_path(@tool, sort_by_bugs: "trending"), class: "btn btn-outline-secondary #{@sort_by_bugs == 'trending' ? 'active' : ''}" %>
-      </div>
-    </div>
-    <div id="bug-form" class="collapse mb-3">
-      <div class="card card-body">
-        <%= render "comments/form",
-                 tool: @tool,
-                 comment: @new_bug,
-                 submit_label: t("comments.actions.submit_bug"),
-                 placeholder: t("comments.form.bug_placeholder"),
-                 show_cancel: true,
-                 collapse_target: "bug-form" %>
-      </div>
-    </div>
-    <% if @bugs.any? %>
-      <div class="list-group">
-        <% @bugs.each do |bug| %>
-          <div class="list-group-item d-flex justify-content-between align-items-start">
-            <div class="flex-grow-1">
-              <p class="mb-1 fw-semibold"><%= display_user_name(bug.user) %></p>
-              <p class="mb-2"><%= simple_format(bug.comment) %></p>
-              <p class="text-secondary small mb-0"><%= l(bug.created_at, format: :short) %></p>
-            </div>
-            <div class="d-flex flex-column align-items-end gap-2">
-              <%= button_to upvote_tool_comment_path(@tool, bug),
-                          method: :post,
-                          class: "btn btn-sm #{bug.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'}",
-                          title: bug.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
-                <span>↑</span> <span><%= bug.upvote_count %></span>
-              <% end %>
-              <% if bug.solved? %>
-                <span class="badge bg-success"><%= t("comments.labels.resolved") %></span>
-              <% else %>
-                <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
-              <% end %>
-              <%# TODO: Re-enable bug resolution when we decide on permissions %>
+            <!-- Right Column: Bugs and Flags -->
+            <div class="col-12 col-md-6 d-flex flex-column">
+              <!-- Back Button -->
+              <div class="d-none d-md-flex justify-content-end gap-2 mb-4">
+                <%# TODO: Re-enable edit/delete when we decide on permissions (admin-only or open editing) %>
+                <%= link_to t("actions.back"), tools_path, class: "btn btn-secondary" %>
+              </div>
+              
+              <!-- Bugs and Flags container - grouped together and pushed to bottom -->
+              <div class="mt-auto d-flex flex-column">
+              <!-- Bugs -->
+              <div class="mb-0">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h2 class="h6 mb-0"><%= t("tools.show.bugs_title") %></h2>
+                </div>
+                <div class="mb-2 d-flex justify-content-between gap-2 align-items-center flex-wrap">
+                  <div class="btn-group btn-group-sm" role="group">
+                    <%= link_to t("comments.sort.recent"), tool_path(@tool, sort_by_bugs: "recent"), class: "btn btn-outline-secondary #{@sort_by_bugs == 'recent' ? 'active' : ''}" %>
+                    <%= link_to t("comments.sort.most_upvoted"), tool_path(@tool, sort_by_bugs: "most_upvoted"), class: "btn btn-outline-secondary #{@sort_by_bugs == 'most_upvoted' ? 'active' : ''}" %>
+                    <%= link_to t("comments.sort.trending"), tool_path(@tool, sort_by_bugs: "trending"), class: "btn btn-outline-secondary #{@sort_by_bugs == 'trending' ? 'active' : ''}" %>
+                  </div>
+                  <button class="btn btn-sm btn-outline-danger" data-bs-toggle="collapse" data-bs-target="#bug-form"><%= t("comments.actions.add_bug") %></button>
+                </div>
+                <div id="bug-form" class="collapse mb-3">
+                  <div class="card card-body">
+                    <%= render "comments/form",
+                             tool: @tool,
+                             comment: @new_bug,
+                             submit_label: t("comments.actions.submit_bug"),
+                             placeholder: t("comments.form.bug_placeholder"),
+                             show_cancel: true,
+                             collapse_target: "bug-form" %>
+                  </div>
+                </div>
+                <% if @bugs.any? %>
+                  <div class="list-group">
+                    <% @bugs.each do |bug| %>
+                      <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                          <p class="mb-1 fw-semibold"><%= display_user_name(bug.user) %></p>
+                          <p class="mb-2"><%= simple_format(bug.comment) %></p>
+                          <p class="text-secondary small mb-0"><%= l(bug.created_at, format: :short) %></p>
+                        </div>
+                        <div class="d-flex flex-column align-items-end gap-2">
+                          <%= button_to upvote_tool_comment_path(@tool, bug),
+                                      method: :post,
+                                      class: "btn btn-sm #{bug.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'}",
+                                      title: bug.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
+                            <span>↑</span> <span><%= bug.upvote_count %></span>
+                          <% end %>
+                          <% if bug.solved? %>
+                            <span class="badge bg-success"><%= t("comments.labels.resolved") %></span>
+                          <% else %>
+                            <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
+                          <% end %>
+                          <%# TODO: Re-enable bug resolution when we decide on permissions %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <div class="alert alert-light border"><%= t("comments.empty.bugs") %></div>
+                <% end %>
+              </div>
+
+              <!-- Flags -->
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h2 class="h6 mb-0"><%= t("tools.show.flags_title") %></h2>
+                </div>
+                <div class="mb-2 d-flex justify-content-between gap-2 align-items-center flex-wrap">
+                  <div class="btn-group btn-group-sm" role="group">
+                    <%= link_to t("comments.sort.recent"), tool_path(@tool, sort_by_flags: "recent"), class: "btn btn-outline-secondary #{@sort_by_flags == 'recent' ? 'active' : ''}" %>
+                    <%= link_to t("comments.sort.most_upvoted"), tool_path(@tool, sort_by_flags: "most_upvoted"), class: "btn btn-outline-secondary #{@sort_by_flags == 'most_upvoted' ? 'active' : ''}" %>
+                    <%= link_to t("comments.sort.trending"), tool_path(@tool, sort_by_flags: "trending"), class: "btn btn-outline-secondary #{@sort_by_flags == 'trending' ? 'active' : ''}" %>
+                  </div>
+                  <button class="btn btn-sm btn-outline-warning" data-bs-toggle="collapse" data-bs-target="#flag-form"><%= t("comments.actions.add_flag") %></button>
+                </div>
+                <div id="flag-form" class="collapse mb-3">
+                  <div class="card card-body">
+                    <%= render "comments/form",
+                             tool: @tool,
+                             comment: @new_flag,
+                             submit_label: t("comments.actions.submit_flag"),
+                             placeholder: t("comments.form.flag_placeholder"),
+                             show_cancel: true,
+                             collapse_target: "flag-form" %>
+                  </div>
+                </div>
+                <% if @flags.any? %>
+                  <div class="list-group">
+                    <% @flags.each do |flag| %>
+                      <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                          <p class="mb-1 fw-semibold"><%= display_user_name(flag.user) %></p>
+                          <p class="mb-2"><%= simple_format(flag.comment) %></p>
+                          <p class="text-secondary small mb-0"><%= l(flag.created_at, format: :short) %></p>
+                        </div>
+                        <div class="d-flex flex-column align-items-end gap-2">
+                          <%= button_to upvote_tool_comment_path(@tool, flag),
+                                      method: :post,
+                                      class: "btn btn-sm #{flag.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'}",
+                                      title: flag.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote") do %>
+                            <span>↑</span> <span><%= flag.upvote_count %></span>
+                          <% end %>
+                          <% if flag.solved? %>
+                            <span class="badge bg-success"><%= t("comments.labels.resolved") %></span>
+                          <% else %>
+                            <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
+                          <% end %>
+                          <%# TODO: Re-enable flag resolution when we decide on permissions %>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <div class="alert alert-light border"><%= t("comments.empty.flags") %></div>
+                <% end %>
+              </div>
+              </div>
             </div>
           </div>
-        <% end %>
-      </div>
-    <% else %>
-      <div class="alert alert-light border"><%= t("comments.empty.bugs") %></div>
-    <% end %>
-  </div>
-</div>
+
+          <!-- Bottom Row: Discussion (left) + Related Submissions (right) -->
+          <div class="row g-4 align-items-start">
+            <!-- Left Column: Discussion/Comments -->
+            <div class="col-12 col-md-6">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h2 class="h5 mb-0"><%= t("tools.show.comments_title") %></h2>
+                  <span class="badge bg-secondary"><%= @comments.size %></span>
+                </div>
+                <div class="mb-3">
+                  <%= render "comments/form", tool: @tool, comment: @new_comment, submit_label: t("comments.actions.post_comment"), placeholder: t("comments.form.comment_placeholder") %>
+                </div>
+                <div class="mb-2">
+                  <div class="btn-group btn-group-sm" role="group">
+                    <%= link_to t("comments.sort.recent"), tool_path(@tool, sort_by: "recent"), class: "btn btn-outline-secondary #{@sort_by == 'recent' ? 'active' : ''}" %>
+                    <%= link_to t("comments.sort.most_upvoted"), tool_path(@tool, sort_by: "most_upvoted"), class: "btn btn-outline-secondary #{@sort_by == 'most_upvoted' ? 'active' : ''}" %>
+                    <%= link_to t("comments.sort.trending"), tool_path(@tool, sort_by: "trending"), class: "btn btn-outline-secondary #{@sort_by == 'trending' ? 'active' : ''}" %>
+                  </div>
+                </div>
+                <% @comments.each do |comment| %>
+                  <%= render "comments/comment", comment: comment, depth: 0, allow_replies: true %>
+                <% end %>
+              </div>
+            </div>
+
+            <!-- Right Column: Related Submissions -->
+            <div class="col-12 col-md-6">
+              <% if @related_submissions.any? %>
+                <div class="mt-2">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 mb-0"><%= t("tools.show.related_submissions_title") %></h2>
+                    <span class="badge bg-secondary"><%= @related_submissions.size %></span>
+                  </div>
+                  <div class="row row-cols-1 g-3">
+                    <% @related_submissions.each do |submission| %>
+                      <div class="col">
+                        <%= render "submissions/submission_card", submission: submission %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
