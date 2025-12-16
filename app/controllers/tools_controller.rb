@@ -63,7 +63,7 @@ class ToolsController < ApplicationController
     # Show top 10 by default, but keep all tags for tag management
     @tool_tags = @tool.top_tags(limit: 10)
     @all_tool_tags = @tool.tags.includes(:parent) # For tag management UI
-    @available_tags = Tag.includes(:parent).order(tag_type: :asc, tag_name: :asc)
+    @available_tags = Tag.includes(:parent).order(tag_type_id: :asc, tag_type: :asc, tag_name: :asc)
 
     # Load related submissions for this tool, sorted by newest (most recent first)
     # Eager load associations to avoid N+1 queries when rendering submission cards

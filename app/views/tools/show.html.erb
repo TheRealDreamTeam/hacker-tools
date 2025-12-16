@@ -48,6 +48,21 @@
                 <h2 class="h5"><%= t("tools.show.description") %></h2>
                 <p><%= simple_format(@tool.tool_description) %></p>
               </div>
+              <% if @related_submissions.any? %>
+                <div class="mb-4">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 mb-0"><%= t("tools.show.related_submissions_title") %></h2>
+                    <span class="badge bg-secondary"><%= @related_submissions.size %></span>
+                  </div>
+                  <div class="row row-cols-1 g-3">
+                    <% @related_submissions.each do |submission| %>
+                      <div class="col">
+                        <%= render "submissions/submission_card", submission: submission %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
               <% if @tool.picture.attached? %>
                 <div class="mb-4">
                   <h2 class="h5"><%= t("tools.show.picture") %></h2>
@@ -98,7 +113,19 @@
                       <div class="d-flex flex-wrap gap-2">
                         <% @all_tool_tags.each do |tag| %>
                           <% unless @tool_tags.map(&:id).include?(tag.id) %>
-                            <span class="badge <%= tag_badge_class(tag.tag_type) %>">
+                            <% 
+                              badge_style = ""
+                              if tag.color.present?
+                                color_hex = color_name_to_hex(tag.color)
+                                badge_style = "background-color: #{color_hex};"
+                                if ["black", "navy", "purple", "indigo", "blue"].include?(tag.color.downcase)
+                                  badge_style += " color: #ffffff;"
+                                else
+                                  badge_style += " color: #000000;"
+                                end
+                              end
+                            %>
+                            <span class="badge <%= tag_badge_class(tag) %>" style="<%= badge_style %>">
                               <%= tag.display_name %>
                             </span>
                           <% end %>
@@ -237,10 +264,9 @@
             </div>
           </div>
 
-          <!-- Bottom Row: Discussion (left) + Related Submissions (right) -->
+          <!-- Bottom Row: Discussion/Comments -->
           <div class="row g-4 align-items-start">
-            <!-- Left Column: Discussion/Comments -->
-            <div class="col-12 col-md-6">
+            <div class="col-12">
               <div>
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <h2 class="h5 mb-0"><%= t("tools.show.comments_title") %></h2>
@@ -260,25 +286,6 @@
                   <%= render "comments/comment", comment: comment, depth: 0, allow_replies: true %>
                 <% end %>
               </div>
-            </div>
-
-            <!-- Right Column: Related Submissions -->
-            <div class="col-12 col-md-6">
-              <% if @related_submissions.any? %>
-                <div class="mt-2">
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h2 class="h5 mb-0"><%= t("tools.show.related_submissions_title") %></h2>
-                    <span class="badge bg-secondary"><%= @related_submissions.size %></span>
-                  </div>
-                  <div class="row row-cols-1 g-3">
-                    <% @related_submissions.each do |submission| %>
-                      <div class="col">
-                        <%= render "submissions/submission_card", submission: submission %>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
-              <% end %>
             </div>
           </div>
         </div>

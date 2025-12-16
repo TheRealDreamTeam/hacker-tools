@@ -1,4 +1,4 @@
-\restrict fLDbx2xhewXzXFaSzJDtPQ8gAaOtkkhUhkJa0zrpoVhzZBUR8Bv4XKUUNvT7ayd
+\restrict bVmh8oZM0PuUfOEEwjcLEEE7d7NsY4bwlxkedgZKNwTZ18VDIvF6mQgUsq17rsR
 
 -- Dumped from database version 16.11 (Ubuntu 16.11-1.pgdg24.04+1)
 -- Dumped by pg_dump version 16.11 (Ubuntu 16.11-1.pgdg24.04+1)
@@ -479,12 +479,18 @@ ALTER SEQUENCE public.submissions_id_seq OWNED BY public.submissions.id;
 
 CREATE TABLE public.tags (
     id bigint NOT NULL,
-    tag_name character varying NOT NULL,
+    tag_name text NOT NULL,
     tag_description text,
-    tag_type integer DEFAULT 0 NOT NULL,
     parent_id bigint,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    tag_slug text,
+    tag_type_id integer,
+    tag_type_slug text,
+    color text,
+    icon text,
+    tag_alias text,
+    tag_type text NOT NULL
 );
 
 
@@ -1529,10 +1535,11 @@ ALTER TABLE ONLY public.user_submissions
 -- PostgreSQL database dump complete
 --
 
-\unrestrict fLDbx2xhewXzXFaSzJDtPQ8gAaOtkkhUhkJa0zrpoVhzZBUR8Bv4XKUUNvT7ayd
+\unrestrict bVmh8oZM0PuUfOEEwjcLEEE7d7NsY4bwlxkedgZKNwTZ18VDIvF6mQgUsq17rsR
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20251216102902'),
 ('20251212130222');
 
