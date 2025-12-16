@@ -32,7 +32,7 @@
           <% displayed_tags = tool.tags.limit(3) %>
           <% if displayed_tags.any? %>
             <% displayed_tags.each do |tag| %>
-              <%= render_tag_link(tag, badge_class: "bg-light text-primary border") %>
+              <%= render_tag_link(tag) %>
             <% end %>
             <% if tool.tags.count > 3 %>
               <% hidden_tags = tool.tags.offset(3) %>

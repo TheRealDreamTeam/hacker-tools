@@ -98,38 +98,141 @@ ActiveRecord::Base.transaction do
   ghost.soft_delete! unless ghost.deleted?
   users[:ghost] = ghost
 
-  # Tags (typed + parent/child)
+  # Tags (comprehensive tag system with new structure)
   log_step "Creating tags"
   tags = {}
+  tags_by_id = {}
+
+  # Comprehensive tag definitions with new structure
   tag_defs = [
-    { key: :dev, name: "development", type: :category },
-    { key: :ai, name: "ai", type: :category },
-    { key: :frontend, name: "frontend", type: :category, parent: :dev },
-    { key: :backend, name: "backend", type: :category, parent: :dev },
-    { key: :devops, name: "devops", type: :category },
-    { key: :data, name: "data", type: :category },
-    { key: :security, name: "security", type: :category, parent: :devops },
-    { key: :testing, name: "testing", type: :category, parent: :dev },
-    { key: :productivity, name: "productivity", type: :category, parent: :dev },
-    { key: :ruby, name: "ruby", type: :language },
-    { key: :rails, name: "rails", type: :framework, parent: :ruby },
-    { key: :javascript, name: "javascript", type: :language },
-    { key: :react, name: "react", type: :framework, parent: :javascript },
-    { key: :python, name: "python", type: :language },
-    { key: :django, name: "django", type: :framework, parent: :python },
-    { key: :kubernetes, name: "kubernetes", type: :platform, parent: :devops },
-    { key: :postgres, name: "postgresql", type: :platform, parent: :data },
-    { key: :llm, name: "llm", type: :library, parent: :ai },
-    { key: :observability, name: "observability", type: :platform, parent: :devops }
+    # Content Type tags (tag_type_id: 2)
+    { id: 1, name: "Articles", slug: "articles", description: "Blog posts and written content", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "📝" },
+    { id: 2, name: "Guides", slug: "guides", description: "Step-by-step tutorials", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "📘" },
+    { id: 3, name: "Documentation", slug: "documentation", description: "Official documentation pages", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "📖" },
+    { id: 4, name: "GitHub Repos", slug: "github-repos", description: "Code repositories and projects", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "💻" },
+    { id: 5, name: "Videos", slug: "videos", description: "Video-based content", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "🎥" },
+    { id: 6, name: "Podcasts", slug: "podcasts", description: "Audio-based discussions", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "🎙️" },
+    { id: 7, name: "Code Snippets", slug: "code-snippets", description: "Small reusable code examples", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "💾" },
+    { id: 8, name: "Websites", slug: "websites", description: "Product or company websites", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "🌍" },
+    { id: 9, name: "Social Posts", slug: "social-posts", description: "Short-form social content", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "🐦" },
+    { id: 10, name: "Discussions", slug: "discussions", description: "Community discussions", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "💬" },
+    { id: 11, name: "Courses", slug: "courses", description: "Structured learning content", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "🎓" },
+    { id: 12, name: "Talks", slug: "talks", description: "Conference talks", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "🎤" },
+    { id: 13, name: "Cheatsheets", slug: "cheatsheets", description: "Quick reference material", type_id: 2, type: "Content Type", type_slug: "content-type", parent_id: nil, color: "yellow", icon: "🧾" },
+    # Platform tags (tag_type_id: 1)
+    { id: 20, name: "YouTube", slug: "youtube", description: "Video hosting platform", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 21, name: "GitHub", slug: "github", description: "Code hosting platform", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 22, name: "MDN", slug: "mdn", description: "Web standards documentation", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 23, name: "Dev.to", slug: "devto", description: "Developer blogging platform", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 24, name: "Stack Overflow", slug: "stack-overflow", description: "Developer Q&A platform", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 25, name: "GitLab", slug: "gitlab", description: "Code hosting platform", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 26, name: "Bitbucket", slug: "bitbucket", description: "Code hosting platform", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 27, name: "Hacker News", slug: "hacker-news", description: "Tech news and discussions", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 28, name: "Reddit", slug: "reddit", description: "Community discussions", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 29, name: "LinkedIn", slug: "linkedin", description: "Professional social platform", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 30, name: "X", slug: "x", description: "Short-form social platform", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 31, name: "npm", slug: "npm", description: "JavaScript package registry", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 32, name: "PyPI", slug: "pypi", description: "Python package index", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 33, name: "RubyGems", slug: "rubygems", description: "Ruby package registry", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    { id: 34, name: "Docker Hub", slug: "docker-hub", description: "Container image registry", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
+    # Programming Language tags (tag_type_id: 3)
+    { id: 100, name: "Ruby", slug: "ruby", description: "Ruby programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
+    { id: 101, name: "Ruby 3.3", slug: "ruby-3-3", description: "Ruby version 3.3", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 100, color: "grey", icon: "🔢" },
+    { id: 102, name: "Ruby 3.2", slug: "ruby-3-2", description: "Ruby version 3.2", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 100, color: "grey", icon: "🔢" },
+    { id: 110, name: "Python", slug: "python", description: "Python programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
+    { id: 111, name: "Python 3.12", slug: "python-3-12", description: "Python version 3.12", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 110, color: "grey", icon: "🔢" },
+    { id: 112, name: "Python 3.11", slug: "python-3-11", description: "Python version 3.11", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 110, color: "grey", icon: "🔢" },
+    { id: 120, name: "JavaScript", slug: "javascript", description: "JavaScript programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
+    { id: 121, name: "TypeScript", slug: "typescript", description: "Typed JavaScript", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
+    { id: 130, name: "Go", slug: "go", description: "Go programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
+    { id: 131, name: "Go 1.22", slug: "go-1-22", description: "Go version 1.22", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 130, color: "grey", icon: "🔢" },
+    { id: 140, name: "Java", slug: "java", description: "Java programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
+    { id: 141, name: "Java 21 (LTS)", slug: "java-21-lts", description: "Java LTS version", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 140, color: "grey", icon: "🔢" },
+    { id: 150, name: "C#", slug: "c-sharp", description: "C# programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
+    { id: 151, name: ".NET 8", slug: "dotnet-8", description: ".NET runtime version", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 150, color: "grey", icon: "🔢" },
+    { id: 160, name: "Rust", slug: "rust", description: "Rust programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
+    # Framework tags (tag_type_id: 5)
+    { id: 200, name: "Ruby on Rails", slug: "ruby-on-rails", description: "Ruby web framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: nil, color: "green", icon: "🧩" },
+    { id: 201, name: "Rails 7.1", slug: "rails-7-1", description: "Rails framework version", type_id: 6, type: "Framework Version", type_slug: "framework-version", parent_id: 200, color: "green", icon: "🔢" },
+    { id: 210, name: "Django", slug: "django", description: "Python web framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: nil, color: "green", icon: "🧩" },
+    { id: 211, name: "Django 5.x", slug: "django-5", description: "Django major version", type_id: 6, type: "Framework Version", type_slug: "framework-version", parent_id: 210, color: "green", icon: "🔢" },
+    { id: 220, name: "React", slug: "react", description: "UI library for web apps", type_id: 5, type: "Framework", type_slug: "framework", parent_id: nil, color: "green", icon: "🧩" },
+    { id: 221, name: "Next.js", slug: "nextjs", description: "React meta-framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: 220, color: "green", icon: "🧩" },
+    { id: 222, name: "Next.js 14", slug: "nextjs-14", description: "Next.js version 14", type_id: 6, type: "Framework Version", type_slug: "framework-version", parent_id: 221, color: "green", icon: "🔢" },
+    { id: 230, name: "Vue", slug: "vue", description: "Frontend framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: nil, color: "green", icon: "🧩" },
+    { id: 231, name: "Nuxt", slug: "nuxt", description: "Vue meta-framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: 230, color: "green", icon: "🧩" },
+    { id: 240, name: "Svelte", slug: "svelte", description: "Compiler-based frontend framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: nil, color: "green", icon: "🧩" },
+    { id: 241, name: "SvelteKit", slug: "sveltekit", description: "Svelte meta-framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: 240, color: "green", icon: "🧩" },
+    # Dev Tool tags (tag_type_id: 7)
+    { id: 300, name: "Git", slug: "git", description: "Version control system", type_id: 7, type: "Dev Tool", type_slug: "dev-tool", parent_id: nil, color: "indigo", icon: "🛠️" },
+    { id: 301, name: "Docker", slug: "docker", description: "Container platform", type_id: 7, type: "Dev Tool", type_slug: "dev-tool", parent_id: nil, color: "indigo", icon: "🛠️" },
+    { id: 302, name: "Kubernetes", slug: "kubernetes", description: "Container orchestration", type_id: 7, type: "Dev Tool", type_slug: "dev-tool", parent_id: nil, color: "indigo", icon: "🛠️" },
+    { id: 303, name: "Postman", slug: "postman", description: "API testing tool", type_id: 7, type: "Dev Tool", type_slug: "dev-tool", parent_id: nil, color: "indigo", icon: "🛠️" },
+    # Database tags (tag_type_id: 8)
+    { id: 400, name: "PostgreSQL", slug: "postgresql", description: "Relational database", type_id: 8, type: "Database", type_slug: "database", parent_id: nil, color: "navy", icon: "🗄️" },
+    { id: 401, name: "MySQL", slug: "mysql", description: "Relational database", type_id: 8, type: "Database", type_slug: "database", parent_id: nil, color: "navy", icon: "🗄️" },
+    { id: 402, name: "SQLite", slug: "sqlite", description: "Embedded database", type_id: 8, type: "Database", type_slug: "database", parent_id: nil, color: "navy", icon: "🗄️" },
+    { id: 403, name: "Redis", slug: "redis", description: "In-memory data store", type_id: 8, type: "Database", type_slug: "database", parent_id: nil, color: "navy", icon: "🗄️" },
+    { id: 404, name: "MongoDB", slug: "mongodb", description: "Document database", type_id: 8, type: "Database", type_slug: "database", parent_id: nil, color: "navy", icon: "🗄️" },
+    # Cloud Platform tags (tag_type_id: 9)
+    { id: 600, name: "AWS", slug: "aws", description: "Amazon Web Services", type_id: 9, type: "Cloud Platform", type_slug: "cloud-platform", parent_id: nil, color: "purple", icon: "☁️" },
+    { id: 601, name: "AWS Lambda", slug: "aws-lambda", description: "Serverless compute", type_id: 10, type: "Cloud Service", type_slug: "cloud-service", parent_id: 600, color: "purple", icon: "🔧" },
+    { id: 602, name: "AWS S3", slug: "aws-s3", description: "Object storage", type_id: 10, type: "Cloud Service", type_slug: "cloud-service", parent_id: 600, color: "purple", icon: "🔧" },
+    { id: 610, name: "Google Cloud", slug: "google-cloud", description: "Google Cloud Platform", type_id: 9, type: "Cloud Platform", type_slug: "cloud-platform", parent_id: nil, color: "purple", icon: "☁️" },
+    { id: 611, name: "Cloud Run", slug: "cloud-run", description: "Serverless containers", type_id: 10, type: "Cloud Service", type_slug: "cloud-service", parent_id: 610, color: "purple", icon: "🔧" },
+    # Topic tags (tag_type_id: 11)
+    { id: 700, name: "Web Development", slug: "web-development", description: "Building web applications", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
+    { id: 701, name: "Backend", slug: "backend", description: "Server-side development", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 700, color: "cyan", icon: "🧠" },
+    { id: 702, name: "Frontend", slug: "frontend", description: "Client-side development", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 700, color: "cyan", icon: "🧠" },
+    { id: 710, name: "APIs", slug: "apis", description: "API design and usage", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
+    { id: 711, name: "REST", slug: "rest", description: "RESTful APIs", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 710, color: "cyan", icon: "🧠" },
+    { id: 712, name: "GraphQL", slug: "graphql", description: "GraphQL APIs", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 710, color: "cyan", icon: "🧠" },
+    { id: 720, name: "Testing", slug: "testing", description: "Software testing", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
+    { id: 721, name: "Unit Testing", slug: "unit-testing", description: "Unit tests", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 720, color: "cyan", icon: "🧠" },
+    { id: 722, name: "E2E Testing", slug: "e2e-testing", description: "End-to-end tests", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 720, color: "cyan", icon: "🧠" },
+    { id: 730, name: "Security", slug: "security", description: "Application security", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
+    { id: 731, name: "OWASP", slug: "owasp", description: "OWASP standards", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 730, color: "cyan", icon: "🧠" },
+    { id: 740, name: "Performance", slug: "performance", description: "Optimization and speed", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
+    { id: 750, name: "System Design", slug: "system-design", description: "Architecture and scaling", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
+    # Task tags (tag_type_id: 12)
+    { id: 800, name: "Getting Started", slug: "getting-started", description: "Beginner introductions", type_id: 12, type: "Task", type_slug: "task", parent_id: nil, color: "blue", icon: "✅" },
+    { id: 801, name: "Setup / Install", slug: "setup-install", description: "Installation instructions", type_id: 12, type: "Task", type_slug: "task", parent_id: nil, color: "blue", icon: "✅" },
+    { id: 802, name: "Debugging", slug: "debugging", description: "Finding and fixing bugs", type_id: 12, type: "Task", type_slug: "task", parent_id: nil, color: "blue", icon: "✅" },
+    { id: 803, name: "Deployment", slug: "deployment", description: "Shipping to production", type_id: 12, type: "Task", type_slug: "task", parent_id: nil, color: "blue", icon: "✅" },
+    { id: 804, name: "Best Practices", slug: "best-practices", description: "Recommended patterns", type_id: 12, type: "Task", type_slug: "task", parent_id: nil, color: "blue", icon: "✅" },
+    { id: 805, name: "Migration / Upgrade", slug: "migration-upgrade", description: "Updating versions", type_id: 12, type: "Task", type_slug: "task", parent_id: nil, color: "blue", icon: "✅" },
+    # Level tags (tag_type_id: 13)
+    { id: 900, name: "Beginner", slug: "beginner", description: "Beginner-friendly content", type_id: 13, type: "Level", type_slug: "level", parent_id: nil, color: "light green", icon: "🎚️" },
+    { id: 901, name: "Intermediate", slug: "intermediate", description: "Intermediate difficulty", type_id: 13, type: "Level", type_slug: "level", parent_id: nil, color: "light orange", icon: "🎚️" },
+    { id: 902, name: "Advanced", slug: "advanced", description: "Advanced-level content", type_id: 13, type: "Level", type_slug: "level", parent_id: nil, color: "light red", icon: "🎚️" }
   ]
 
+  # First pass: create all tags without parent relationships
   tag_defs.each do |attrs|
-    tag = Tag.find_or_initialize_by(tag_name: attrs[:name].downcase)
+    tag = Tag.find_by(id: attrs[:id]) || Tag.new(id: attrs[:id])
+    tag.tag_name = attrs[:name]
+    tag.tag_slug = attrs[:slug]
     tag.tag_description = attrs[:description]
+    tag.tag_type_id = attrs[:type_id]
     tag.tag_type = attrs[:type]
-    tag.parent = tags[attrs[:parent]] if attrs[:parent]
+    tag.tag_type_slug = attrs[:type_slug]
+    tag.color = attrs[:color]
+    tag.icon = attrs[:icon]
+    tag.tag_alias = nil # Not provided in seed data
     tag.save!
-    tags[attrs[:key]] = tag
+    tags_by_id[attrs[:id]] = tag
+  end
+
+  # Second pass: set parent relationships
+  tag_defs.each do |attrs|
+    next unless attrs[:parent_id]
+
+    tag = tags_by_id[attrs[:id]]
+    parent_tag = tags_by_id[attrs[:parent_id]]
+    if parent_tag
+      tag.parent_id = parent_tag.id
+      tag.save!
+    end
   end
 
   # Tools (community-owned). Disable discovery job while seeding to keep it fast.

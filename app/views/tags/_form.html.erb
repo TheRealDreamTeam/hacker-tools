@@ -1,25 +1,51 @@
-<%= simple_form_for(@tag) do |f| %>
+<%= simple_form_for(@tag, html: { data: { controller: "tag-form" } }) do |f| %>
   <%= f.error_notification %>
 
   <div class="row g-3">
-    <div class="col-12">
+    <div class="col-md-4">
       <%= f.input :tag_name, required: true, label: t("tags.form.tag_name") %>
+    </div>
+
+    <div class="col-md-6">
+      <%= f.input :tag_type,
+                  collection: Tag.tag_type_options.map { |opt| [opt[:tag_type], opt[:tag_type]] },
+                  include_blank: false,
+                  label: t("tags.form.tag_type"),
+                  input_html: {
+                    data: {
+                      tag_form_target: "tagType",
+                      action: "change->tag-form#updateTagTypeFields"
+                    }
+                  } %>
     </div>
 
     <div class="col-12">
       <%= f.input :tag_description, as: :text, label: t("tags.form.tag_description"), input_html: { rows: 3 } %>
     </div>
 
+    <!-- Hidden fields for tag_type_id and tag_type_slug (auto-populated) -->
+    <%= f.hidden_field :tag_type_id, data: { tag_form_target: "tagTypeId" } %>
+    <%= f.hidden_field :tag_type_slug, data: { tag_form_target: "tagTypeSlug" } %>
+
     <div class="col-md-6">
-      <%= f.input :tag_type,
-                  collection: Tag.tag_types.keys.map { |t| [t("tags.tag_types.#{t}"), t] },
+      <%= f.input :color,
+                  collection: Tag.color_options.map { |c| [c.humanize, c] },
                   include_blank: false,
-                  label: t("tags.form.tag_type") %>
+                  label: t("tags.form.color"),
+                  selected: @tag.color || "yellow" %>
+    </div>
+
+    <div class="col-md-6">
+      <%= f.input :icon,
+                  collection: Tag.icon_options.map { |i| [i, i] },
+                  include_blank: false,
+                  label: t("tags.form.icon"),
+                  selected: @tag.icon || "📝" %>
     </div>
 
     <div class="col-md-6">
       <%= f.input :parent_id,
-                  collection: (@tag.persisted? ? Tag.where.not(id: @tag.id) : Tag.all).order(tag_type: :asc, tag_name: :asc).map { |t| [t.display_name, t.id] },
+                  collection: (@tag.persisted? ? Tag.where.not(id: @tag.id) : Tag.all).order(tag_type_id: :asc, tag_type: :asc, tag_name: :asc).map { |t| [t.display_name, t.id] },
                   include_blank: t("tags.form.no_parent"),
                   label: t("tags.form.parent") %>
     </div>
@@ -29,5 +55,8 @@
     <%= f.button :submit, class: "btn btn-primary" %>
     <%= link_to t("actions.cancel"), tags_path, class: "btn btn-outline-secondary" %>
   </div>
+
+  <!-- Store tag type mappings as data attribute for JavaScript -->
+  <div data-tag-form-target="tagTypeMappings" data-mappings="<%= Tag.tag_type_options.to_json.html_safe %>" style="display: none;"></div>
 <% end %>
 

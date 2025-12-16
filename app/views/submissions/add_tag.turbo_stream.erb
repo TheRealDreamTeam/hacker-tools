@@ -2,7 +2,19 @@
   <% if @submission.tags.any? %>
     <div class="d-flex flex-wrap gap-2">
       <% @submission.tags.each do |tag| %>
-        <span class="badge <%= tag_badge_class(tag.tag_type) %> d-flex align-items-center gap-1">
+        <% 
+          badge_style = ""
+          if tag.color.present?
+            color_hex = color_name_to_hex(tag.color)
+            badge_style = "background-color: #{color_hex};"
+            if ["black", "navy", "purple", "indigo", "blue"].include?(tag.color.downcase)
+              badge_style += " color: #ffffff;"
+            else
+              badge_style += " color: #000000;"
+            end
+          end
+        %>
+        <span class="badge <%= tag_badge_class(tag) %> d-flex align-items-center gap-1" style="<%= badge_style %>">
           <%= tag.display_name %>
           <% if @submission.user == current_user %>
             <%= button_to "×",

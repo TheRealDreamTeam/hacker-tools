@@ -13,6 +13,8 @@ module RubyLlmTools
         string :category,
           description: "Tag category (optional)",
           enum: %w[category language framework library version platform other]
+        string :description,
+          description: "Brief description of what this tag represents (1-2 sentences, optional but recommended)"
       end
     end
   end

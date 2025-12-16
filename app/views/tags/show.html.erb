@@ -20,8 +20,8 @@
     <div>
       <h1 class="h3 mb-2"><%= @tag.display_name %></h1>
       <div class="d-flex align-items-center gap-2 mb-2">
-        <span class="badge <%= tag_badge_class(@tag.tag_type) %>">
-          <%= t("tags.tag_types.#{@tag.tag_type}") %>
+        <span class="badge <%= tag_badge_class(@tag) %>">
+          <%= @tag.tag_type %>
         </span>
         <% if @tag.parent %>
           <span class="text-muted small">
