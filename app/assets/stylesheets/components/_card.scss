@@ -1,0 +1,52 @@
+// Fixed-height card styling for tool and submission cards
+// Ensures consistent card sizes in grid layouts
+
+.card-hover {
+  // Fixed height for consistent card sizing
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; // Prevent content from overflowing card
+
+    .row {
+      flex: 1;
+      min-height: 0; // Allow flex children to shrink below content size
+    }
+
+    // Description area with fixed height and overflow handling
+    .card-description {
+      position: relative;
+      min-height: 4.5rem; // Reserve space for 3 lines of text
+      margin-bottom: 0.5rem;
+
+      .card-text {
+        margin-bottom: 0;
+        // Limit description to 3 lines with ellipsis
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.5;
+        max-height: 4.5rem; // 3 lines × 1.5 line-height
+      }
+
+      // "View more.." indicator when description is truncated
+      // Appears inline after truncated text
+      .view-more-indicator {
+        display: inline;
+        font-size: 0.875rem;
+        font-weight: 500;
+        opacity: 0.8;
+        margin-left: 0.25rem;
+        font-style: italic;
+      }
+    }
+  }
+}
+
