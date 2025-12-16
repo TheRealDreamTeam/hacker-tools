@@ -208,6 +208,18 @@ module SubmissionProcessing
               # Use LLM-generated description if available, otherwise use a fallback
               tag_description = tag_data["description"].presence || "Auto-generated from submission"
               
+              # Enforce 160 character limit - truncate at word boundary if needed
+              if tag_description.length > 160
+                truncated = tag_description[0..156] # Leave room for "..."
+                # Find last space before 157 to avoid cutting words
+                last_space = truncated.rindex(/\s/)
+                if last_space && last_space > 100 # Only truncate if we have enough content
+                  tag_description = truncated[0..last_space].strip + "..."
+                else
+                  tag_description = truncated.strip + "..."
+                end
+              end
+              
               tag = Tag.create!(
                 tag_name: normalized_name,
                 tag_slug: normalized_name.parameterize,

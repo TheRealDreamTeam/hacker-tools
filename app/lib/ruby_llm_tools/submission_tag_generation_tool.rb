@@ -76,10 +76,12 @@ module RubyLlmTools
       "- Examples of good tags: 'react', 'javascript', 'web-development', 'ai-assisted', 'machine-learning'\n" \
       "- Examples of bad tags: 'React', 'JavaScript', 'AI-Assisted-Coding', 'Machine Learning'\n\n" \
       "TAG DESCRIPTION RULES:\n" \
-      "- For each tag, provide a brief, clear description (1-2 sentences)\n" \
+      "- For each tag, provide a brief, clear description (1 sentence, maximum 2 short sentences)\n" \
+      "- The description MUST be 160 characters or less (strict limit)\n" \
       "- The description should explain what the tag represents and its relevance\n" \
       "- Be specific and informative (e.g., 'CSS is a stylesheet language used for describing the presentation of web documents')\n" \
       "- Avoid generic descriptions like 'A tag for X' or 'Related to X'\n" \
+      "- Prioritize clarity and conciseness over length\n" \
       "#{existing_tags_section}" \
       "Content to tag:\n#{parts.join("\n")}\n\n" \
       "Return a JSON array of tags with name (following formatting rules), relevance score, category, and description."
