@@ -44,7 +44,7 @@ en:
       description: "Search less. Build more."
       hero:
         heading: "Search less. Build more."
-        subheading: "Stop wasting time hunting for tools and lost links. Browse curated tools, community-submitted articles and guides, and save your favorites. Share with the community and follow what’s gaining real traction in development."
+        subheading: "Stop wasting time hunting for tools and lost links. Here you can browse curated tools, community-submitted articles and guides, and save your favorites. Share with the community and follow what’s gaining real traction in development."
         articles:
           newest: "Newest Blogposts"
           guide: "Here is a guide to best use HackerTools"
