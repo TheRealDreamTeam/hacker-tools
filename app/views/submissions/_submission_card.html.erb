@@ -33,9 +33,19 @@
           <% end %>
         </div>
 
-        <p class="card-text text-muted mb-2">
-          <%= truncate(submission.submission_description.presence || submission.author_note, length: 140) %>
-        </p>
+        <div class="card-description">
+          <% description = submission.submission_description.presence || submission.author_note %>
+          <% if description.present? %>
+            <% description_length = description.length %>
+            <% max_length = 150 %>
+            <p class="card-text text-muted">
+              <%= description %>
+              <% if description_length > max_length %>
+                <span class="view-more-indicator text-muted">View more..</span>
+              <% end %>
+            </p>
+          <% end %>
+        </div>
 
         <% if submission.tools.any? %>
           <p class="small mb-2 text-secondary">
@@ -45,11 +55,18 @@
 
         <% if submission.tags.any? %>
           <div class="mb-2 d-flex flex-wrap gap-1" data-controller="tooltip">
-            <% submission.tags.limit(5).each do |tag| %>
+            <% displayed_tags = submission.tags.limit(5) %>
+            <% displayed_tags.each do |tag| %>
               <%= render_tag_link(tag, style: "font-size: 0.75rem;") %>
             <% end %>
             <% if submission.tags.count > 5 %>
-              <span class="badge bg-secondary" style="font-size: 0.75rem;">
+              <% hidden_tags = submission.tags.offset(5) %>
+              <% hidden_tag_names = hidden_tags.pluck(:tag_name).join(", ") %>
+              <span class="badge bg-secondary"
+                    style="font-size: 0.75rem;"
+                    data-bs-toggle="tooltip"
+                    data-bs-title="<%= hidden_tag_names %>"
+                    data-bs-placement="top">
                 +<%= submission.tags.count - 5 %>
               </span>
             <% end %>

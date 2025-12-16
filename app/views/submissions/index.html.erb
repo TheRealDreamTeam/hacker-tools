@@ -16,18 +16,53 @@
     <div class="col-12 col-lg-8">
       <div class="container py-4">
 <div class="p-2">
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center align-items-start gap-3 mb-4">
     <h1 class="h3 m-0"><%= t("submissions.index.title") %></h1>
-    <% if user_signed_in? %>
-      <%= link_to t("submissions.index.new_submission"), new_submission_path, class: "btn btn-primary" %>
-    <% end %>
+
+    <div class="d-flex align-items-center gap-2">
+      <% if user_signed_in? %>
+        <%= link_to t("submissions.index.new_submission"), new_submission_path, class: "btn btn-primary" %>
+      <% end %>
+
+      <!-- Sorting dropdown: allows users to choose how submissions are ordered on the index page -->
+      <div class="d-flex align-items-center gap-2">
+        <label for="submissions-sort-select" class="form-label m-0 small text-muted">
+          <%= t("submissions.index.sort.label") %>
+        </label>
+        <%= form_with url: submissions_path, method: :get, local: true, html: { class: "d-inline-block" } do |f| %>
+          <%# Preserve existing filters when changing sort %>
+          <%= hidden_field_tag :type, @submission_type if @submission_type.present? %>
+          <%= hidden_field_tag :status, @status if @status.present? %>
+          <%= hidden_field_tag :tool_id, params[:tool_id] if params[:tool_id].present? %>
+          <%= hidden_field_tag :query, @query if @query.present? %>
+          <%= f.select :sort,
+            options_for_select(
+              [
+                [t("submissions.index.sort.newest"), "newest"],
+                [t("submissions.index.sort.alphabetical"), "alphabetical"],
+                [t("submissions.index.sort.most_upvoted"), "most_upvoted"],
+                [t("submissions.index.sort.trending"), "trending"],
+                [t("submissions.index.sort.new_hot"), "new_hot"],
+                [t("submissions.index.sort.most_followed"), "most_followed"]
+              ],
+              @sort
+            ),
+            { include_blank: false },
+            {
+              id: "submissions-sort-select",
+              class: "form-select form-select-sm",
+              onchange: "this.form.submit()"
+            } %>
+        <% end %>
+      </div>
+    </div>
   </div>
   
   <% if @submissions.any? %>
     <div class="row row-cols-1 row-cols-md-2 g-3">
       <% @submissions.each do |submission| %>
         <div class="col">
-          <%= render "submission_card", submission: submission %>
+          <%= render "submissions/submission_card", submission: submission %>
         </div>
       <% end %>
     </div>

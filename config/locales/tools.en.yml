@@ -10,6 +10,15 @@ en:
       new_tool: "New tool"
       owner: "by %{owner}"
       empty_state: "No tools yet. Create the first one!"
+      sort:
+        label: "Sort By:"
+        alphabetical: "Alphabetical"
+        newest: "Newest"
+        most_upvoted: "Most Upvoted"
+        trending: "Trending"
+        new_hot: "New & Hot"
+        most_favorited: "Most Favorited"
+        most_followed: "Most Followed"
     new:
       title: "Create tool"
     edit:
@@ -26,6 +35,7 @@ en:
       showing_top_tags: "Showing top %{count} of %{total} tags"
       show_all_tags: "Show all tags"
       interactions_hint: "Upvote, favorite, or follow this tool."
+      related_submissions_title: "Related Submissions"
       comments_title: "Discussion"
       flags_title: "Flags"
       bugs_title: "Bugs"

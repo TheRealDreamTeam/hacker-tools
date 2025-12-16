@@ -10,19 +10,39 @@
       <div class="col-12 col-md-5">
         <div class="d-flex justify-content-between align-items-start mb-1 position-relative">
           <h5 class="card-title mb-0">
-            <%= link_to "#{index + 1}. #{tool.tool_name}", tool_path(tool), class: "text-decoration-none" %>
+            <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
             <%# Tools are community-owned, no owner to display %>
           </h5>
           <span class="position-absolute top-0 end-0 mt-1 me-1">
             <%= render "tools/read_state", tool: tool %>
           </span>
         </div>
-        <p class="card-text text-muted mb-2"><%= tool.tool_description.presence || t("pages.home.card.description", index: index + 1) %></p>
+        <div class="card-description">
+          <% description = tool.tool_description.presence || t("pages.home.card.description", index: 1) %>
+          <% description_length = description.length %>
+          <% max_length = 150 %>
+          <p class="card-text text-muted">
+            <%= description %>
+            <% if description_length > max_length %>
+              <span class="view-more-indicator text-muted">View more..</span>
+            <% end %>
+          </p>
+        </div>
         <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
           <% displayed_tags = tool.tags.limit(3) %>
           <% if displayed_tags.any? %>
             <% displayed_tags.each do |tag| %>
               <%= render_tag_link(tag, badge_class: "bg-light text-primary border") %>
+            <% end %>
+            <% if tool.tags.count > 3 %>
+              <% hidden_tags = tool.tags.offset(3) %>
+              <% hidden_tag_names = hidden_tags.pluck(:tag_name).join(", ") %>
+              <span class="badge bg-secondary"
+                    data-bs-toggle="tooltip"
+                    data-bs-title="<%= hidden_tag_names %>"
+                    data-bs-placement="top">
+                +<%= tool.tags.count - 3 %>
+              </span>
             <% end %>
           <% else %>
             <% [

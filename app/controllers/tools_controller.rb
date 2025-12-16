@@ -6,7 +6,28 @@ class ToolsController < ApplicationController
 
   # GET /tools
   def index
-    @tools = Tool.includes(:tags, :user_tools).order(created_at: :desc)
+    # Tools index supports multiple sort modes so users can browse by
+    # alphabetic name, recency, engagement, or follows. We keep the default
+    # sort alphabetical to make scanning the catalog predictable.
+    @sort = params[:sort].presence || "alphabetical"
+
+    base_scope = Tool.public_tools.includes(:tags, :user_tools, :follows)
+    @tools = case @sort
+             when "newest"
+               base_scope.recent
+             when "most_upvoted"
+               base_scope.most_upvoted_all_time
+             when "trending"
+               base_scope.trending
+             when "new_hot"
+               base_scope.new_hot
+             when "most_favorited"
+               base_scope.most_favorited
+             when "most_followed"
+               base_scope.most_followed
+             else
+               base_scope.alphabetical
+             end
   end
 
   # GET /tools/:id
@@ -43,6 +64,12 @@ class ToolsController < ApplicationController
     @tool_tags = @tool.top_tags(limit: 10)
     @all_tool_tags = @tool.tags.includes(:parent) # For tag management UI
     @available_tags = Tag.includes(:parent).order(tag_type: :asc, tag_name: :asc)
+
+    # Load related submissions for this tool, sorted by newest (most recent first)
+    # Eager load associations to avoid N+1 queries when rendering submission cards
+    @related_submissions = @tool.submissions
+                                 .includes(:user, :tools, :tags, :user_submissions)
+                                 .order(created_at: :desc)
   end
 
   # GET /tools/new

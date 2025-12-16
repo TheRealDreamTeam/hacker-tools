@@ -90,6 +90,20 @@ class Submission < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :by_type, ->(type) { where(submission_type: submission_types[type]) }
   scope :for_tool, ->(tool) { joins(:submission_tools).where(submission_tools: { tool_id: tool.id }) }
+
+  # Alphabetical sorting by submission name (case-insensitive)
+  # Falls back to submission_url if submission_name is blank
+  scope :alphabetical, -> {
+    order(Arel.sql("COALESCE(LOWER(submission_name), LOWER(submission_url)) ASC"))
+  }
+
+  # Most followed: submissions with the highest follower counts
+  scope :most_followed, -> {
+    left_joins(:follows)
+      .select("submissions.*, COALESCE(COUNT(follows.id), 0) AS follows_count")
+      .group("submissions.id")
+      .order("follows_count DESC, submissions.created_at DESC")
+  }
   
   # Engagement scopes for home page categories
   # Note: These scopes return ActiveRecord::Relation that can be eager loaded after grouping

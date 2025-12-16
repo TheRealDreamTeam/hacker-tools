@@ -32,10 +32,63 @@ class Tool < ApplicationRecord
   validate :tool_url_format
   validates :visibility, presence: true
 
-  # Scopes for filtering
+  # Scopes for filtering and sorting
+  # NOTE: We keep these scopes simple and composable so they can be chained from
+  # controllers depending on context (e.g., public-only, eager loading, etc.).
   scope :public_tools, -> { where(visibility: visibilities[:public]) }
+
+  # Default "newest" ordering – used when we explicitly want recency
   scope :recent, -> { order(created_at: :desc) }
-  scope :most_upvoted, -> { joins(:user_tools).where(user_tools: { upvote: true }).group("tools.id").order("COUNT(user_tools.id) DESC") }
+
+  # Alphabetical sorting by tool name (case-insensitive) – used as the default
+  # for the tools index to give users a predictable, stable list.
+  scope :alphabetical, -> { order(Arel.sql("LOWER(tool_name) ASC")) }
+
+  # All‑time most upvoted tools. Uses a LEFT JOIN so tools without any
+  # interactions still appear (with 0 upvotes) and are ordered last.
+  scope :most_upvoted_all_time, lambda {
+    left_joins(:user_tools)
+      .select("tools.*, COALESCE(SUM(CASE WHEN user_tools.upvote = true THEN 1 ELSE 0 END), 0) AS upvotes_count")
+      .group("tools.id")
+      .order("upvotes_count DESC, tools.created_at DESC")
+  }
+
+  # Trending tools: most upvoted in the last 30 days. Mirrors the home page
+  # definition so users see consistent behavior between home and the tools index.
+  scope :trending, lambda {
+    left_joins(:user_tools)
+      .where("user_tools.upvote = ? AND user_tools.created_at >= ?", true, 30.days.ago)
+      .select("tools.*, COUNT(user_tools.id) AS upvotes_count")
+      .group("tools.id")
+      .order("upvotes_count DESC, tools.created_at DESC")
+  }
+
+  # New & Hot: tools created in the last 7 days, ordered by upvotes in that
+  # window and then recency. This matches the "New & Hot" category on the home
+  # page to avoid confusing users with different definitions.
+  scope :new_hot, lambda {
+    where("tools.created_at >= ?", 7.days.ago)
+      .left_joins(:user_tools)
+      .select("tools.*, COALESCE(SUM(CASE WHEN user_tools.upvote = true THEN 1 ELSE 0 END), 0) AS upvotes_count")
+      .group("tools.id")
+      .order("upvotes_count DESC, tools.created_at DESC")
+  }
+
+  # Most favorited: tools with the highest number of favorites (all time).
+  scope :most_favorited, lambda {
+    left_joins(:user_tools)
+      .select("tools.*, COALESCE(SUM(CASE WHEN user_tools.favorite = true THEN 1 ELSE 0 END), 0) AS favorites_count")
+      .group("tools.id")
+      .order("favorites_count DESC, tools.created_at DESC")
+  }
+
+  # Most followed: tools with the highest follower counts.
+  scope :most_followed, lambda {
+    left_joins(:follows)
+      .select("tools.*, COALESCE(COUNT(follows.id), 0) AS follows_count")
+      .group("tools.id")
+      .order("follows_count DESC, tools.created_at DESC")
+  }
 
   # Get top tags for this tool, ranked by number of submissions that have both the tool and the tag
   # This gives us relevance: tags that appear frequently with this tool are more relevant

@@ -41,6 +41,21 @@
     <h2 class="h5"><%= t("tools.show.description") %></h2>
     <p><%= simple_format(@tool.tool_description) %></p>
   </div>
+  <% if @related_submissions.any? %>
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0"><%= t("tools.show.related_submissions_title") %></h2>
+        <span class="badge bg-secondary"><%= @related_submissions.size %></span>
+      </div>
+      <div class="row row-cols-1 g-3">
+        <% @related_submissions.each do |submission| %>
+          <div class="col">
+            <%= render "submissions/submission_card", submission: submission %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
   <% if @tool.picture.attached? %>
     <div class="mb-4">
       <h2 class="h5"><%= t("tools.show.picture") %></h2>

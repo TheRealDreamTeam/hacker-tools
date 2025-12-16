@@ -8,6 +8,10 @@ class SubmissionsController < ApplicationController
     @query = params[:query]&.strip
     @submission_type = params[:type]
     @status = params[:status] || :completed # Default to completed submissions
+    # Submissions index supports multiple sort modes. Default to "newest" to show
+    # the most recent submissions first, which is more useful than alphabetical
+    # for a content feed.
+    @sort = params[:sort].presence || "newest"
     
     # Use search service if query is present
     if @query.present?
@@ -28,22 +32,37 @@ class SubmissionsController < ApplicationController
       #   @enhanced_results = SubmissionRagService.enhance_results(@query, @submissions, top_k: 5)
       # end
     else
-      # Regular listing without search
-      @submissions = Submission.includes(:user, :tools, :tags)
-                               .order(created_at: :desc)
+      # Regular listing without search - apply sorting
+      base_scope = Submission.includes(:user, :tools, :tags, :user_submissions, :follows)
       
       # Filter by submission type if provided
-      @submissions = @submissions.by_type(@submission_type) if @submission_type.present?
+      base_scope = base_scope.by_type(@submission_type) if @submission_type.present?
       
       # Filter by status if provided
-      @submissions = @submissions.where(status: @status) if @status.present?
+      base_scope = base_scope.where(status: @status) if @status.present?
       
       # Filter by tool if provided
-      @submissions = @submissions.for_tool(Tool.find(params[:tool_id])) if params[:tool_id].present?
+      base_scope = base_scope.for_tool(Tool.find(params[:tool_id])) if params[:tool_id].present?
+      
+      # Apply sorting based on selected sort mode
+      @submissions = case @sort
+                     when "alphabetical"
+                       base_scope.alphabetical
+                     when "most_upvoted"
+                       base_scope.most_upvoted
+                     when "trending"
+                       base_scope.trending
+                     when "new_hot"
+                       base_scope.new_hot
+                     when "most_followed"
+                       base_scope.most_followed
+                     else # "newest" or default
+                       base_scope.recent
+                     end
     end
     
-    # Eager load associations for performance
-    @submissions = @submissions.includes(:user, :tools, :tags) if @submissions.is_a?(ActiveRecord::Relation)
+    # Eager load associations for performance (if not already loaded by scopes)
+    @submissions = @submissions.includes(:user, :tools, :tags, :user_submissions, :follows) if @submissions.is_a?(ActiveRecord::Relation)
   end
 
   # GET /submissions/:id
