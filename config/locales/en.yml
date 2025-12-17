@@ -345,6 +345,11 @@ en:
     too_short: "is too short"
     too_long: "is too long"
     taken: "has already been taken"
+    pages:
+      not_found_title: "Page not found"
+      internal_server_error_title: "Something went wrong"
+      message: "Ooob we are very sorry, something went wrong."
+      back_home: "Back to home"
   
   # Users
   users:
