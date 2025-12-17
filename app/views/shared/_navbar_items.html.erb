@@ -21,6 +21,7 @@
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
+  <%= render "notifications/badge" %>
   <li class="nav-item">
     <%= link_to t("navigation.profile"), profile_path(current_user.username),
         class: "nav-link",
@@ -37,8 +38,8 @@
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false }, local: true, class: "d-inline" do |f| %>
-      <%= f.submit t("navigation.logout"), class: "btn btn-link nav-link text-decoration-none border-0 bg-transparent p-0 shadow-none" %>
+    <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false }, local: true, class: "d-inline m-0" do |f| %>
+      <%= f.submit t("navigation.logout"), class: "btn btn-link nav-link text-decoration-none border-0 bg-transparent shadow-none" %>
     <% end %>
   </li>
   <% else %>

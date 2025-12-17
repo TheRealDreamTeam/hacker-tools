@@ -42,6 +42,19 @@ class User < ApplicationRecord
   # Followers (for this user as followable)
   has_many :follower_follows, as: :followable, class_name: "Follow", dependent: :destroy
   has_many :followers, through: :follower_follows, source: :user
+  
+  # Notifications (Noticed gem)
+  has_many :notifications, as: :recipient, class_name: "Noticed::Notification", dependent: :destroy
+  has_many :unread_notifications, -> { where(read_at: nil) }, as: :recipient, class_name: "Noticed::Notification"
+  
+  # Helper methods for notifications
+  def unread_notifications_count
+    unread_notifications.count
+  end
+  
+  def has_unread_notifications?
+    unread_notifications.exists?
+  end
 
   # Username validation: must be unique among active users only
   # This allows username reuse after account deletion

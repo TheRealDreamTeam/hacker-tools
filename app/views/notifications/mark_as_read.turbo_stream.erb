@@ -1,0 +1,11 @@
+<%# Turbo Stream response for marking notification as read %>
+<%= turbo_stream.update "notification-count" do %>
+  <% if current_user.has_unread_notifications? %>
+    <%= current_user.unread_notifications_count %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.update "notification-#{@notification.id}" do %>
+  <%= render "notifications/notification", notification: @notification %>
+<% end %>
+

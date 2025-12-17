@@ -23,6 +23,28 @@
   // Ensure navbar-nav maintains height even when empty
   .navbar-nav {
     min-height: 40px; // Maintain minimum height for nav items container
+    list-style: none !important; // Remove list bullets/dots - force override
+    margin: 0 !important;
+    padding: 0 !important;
+    // Bootstrap already sets display: flex, but ensure it's applied
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+  
+  // Remove list markers from all nav-items (Bootstrap should handle this, but ensure it)
+  .navbar-nav > .nav-item,
+  .navbar-nav > li.nav-item {
+    list-style: none !important;
+    list-style-type: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    
+    &::marker {
+      display: none !important;
+      content: "" !important;
+      font-size: 0 !important;
+    }
   }
   
   .navbar-brand {
@@ -62,11 +84,69 @@
     border-radius: 0.5rem; // Slightly less rounded for nav items
     transition: all 0.2s ease-in-out;
     margin: 0 0.25rem;
+    display: inline-block; // Ensure consistent display
+    text-decoration: none; // Remove underline
+    white-space: nowrap; // Prevent text wrapping
     
     &:focus {
       outline: none;
       box-shadow: none;
     }
+    
+    &:hover {
+      color: darken($primary, 10%);
+    }
+  }
+  
+  // Ensure form buttons styled as nav-links look consistent
+  .nav-item {
+    form {
+      margin: 0;
+      
+      .btn-link.nav-link {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        margin: 0 0.25rem;
+        color: $primary;
+        font-weight: 500;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease-in-out;
+        
+        &:hover {
+          color: darken($primary, 10%);
+        }
+      }
+    }
+  }
+  
+  // Dropdown menus in navbar - ensure they appear above content
+  .dropdown {
+    position: relative;
+    
+    .dropdown-menu {
+      z-index: 10001; // Higher than navbar z-index to appear above
+      margin-top: 0.5rem; // Add spacing from trigger
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    // Notification bell icon styling
+    #notification-badge {
+      i {
+        font-size: 1.1rem; // Match text size
+        vertical-align: middle;
+      }
+    }
+  }
+  
+  // Notification dropdown specific styling
+  .notification-dropdown {
+    z-index: 10001 !important; // Ensure it's above navbar
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
   }
 }
 
@@ -102,6 +182,40 @@
           }
         }
       }
+    }
+  }
+}
+
+// CRITICAL: Final override to ensure no list markers appear anywhere in navbar
+// This must be at the end to override any other rules
+#navbar .navbar-nav,
+#navbar ul.navbar-nav,
+nav#navbar .navbar-nav,
+nav#navbar ul.navbar-nav {
+  list-style: none !important;
+  list-style-type: none !important;
+  -webkit-list-style: none !important;
+  
+  > li,
+  > li.nav-item,
+  > .nav-item {
+    list-style: none !important;
+    list-style-type: none !important;
+    -webkit-list-style: none !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+    
+    &::marker {
+      display: none !important;
+      content: "" !important;
+      font-size: 0 !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+    
+    &::before {
+      display: none !important;
+      content: "" !important;
     }
   }
 }

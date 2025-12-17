@@ -1,0 +1,7 @@
+<%# Turbo Stream response for marking all notifications as read %>
+<%= turbo_stream.remove "notification-count" %>
+
+<%= turbo_stream.update "notifications-list" do %>
+  <%= render "notifications/list", notifications: current_user.notifications.limit(10).order(created_at: :desc) %>
+<% end %>
+

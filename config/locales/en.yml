@@ -534,3 +534,69 @@ en:
     github: "GitHub"
     privacy: "Privacy"
     terms: "Terms"
+
+  # Notifications
+  notifications:
+    title: "Notifications"
+    empty: "No notifications yet"
+    marked_as_read: "Notification marked as read"
+    all_marked_as_read: "All notifications marked as read"
+    mark_all_as_read: "Mark all as read"
+    view_all: "View all notifications"
+    new_submission_from_followed_user:
+      message: "%{username} created a new submission: %{submission_name}"
+    new_submission_on_followed_tool:
+      message: "%{username} created a new submission about %{tool_name}: %{submission_name}"
+    new_submission_on_followed_tag:
+      message: "%{username} created a new submission tagged with %{tag_name}: %{submission_name}"
+    new_top_level_comment:
+      message: "%{username} commented on %{commentable_name}"
+    reply_to_comment:
+      message: "%{username} replied to your comment on %{commentable_name}"
+    flag_resolved:
+      message: "A flag you reported or upvoted on %{commentable_name} has been resolved"
+    bug_resolved:
+      message: "A bug you reported or upvoted on %{commentable_name} has been resolved"
+    submission_processing_complete:
+      message: "Your submission \"%{submission_name}\" has finished processing"
+    submission_processing_failed:
+      message: "Processing failed for your submission \"%{submission_name}\": %{error}"
+      default_error: "An unknown error occurred"
+    submission_rejected:
+      message: "Your submission \"%{submission_name}\" was rejected: %{reason}"
+      default_reason: "Submission does not meet our guidelines"
+  
+  # Notifiers (for Noticed gem - relative translation lookups)
+  notifiers:
+    new_submission_from_followed_user_notifier:
+      notification:
+        message: "%{username} created a new submission: %{submission_name}"
+    new_submission_on_followed_tool_notifier:
+      notification:
+        message: "%{username} created a new submission about %{tool_name}: %{submission_name}"
+    new_submission_on_followed_tag_notifier:
+      notification:
+        message: "%{username} created a new submission tagged with %{tag_name}: %{submission_name}"
+    new_top_level_comment_notifier:
+      notification:
+        message: "%{username} commented on %{commentable_name}"
+    reply_to_comment_notifier:
+      notification:
+        message: "%{username} replied to your comment on %{commentable_name}"
+    flag_resolved_notifier:
+      notification:
+        message: "A flag you reported or upvoted on %{commentable_name} has been resolved"
+    bug_resolved_notifier:
+      notification:
+        message: "A bug you reported or upvoted on %{commentable_name} has been resolved"
+    submission_processing_complete_notifier:
+      notification:
+        message: "Your submission \"%{submission_name}\" has finished processing"
+    submission_processing_failed_notifier:
+      notification:
+        message: "Processing failed for your submission \"%{submission_name}\": %{error}"
+        default_error: "An unknown error occurred"
+    submission_rejected_notifier:
+      notification:
+        message: "Your submission \"%{submission_name}\" was rejected: %{reason}"
+        default_reason: "Submission does not meet our guidelines"

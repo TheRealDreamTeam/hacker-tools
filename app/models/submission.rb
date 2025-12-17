@@ -65,6 +65,8 @@ class Submission < ApplicationRecord
   # Callbacks
   before_validation :normalize_url, if: -> { submission_url.present? }
   before_validation :set_default_status, on: :create
+  after_create :notify_followers_of_new_submission
+  after_update :notify_submission_status_change, if: :saved_change_to_status?
   
   # pg_search configuration for full-text search
   # Search across submission_name, submission_description, and author_note
@@ -259,6 +261,55 @@ class Submission < ApplicationRecord
   # Set default status to pending on creation
   def set_default_status
     self.status ||= :pending
+  end
+  
+  # Notify followers when a new submission is created
+  def notify_followers_of_new_submission
+    return if user.deleted? # Skip notifications for deleted users
+    
+    # Notify users who follow the submission creator
+    user_followers = user.followers.active
+    if user_followers.any?
+      NewSubmissionFromFollowedUserNotifier.with(
+        record: self,
+        submission: self,
+        user: user
+      ).deliver_later(user_followers)
+    end
+    
+    # Notify users who follow tools associated with this submission
+    # Note: This runs after submission_tools are created, so we need to reload
+    # For now, we'll handle this in a background job after associations are set
+    NotifyToolFollowersJob.perform_later(self.id) if tools.any?
+    
+    # Notify users who follow tags associated with this submission
+    NotifyTagFollowersJob.perform_later(self.id) if tags.any?
+  end
+  
+  # Notify submitter when submission status changes
+  def notify_submission_status_change
+    return if user.deleted?
+    
+    case status
+    when "completed"
+      SubmissionProcessingCompleteNotifier.with(
+        record: self,
+        submission: self
+      ).deliver_later(user)
+    when "failed"
+      SubmissionProcessingFailedNotifier.with(
+        record: self,
+        submission: self,
+        error: metadata_value(:error)
+      ).deliver_later(user)
+    when "rejected"
+      reason = metadata_value(:rejection_reason) || "Submission was rejected"
+      SubmissionRejectedNotifier.with(
+        record: self,
+        submission: self,
+        reason: reason
+      ).deliver_later(user)
+    end
   end
 end
 
