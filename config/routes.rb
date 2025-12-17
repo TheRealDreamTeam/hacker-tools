@@ -80,4 +80,8 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  # Error pages (unscoped so they work for all locales and during exceptions)
+  match "/404", to: "errors#not_found", via: :all
+  match "/500", to: "errors#internal_server_error", via: :all
 end

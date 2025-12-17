@@ -2,7 +2,7 @@
 
 This document serves as the human-readable specification for the Hacker Tools application. It is maintained alongside development and updated as features are built.
 
-**Last Updated**: 2025-12-17 (Navbar sign-in CTA and favorites removed)
+**Last Updated**: 2025-12-17 (Branded error pages with navbar)
 
 ## Overview
 
@@ -15,6 +15,19 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
 - Comments include threaded discussions on new tools (CI caching strategies, formatting, observability, API clients) plus security flags/bugs contributed by the deleted user to validate soft-delete associations.
 
 ## Core Features
+
+### Error Handling & Status Pages
+- **Status**: Complete
+- **Description**: Branded 404 and 500 pages render through the application layout so the Hackertools navbar/footer remain visible even on errors.
+- **Technical Implementation**:
+  - Exceptions are routed through Rails routes via `config.exceptions_app = routes`.
+  - Routes: `/404` → `ErrorsController#not_found`; `/500` → `ErrorsController#internal_server_error` (both unscoped, work without locale).
+  - Views: `app/views/errors/not_found.html.erb` and `app/views/errors/internal_server_error.html.erb` share `_error_page` to render the common message and CTA.
+  - Message text is localized at `errors.pages.message` (“Ooob we are very sorry, something went wrong.”) with a “Back to home” button linking to `root_path`.
+- **UI/UX Considerations**:
+  - Pages use the full navbar/footer for consistent branding.
+  - Layout remains responsive (Bootstrap grid) and centered content for readability.
+  - Error URLs stay clean without locale query params for simpler monitoring and sharing.
 
 ### Search & Discovery
 - **Status**: In Progress (Dedicated search page)
