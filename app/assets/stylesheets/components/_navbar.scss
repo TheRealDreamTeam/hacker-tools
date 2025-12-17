@@ -18,6 +18,20 @@
     padding-left: 0;
     padding-right: 0;
     min-height: 60px; // Ensure container maintains height
+    position: relative; // Ensure proper stacking context
+    z-index: 1; // Ensure navbar content is above centered logo
+  }
+  
+  // Left side container (burger + new submission button) - ensure it's above centered logo
+  .container-fluid > div:first-child {
+    position: relative;
+    z-index: 2; // Higher than logo to ensure clickability
+  }
+  
+  // Right side container (search) - ensure it's above centered logo
+  .container-fluid > div:last-child {
+    position: relative;
+    z-index: 2; // Higher than logo to ensure clickability
   }
   
   // Ensure navbar-nav maintains height even when empty
@@ -61,117 +75,100 @@
   
   // Navbar toggler button
   // Override Bootstrap's default behavior - keep hamburger visible on all screen sizes
+  // Since navigation moved to sidebar, burger should always be visible
   .navbar-toggler {
-    border: none;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important; // Add visible border for debugging
     border-radius: 0.75rem; // 12px
-    padding: 0.5rem;
+    padding: 0.5rem !important;
     transition: all 0.2s ease-in-out;
     display: block !important; // Force display on all screen sizes (override Bootstrap's navbar-expand-lg)
+    background-color: transparent;
+    width: auto;
+    min-width: 44px !important; // Ensure minimum touch target size
+    height: auto;
+    min-height: 44px !important; // Ensure minimum touch target size
+    flex-shrink: 0 !important; // Prevent button from shrinking
+    visibility: visible !important;
+    opacity: 1 !important;
     
     &:hover {
       box-shadow: 0 2px 4px rgba($primary, 0.1);
+      background-color: rgba($primary, 0.05);
+      border-color: rgba($primary, 0.3) !important;
     }
     
     &:focus {
-      box-shadow: none;
+      box-shadow: 0 0 0 0.2rem rgba($primary, 0.25);
       outline: none;
     }
   }
+  
+  // CRITICAL: Override Bootstrap's navbar-expand-lg hiding of toggler at ALL breakpoints
+  // Bootstrap hides toggler on screens ≥992px, we need to force it visible
+  &.navbar-expand-lg .navbar-toggler,
+  .navbar-expand-lg .navbar-toggler {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  // Override Bootstrap's media query that hides toggler on large screens
+  @media (min-width: 992px) {
+    &.navbar-expand-lg .navbar-toggler,
+    .navbar-expand-lg .navbar-toggler {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+  }
+  
+  // Style Bootstrap Icon inside navbar-toggler (replacing navbar-toggler-icon)
+  .navbar-toggler {
+    i {
+      color: #000000 !important; // Black color for visibility
+      font-size: 1.5rem !important; // Ensure icon is large enough
+      display: inline-block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      line-height: 1 !important;
+    }
+  }
+  
+  // Ensure icon is visible on all screen sizes
+  &.navbar-expand-lg .navbar-toggler i,
+  .navbar-expand-lg .navbar-toggler i {
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  // Override Bootstrap's media query that might hide icon on large screens
+  @media (min-width: 992px) {
+    &.navbar-expand-lg .navbar-toggler i,
+    .navbar-expand-lg .navbar-toggler i {
+      display: inline-block !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+  }
 
-  // New Submission button - big button with hover text change
-  // On mobile: shows "+" icon
-  // On desktop: shows text with hover effect
+  // New Submission button - simple button, visible on desktop only
+  // Hidden on mobile via Bootstrap utility classes (d-none d-md-inline-block)
   .new-submission-btn {
-    position: relative;
     border-radius: 0.75rem; // 12px
     font-weight: 600;
     white-space: nowrap;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     
     // Custom styling: black outline, light grey background, black text
     background-color: #f5f5f5 !important; // Light grey background
     border: 1px solid #000000 !important; // Black outline
     color: #000000 !important; // Black text
     
-    // Remove any default button hover effects
+    // Simple hover effect
     &:hover {
-      transform: none;
-      box-shadow: none;
-      background-color: #f5f5f5 !important; // Keep light grey on hover
-      border-color: #000000 !important; // Keep black border on hover
-      color: #000000 !important; // Keep black text on hover
-    }
-    
-    // Ensure text elements also have black color
-    .btn-text-default,
-    .btn-text-hover {
-      color: #000000 !important;
-    }
-    
-    // On mobile, make it a square icon button
-    @media (max-width: 767.98px) {
-      width: 44px;
-      height: 44px;
-      padding: 0;
-      
-      i {
-        font-size: 1.5rem;
-      }
-    }
-    
-    // Spacer element maintains button size (invisible, but keeps dimensions)
-    .btn-text-spacer {
-      visibility: hidden;
-      display: inline-block;
-      height: 0;
-      overflow: hidden;
-    }
-    
-    // Both text elements positioned absolutely in the exact same location
-    .btn-text-default,
-    .btn-text-hover {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-    }
-    
-    .btn-text-default {
-      opacity: 1;
-      visibility: visible;
-    }
-    
-    .btn-text-hover {
-      opacity: 0;
-      visibility: hidden;
-    }
-    
-    // Text change on hover only on desktop (where text is visible)
-    @media (min-width: 768px) {
-      &:hover {
-        // Only change text opacity, no button effects
-        .btn-text-default {
-          opacity: 0;
-          visibility: hidden;
-        }
-        
-        .btn-text-hover {
-          opacity: 1;
-          visibility: visible;
-        }
-      }
+      background-color: #e9e9e9 !important; // Slightly darker grey on hover
+      border-color: #000000 !important; // Keep black border
+      color: #000000 !important; // Keep black text
     }
   }
 
