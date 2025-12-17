@@ -169,13 +169,15 @@
                         <%= link_to t("comments.sort.trending"), "#{tool_path(@tool, sort_by: 'trending')}#discussion-section", class: "btn btn-outline-secondary #{@sort_by == 'trending' ? 'active' : ''}" %>
                       </div>
                     </div>
-                    <% if @comments.any? %>
-                      <% @comments.each do |comment| %>
-                        <%= render "comments/comment", comment: comment, depth: 0, allow_replies: true %>
+                    <div id="comments-list">
+                      <% if @comments.any? %>
+                        <% @comments.each do |comment| %>
+                          <%= render "comments/comment", comment: comment, depth: 0, allow_replies: true %>
+                        <% end %>
+                      <% else %>
+                        <div id="comments-empty" class="alert alert-light border"><%= t("comments.empty.comments") %></div>
                       <% end %>
-                    <% else %>
-                      <div class="alert alert-light border"><%= t("comments.empty.comments") %></div>
-                    <% end %>
+                    </div>
                   </div>
 
                   <!-- Bugs Tab -->

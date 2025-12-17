@@ -69,5 +69,15 @@ Rails.application.routes.draw do
         post :add_submission_to_multiple
       end
     end
+    
+    # Notifications
+    resources :notifications, only: [:index] do
+      member do
+        patch :mark_as_read
+      end
+      collection do
+        patch :mark_all_as_read
+      end
+    end
   end
 end

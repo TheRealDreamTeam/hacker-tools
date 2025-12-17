@@ -1,0 +1,33 @@
+<%# Replace the interaction buttons with updated upvote state %>
+<%= turbo_stream.replace "comment-#{@comment.id}-interactions" do %>
+  <div id="comment-<%= @comment.id %>-interactions" class="interaction-buttons d-flex gap-2 align-items-center">
+    <% if @comment.commentable_type == "Tool" %>
+      <div class="interaction-item d-flex flex-column align-items-center gap-0">
+        <%= button_to upvote_tool_comment_path(@comment.commentable, @comment),
+                      method: :post,
+                      class: "btn btn-sm #{@comment.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'} interaction-btn",
+                      title: @comment.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote"),
+                      aria: { label: t("comments.actions.upvote") } do %>
+          <i class="bi <%= @comment.upvoted_by?(current_user) ? 'bi-arrow-up-circle-fill text-primary' : 'bi-arrow-up-circle text-secondary' %>"></i>
+        <% end %>
+        <span class="interaction-count" title="<%= t('comments.actions.upvote') %>" aria-label="<%= t('comments.actions.upvote') %>">
+          <%= @comment.upvote_count %>
+        </span>
+      </div>
+    <% elsif @comment.commentable_type == "Submission" %>
+      <div class="interaction-item d-flex flex-column align-items-center gap-0">
+        <%= button_to upvote_submission_comment_path(@comment.commentable, @comment),
+                      method: :post,
+                      class: "btn btn-sm #{@comment.upvoted_by?(current_user) ? 'btn-primary' : 'btn-outline-secondary'} interaction-btn",
+                      title: @comment.upvoted_by?(current_user) ? t("comments.actions.remove_upvote") : t("comments.actions.upvote"),
+                      aria: { label: t("comments.actions.upvote") } do %>
+          <i class="bi <%= @comment.upvoted_by?(current_user) ? 'bi-arrow-up-circle-fill text-primary' : 'bi-arrow-up-circle text-secondary' %>"></i>
+        <% end %>
+        <span class="interaction-count" title="<%= t('comments.actions.upvote') %>" aria-label="<%= t('comments.actions.upvote') %>">
+          <%= @comment.upvote_count %>
+        </span>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+

@@ -8,7 +8,7 @@
           <p class="text-secondary small mb-0"><%= l(comment.created_at, format: :short) %></p>
         </div>
         <div class="d-flex flex-column gap-1 align-items-end">
-          <div class="interaction-buttons d-flex gap-2 align-items-center">
+          <div id="comment-<%= comment.id %>-interactions" class="interaction-buttons d-flex gap-2 align-items-center">
             <% if comment.commentable_type == "Tool" %>
               <div class="interaction-item d-flex flex-column align-items-center gap-0">
                 <%= button_to upvote_tool_comment_path(comment.commentable, comment),
@@ -73,8 +73,10 @@
     </div>
   </div>
 
-  <% comment.replies.each do |reply| %>
-    <%= render "comments/comment", comment: reply, depth: depth + 1, allow_replies: true %>
-  <% end %>
+  <div id="comment-<%= comment.id %>-replies">
+    <% comment.replies.each do |reply| %>
+      <%= render "comments/comment", comment: reply, depth: depth + 1, allow_replies: true %>
+    <% end %>
+  </div>
 </div>
 

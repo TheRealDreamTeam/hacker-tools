@@ -1,0 +1,45 @@
+<%# Notification badge with dropdown - shows unread count %>
+<li class="nav-item dropdown" data-controller="notifications">
+  <%= link_to "#",
+      class: "nav-link position-relative",
+      id: "notification-badge",
+      data: { 
+        bs_toggle: "dropdown",
+        bs_auto_close: "outside",
+        turbo_prefetch: false
+      },
+      aria: { haspopup: true, expanded: false } do %>
+    <i class="bi bi-bell"></i>
+    <% if current_user.has_unread_notifications? %>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notification-count">
+        <%= current_user.unread_notifications_count %>
+      </span>
+    <% end %>
+  <% end %>
+  
+  <%# Dropdown menu with notifications %>
+  <div class="dropdown-menu dropdown-menu-end notification-dropdown" style="min-width: 350px; max-height: 500px; overflow-y: auto; z-index: 10001;">
+    <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+      <h6 class="mb-0"><%= t("notifications.title") %></h6>
+      <% if current_user.has_unread_notifications? %>
+        <%= button_to mark_all_as_read_notifications_path,
+            method: :patch,
+            class: "btn btn-sm btn-link text-decoration-none p-0",
+            form: { data: { turbo_stream: true } } do %>
+          <%= t("notifications.mark_all_as_read") %>
+        <% end %>
+      <% end %>
+    </div>
+    <div id="notifications-list">
+      <%= render "notifications/list", notifications: current_user.notifications.limit(10).order(created_at: :desc) %>
+    </div>
+    <div class="p-2 border-top text-center">
+      <%= link_to t("notifications.view_all"), notifications_path, class: "btn btn-sm btn-outline-primary" %>
+    </div>
+  </div>
+  
+  <%# Subscribe to real-time notification updates via Action Cable %>
+  <%# Noticed broadcasts to stream_for recipient, which creates: "noticed::notification_channel:user_#{user.id}" %>
+  <%= turbo_stream_from "noticed::notification_channel", current_user %>
+</li>
+

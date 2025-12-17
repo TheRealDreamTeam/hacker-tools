@@ -1,0 +1,21 @@
+<%# Notification item for index page %>
+<%= link_to notification.url || "#",
+    class: "list-group-item list-group-item-action d-flex align-items-start #{'list-group-item-light' unless notification.read_at?}",
+    data: { 
+      turbo: notification.url.present?,
+      action: "click->notifications#markAsRead",
+      notification_id: notification.id
+    } do %>
+  <div class="flex-grow-1">
+    <div class="d-flex justify-content-between align-items-start mb-1">
+      <p class="mb-0"><%= notification.message %></p>
+      <% unless notification.read_at? %>
+        <span class="badge bg-primary rounded-pill ms-2">New</span>
+      <% end %>
+    </div>
+    <small class="text-muted">
+      <%= l(notification.created_at, format: :long) %>
+    </small>
+  </div>
+<% end %>
+
