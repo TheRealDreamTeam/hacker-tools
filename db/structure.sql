@@ -1,11 +1,12 @@
-\restrict bVmh8oZM0PuUfOEEwjcLEEE7d7NsY4bwlxkedgZKNwTZ18VDIvF6mQgUsq17rsR
+\restrict xJU9ay9sfgjK80MV8COZ5Q49W33CDgMsgILLoCRISnvhlvACiGk5aPuR5bxX9xV
 
--- Dumped from database version 16.11 (Ubuntu 16.11-1.pgdg24.04+1)
--- Dumped by pg_dump version 16.11 (Ubuntu 16.11-1.pgdg24.04+1)
+-- Dumped from database version 16.11 (Homebrew)
+-- Dumped by pg_dump version 18.0
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -1535,7 +1536,7 @@ ALTER TABLE ONLY public.user_submissions
 -- PostgreSQL database dump complete
 --
 
-\unrestrict bVmh8oZM0PuUfOEEwjcLEEE7d7NsY4bwlxkedgZKNwTZ18VDIvF6mQgUsq17rsR
+\unrestrict xJU9ay9sfgjK80MV8COZ5Q49W33CDgMsgILLoCRISnvhlvACiGk5aPuR5bxX9xV
 
 SET search_path TO "$user", public;
 
