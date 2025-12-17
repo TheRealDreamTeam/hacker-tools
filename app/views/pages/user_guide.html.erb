@@ -47,51 +47,135 @@
                     <p class="mb-0"><%= t("pages.user_guide.sections.basics.submission_explanation") %></p>
                   </div>
                   
-                  <div>
+                  <!-- Types of Submissions - Full Width Container -->
+                  <div class="mb-4">
                     <h4 class="h5 fw-semibold mb-2"><%= t("pages.user_guide.sections.basics.submission_types_title") %></h4>
                     <p class="mb-2"><%= t("pages.user_guide.sections.basics.submission_types_description") %></p>
+                    <div class="row">
+                      <div class="col-12 col-md-6">
+                        <ul class="list-unstyled">
+                          <li class="mb-2">
+                            <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_article") %></span>
+                            <%= t("pages.user_guide.sections.basics.type_article") %>
+                          </li>
+                          <li class="mb-2">
+                            <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_guide") %></span>
+                            <%= t("pages.user_guide.sections.basics.type_guide") %>
+                          </li>
+                          <li class="mb-2">
+                            <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_documentation") %></span>
+                            <%= t("pages.user_guide.sections.basics.type_documentation") %>
+                          </li>
+                          <li class="mb-2">
+                            <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_github_repo") %></span>
+                            <%= t("pages.user_guide.sections.basics.type_github_repo") %>
+                          </li>
+                          <li class="mb-2">
+                            <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_social_post") %></span>
+                            <%= t("pages.user_guide.sections.basics.type_social_post") %>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <ul class="list-unstyled">
+                          <li class="mb-2">
+                            <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_code_snippet") %></span>
+                            <%= t("pages.user_guide.sections.basics.type_code_snippet") %>
+                          </li>
+                          <li class="mb-2">
+                            <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_website") %></span>
+                            <%= t("pages.user_guide.sections.basics.type_website") %>
+                          </li>
+                          <li class="mb-2">
+                            <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_video") %></span>
+                            <%= t("pages.user_guide.sections.basics.type_video") %>
+                          </li>
+                          <li class="mb-2">
+                            <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_podcast") %></span>
+                            <%= t("pages.user_guide.sections.basics.type_podcast") %>
+                          </li>
+                          <li class="mb-2">
+                            <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_other") %></span>
+                            <%= t("pages.user_guide.sections.basics.type_other") %>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Tag Colors & Meaning - Full Width Container -->
+                  <div>
+                    <h4 class="h5 fw-semibold mb-2"><%= t("pages.user_guide.sections.basics.tag_colors_title") %></h4>
                     <ul class="list-unstyled">
                       <li class="mb-2">
-                        <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_article") %></span>
-                        <%= t("pages.user_guide.sections.basics.type_article") %>
+                        <span class="d-inline-block" style="width: 100px;"><%= t("pages.user_guide.sections.basics.tag_colors_yellow_label") %></span>
+                        <span class="fw-bold fs-6"><%= t("pages.user_guide.sections.basics.tag_colors_yellow_category") %></span>
+                        <span> — </span>
+                        <span class="small"><%= t("pages.user_guide.sections.basics.tag_colors_yellow_description") %></span>
                       </li>
                       <li class="mb-2">
-                        <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_guide") %></span>
-                        <%= t("pages.user_guide.sections.basics.type_guide") %>
+                        <span class="d-inline-block" style="width: 100px;"><%= t("pages.user_guide.sections.basics.tag_colors_black_label") %></span>
+                        <span class="fw-bold fs-6"><%= t("pages.user_guide.sections.basics.tag_colors_black_category") %></span>
+                        <span> — </span>
+                        <span class="small"><%= t("pages.user_guide.sections.basics.tag_colors_black_description") %></span>
                       </li>
                       <li class="mb-2">
-                        <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_documentation") %></span>
-                        <%= t("pages.user_guide.sections.basics.type_documentation") %>
+                        <span class="d-inline-block" style="width: 100px;"><%= t("pages.user_guide.sections.basics.tag_colors_grey_label") %></span>
+                        <span class="fw-bold fs-6"><%= t("pages.user_guide.sections.basics.tag_colors_grey_category") %></span>
+                        <span> — </span>
+                        <span class="small"><%= t("pages.user_guide.sections.basics.tag_colors_grey_description") %></span>
                       </li>
                       <li class="mb-2">
-                        <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_github_repo") %></span>
-                        <%= t("pages.user_guide.sections.basics.type_github_repo") %>
+                        <span class="d-inline-block" style="width: 100px;"><%= t("pages.user_guide.sections.basics.tag_colors_green_label") %></span>
+                        <span class="fw-bold fs-6"><%= t("pages.user_guide.sections.basics.tag_colors_green_category") %></span>
+                        <span> — </span>
+                        <span class="small"><%= t("pages.user_guide.sections.basics.tag_colors_green_description") %></span>
                       </li>
                       <li class="mb-2">
-                        <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_social_post") %></span>
-                        <%= t("pages.user_guide.sections.basics.type_social_post") %>
+                        <span class="d-inline-block" style="width: 100px;"><%= t("pages.user_guide.sections.basics.tag_colors_indigo_label") %></span>
+                        <span class="fw-bold fs-6"><%= t("pages.user_guide.sections.basics.tag_colors_indigo_category") %></span>
+                        <span> — </span>
+                        <span class="small"><%= t("pages.user_guide.sections.basics.tag_colors_indigo_description") %></span>
                       </li>
                       <li class="mb-2">
-                        <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_code_snippet") %></span>
-                        <%= t("pages.user_guide.sections.basics.type_code_snippet") %>
+                        <span class="d-inline-block" style="width: 100px;"><%= t("pages.user_guide.sections.basics.tag_colors_navy_label") %></span>
+                        <span class="fw-bold fs-6"><%= t("pages.user_guide.sections.basics.tag_colors_navy_category") %></span>
+                        <span> — </span>
+                        <span class="small"><%= t("pages.user_guide.sections.basics.tag_colors_navy_description") %></span>
                       </li>
                       <li class="mb-2">
-                        <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_website") %></span>
-                        <%= t("pages.user_guide.sections.basics.type_website") %>
+                        <span class="d-inline-block" style="width: 100px;"><%= t("pages.user_guide.sections.basics.tag_colors_purple_label") %></span>
+                        <span class="fw-bold fs-6"><%= t("pages.user_guide.sections.basics.tag_colors_purple_category") %></span>
+                        <span> — </span>
+                        <span class="small"><%= t("pages.user_guide.sections.basics.tag_colors_purple_description") %></span>
                       </li>
                       <li class="mb-2">
-                        <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_video") %></span>
-                        <%= t("pages.user_guide.sections.basics.type_video") %>
+                        <span class="d-inline-block" style="width: 100px;"><%= t("pages.user_guide.sections.basics.tag_colors_cyan_label") %></span>
+                        <span class="fw-bold fs-6"><%= t("pages.user_guide.sections.basics.tag_colors_cyan_category") %></span>
+                        <span> — </span>
+                        <span class="small"><%= t("pages.user_guide.sections.basics.tag_colors_cyan_description") %></span>
                       </li>
                       <li class="mb-2">
-                        <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_podcast") %></span>
-                        <%= t("pages.user_guide.sections.basics.type_podcast") %>
-                      </li>
-                      <li class="mb-2">
-                        <span class="me-2"><%= t("pages.user_guide.sections.basics.bullet_other") %></span>
-                        <%= t("pages.user_guide.sections.basics.type_other") %>
+                        <span class="d-inline-block" style="width: 100px;"><%= t("pages.user_guide.sections.basics.tag_colors_blue_label") %></span>
+                        <span class="fw-bold fs-6"><%= t("pages.user_guide.sections.basics.tag_colors_blue_category") %></span>
+                        <span> — </span>
+                        <span class="small"><%= t("pages.user_guide.sections.basics.tag_colors_blue_description") %></span>
                       </li>
                     </ul>
+                    <div class="mt-3">
+                      <h5 class="h6 fw-semibold mb-2"><%= t("pages.user_guide.sections.basics.tag_colors_level_title") %></h5>
+                      <ul class="list-unstyled">
+                        <li class="mb-2">
+                          <span class="me-2"><%= t("pages.user_guide.sections.basics.tag_colors_level_beginner_label") %></span>
+                        </li>
+                        <li class="mb-2">
+                          <span class="me-2"><%= t("pages.user_guide.sections.basics.tag_colors_level_intermediate_label") %></span>
+                        </li>
+                        <li class="mb-2">
+                          <span class="me-2"><%= t("pages.user_guide.sections.basics.tag_colors_level_advanced_label") %></span>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
@@ -181,7 +265,7 @@
                   <div class="hierarchy-container position-relative">
                     <!-- Tool Level (Top) -->
                     <div class="d-flex justify-content-center mb-3">
-                      <div class="card shadow-sm border-primary border-2" style="max-width: 320px; width: 100%;">
+                      <div class="card shadow-sm border border-dark bg-light" style="max-width: 320px; width: 100%;">
                         <div class="card-body text-center py-3">
                           <div class="mb-2">
                             <i class="bi bi-tools fs-1 text-primary"></i>
@@ -199,7 +283,7 @@
 
                     <!-- Submissions Level (Middle) -->
                     <div class="d-flex justify-content-center mb-3">
-                      <div class="card shadow-sm border-info border-2" style="max-width: 320px; width: 100%;">
+                      <div class="card shadow-sm border border-dark bg-light" style="max-width: 320px; width: 100%;">
                         <div class="card-body text-center py-3">
                           <div class="mb-2">
                             <i class="bi bi-file-earmark-text fs-1 text-info"></i>
@@ -222,7 +306,7 @@
                     <!-- Discussion and Interactions Level (Bottom) -->
                     <div class="row g-3 justify-content-center">
                       <div class="col-12 col-md-6 col-lg-5">
-                        <div class="card shadow-sm border-success border-2 h-100">
+                        <div class="card shadow-sm border border-dark h-100 bg-light">
                           <div class="card-body text-center py-3">
                             <div class="mb-2">
                               <i class="bi bi-chat-dots fs-1 text-success"></i>
@@ -233,7 +317,7 @@
                         </div>
                       </div>
                       <div class="col-12 col-md-6 col-lg-5">
-                        <div class="card shadow-sm border-warning border-2 h-100">
+                        <div class="card shadow-sm border border-dark h-100 bg-light">
                           <div class="card-body text-center py-3">
                             <div class="mb-2">
                               <i class="bi bi-hand-thumbs-up fs-1 text-warning"></i>
