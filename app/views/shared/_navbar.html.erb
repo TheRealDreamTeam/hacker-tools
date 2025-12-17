@@ -1,37 +1,117 @@
-<nav id="navbar" class="navbar navbar-expand-lg bg-white border-bottom px-3">
-  <div class="container-fluid d-flex align-items-center">
-    <!-- Just to push nav items and hamburger button to the right -->
-    <!-- Hamburger (mobile only) - hidden during wizard, landing page, and Devise auth pages -->
-    <%# CSS class on body handles hiding to prevent flash %>
-    <% unless devise_controller? %>
-      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+<nav id="navbar" class="navbar navbar-expand-lg bg-white border-bottom px-3" data-controller="navbar-offcanvas">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    <!-- Left side: Hamburger menu and New Submission button -->
+    <div class="d-flex align-items-center gap-2">
+      <% unless devise_controller? %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNav" data-navbar-offcanvas-target="toggler" aria-label="<%= t("navigation.toggle_navigation") %>">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <% if user_signed_in? %>
+          <%= link_to new_submission_path,
+              class: "btn btn-primary btn-lg new-submission-btn",
+              data: { turbo_prefetch: false, navbar_offcanvas_target: "newSubmissionBtn" },
+              title: t("navigation.sharing_is_caring") do %>
+            <span class="btn-text-spacer d-none d-md-inline"><%= t("navigation.new_submission") %></span>
+            <span class="btn-text-default d-none d-md-inline"><%= t("navigation.new_submission") %></span>
+            <span class="btn-text-hover d-none d-md-inline"><%= t("navigation.sharing_is_caring") %></span>
+            <i class="bi bi-plus-lg d-md-none"></i>
+          <% end %>
+        <% else %>
+          <%= link_to new_user_session_path,
+              class: "btn btn-primary btn-lg new-submission-btn",
+              data: { turbo_prefetch: false, navbar_offcanvas_target: "newSubmissionBtn" },
+              title: t("navigation.login") do %>
+            <span class="btn-text-spacer d-none d-md-inline"><%= t("navigation.login") %></span>
+            <span class="btn-text-default d-none d-md-inline"><%= t("navigation.login") %></span>
+            <span class="btn-text-hover d-none d-md-inline"><%= t("navigation.login") %></span>
+            <i class="bi bi-box-arrow-in-right d-md-none"></i>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- Center: Logo/Title -->
+    <%= link_to root_path,
+            class: "position-absolute top-50 start-50 translate-middle",
+            style: "pointer-events: auto; z-index: 0; text-decoration: none;",
+            data: { turbo_prefetch: false } do %>
+      <h1><%= t("app.name") %></h1>
     <% end %>
-    <div class="navbar-brand"></div>
-    <!-- Desktop links – visible only ≥lg -->
-    <!-- Hide navigation during wizard -->
-    <div class="d-none d-lg-block">
-      <ul class="navbar-nav d-flex align-items-center">
-        <%= render "shared/navbar_items" %>
-      </ul>
+
+    <!-- Right side: Search -->
+    <div class="d-flex align-items-center gap-3">
+      <% unless devise_controller? %>
+        <!-- Search bar for medium/large screens -->
+        <div class="d-none d-md-block navbar-search position-relative" style="width: 33.333%; min-width: 300px; flex-shrink: 0;">
+          <%= form_with url: search_path,
+                        method: :get,
+                        local: true,
+                        role: "search",
+                        data: { controller: "search-suggestions", "search-suggestions-url-value": search_suggestions_path },
+                        class: "d-flex align-items-center gap-2" do |form| %>
+            <%= form.search_field :query,
+                                value: params[:query],
+                                class: "form-control flex-grow-1",
+                                placeholder: t("navigation.search_placeholder"),
+                                aria: { label: t("navigation.search_placeholder") },
+                                data: { "search-suggestions-target": "input", action: "input->search-suggestions#onInput blur->search-suggestions#hide" } %>
+            <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center justify-content-center", style: "min-width: 44px; height: 44px;", aria: { label: t("navigation.search") } do %>
+              <i class="bi bi-search"></i>
+            <% end %>
+            <div id="navbar-search-suggestions" class="position-absolute top-100 end-0 mt-1" data-search-suggestions-target="panel" style="z-index: 10001; min-width: 300px; max-width: 500px;"></div>
+          <% end %>
+        </div>
+        <!-- Search icon for mobile -->
+        <button type="button" class="btn btn-link text-decoration-none d-md-none" data-bs-toggle="modal" data-bs-target="#mobileSearchModal" aria-label="<%= t("navigation.search") %>">
+          <i class="bi bi-search fs-4"></i>
+        </button>
+      <% end %>
     </div>
   </div>
-  <%= link_to root_path,
-          class: "position-absolute top-50 start-50 translate-middle",
-          style: "pointer-events: auto; z-index: 0; text-decoration: none;",
-          data: { turbo_prefetch: false } do %>
-    <h1><%= t("app.name") %></h1>
-  <% end %>
 </nav>
-<!-- Offcanvas drawer (mobile only) -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNav">
+
+<!-- Offcanvas drawer (all screen sizes, open by default on large screens) -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNav" data-navbar-offcanvas-target="offcanvas" data-bs-backdrop="true" data-bs-scroll="true">
   <div class="offcanvas-header">
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    <h5 class="offcanvas-title"><%= t("navigation.menu") %></h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="<%= t("navigation.close") %>"></button>
   </div>
   <div class="offcanvas-body">
-    <ul class="navbar-nav text-end">
+    <ul class="navbar-nav">
       <%= render "shared/navbar_items" %>
     </ul>
+  </div>
+</div>
+
+<!-- Mobile Search Modal -->
+<div class="modal fade" id="mobileSearchModal" tabindex="-1" aria-labelledby="mobileSearchModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mobileSearchModalLabel"><%= t("navigation.search_placeholder") %></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="<%= t("navigation.close") %>"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with url: search_path,
+                      method: :get,
+                      local: true,
+                      role: "search",
+                      data: { controller: "search-suggestions", "search-suggestions-url-value": search_suggestions_path },
+                      class: "d-flex flex-column gap-2" do |form| %>
+          <div class="d-flex align-items-center gap-2">
+            <%= form.search_field :query,
+                                value: params[:query],
+                                class: "form-control flex-grow-1",
+                                placeholder: t("navigation.mobile_search_placeholder"),
+                                aria: { label: t("navigation.mobile_search_placeholder") },
+                                data: { "search-suggestions-target": "input", action: "input->search-suggestions#onInput blur->search-suggestions#hide" } %>
+            <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center justify-content-center", style: "min-width: 44px; height: 44px;", aria: { label: t("navigation.search") } do %>
+              <i class="bi bi-search"></i>
+            <% end %>
+          </div>
+          <div id="mobile-search-suggestions" data-search-suggestions-target="panel"></div>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
