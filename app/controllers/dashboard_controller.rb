@@ -1,4 +1,9 @@
 class DashboardController < ApplicationController
+  def show
+    @user = current_user
+  end
+end
+class DashboardController < ApplicationController
   # Auth enforced in ApplicationController; dashboard is private to the signed-in user.
   def show
     @user = current_user

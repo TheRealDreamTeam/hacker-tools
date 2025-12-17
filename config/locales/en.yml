@@ -218,10 +218,14 @@ en:
     new_tool: "New Tool"
     submissions: "Submissions"
     new_submission: "New Submission"
+    sharing_is_caring: "Sharing is Caring"
     tags: "Tags"
     profile: "Profile"
     dashboard: "Dashboard"
     account: "Account"
+    settings: "Settings"
+    lists: "Lists"
+    favorites: "Favorites"
     about: "About"
     contact: "Contact"
     messages: "Messages"
@@ -233,6 +237,10 @@ en:
     action: "Action"
     another_action: "Another action"
     close: "Close"
+    menu: "Menu"
+    search: "Search"
+    search_placeholder: "Search less. Build more."
+    mobile_search_placeholder: "Type tools, submissions, tags, users or lists"
   
   # Common buttons and actions
   actions:
