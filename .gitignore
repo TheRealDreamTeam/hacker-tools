@@ -53,3 +53,8 @@
 /public/packs-test
 
 coverage/
+
+# Cursor IDE and MCP (Model Context Protocol) configuration
+.cursor/
+mcp.json
+.mcp/
