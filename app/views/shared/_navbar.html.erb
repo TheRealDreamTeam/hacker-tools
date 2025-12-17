@@ -16,6 +16,16 @@
             <span class="btn-text-hover d-none d-md-inline"><%= t("navigation.sharing_is_caring") %></span>
             <i class="bi bi-plus-lg d-md-none"></i>
           <% end %>
+        <% else %>
+          <%= link_to new_user_session_path,
+              class: "btn btn-primary btn-lg new-submission-btn",
+              data: { turbo_prefetch: false, navbar_offcanvas_target: "newSubmissionBtn" },
+              title: t("navigation.login") do %>
+            <span class="btn-text-spacer d-none d-md-inline"><%= t("navigation.login") %></span>
+            <span class="btn-text-default d-none d-md-inline"><%= t("navigation.login") %></span>
+            <span class="btn-text-hover d-none d-md-inline"><%= t("navigation.login") %></span>
+            <i class="bi bi-box-arrow-in-right d-md-none"></i>
+          <% end %>
         <% end %>
       <% end %>
     </div>
@@ -29,7 +39,7 @@
     <% end %>
 
     <!-- Right side: Search -->
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-center gap-3">
       <% unless devise_controller? %>
         <!-- Search bar for medium/large screens -->
         <div class="d-none d-md-block navbar-search position-relative" style="width: 33.333%; min-width: 300px; flex-shrink: 0;">

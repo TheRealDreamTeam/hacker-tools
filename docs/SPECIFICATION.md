@@ -2,7 +2,7 @@
 
 This document serves as the human-readable specification for the Hacker Tools application. It is maintained alongside development and updated as features are built.
 
-**Last Updated**: 2025-12-12 (Embeddings & Semantic Search - Phase 1 Complete)
+**Last Updated**: 2025-12-17 (Navbar sign-in CTA and favorites removed)
 
 ## Overview
 
@@ -499,6 +499,8 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Home, Tools, New Tool, Tags, Profile (private), Dashboard (private), Account (account settings), Auth links
 - **Behavior**:
   - Dashboard and Account links are distinct from Profile; Profile stays read-only
+  - New Submission CTA shows for signed-in users; guests see a primary Sign In CTA in the same position (mobile uses a box-arrow-in-right icon)
+  - Favorites link temporarily removed from navigation until feature is ready
 - **Styling**:
   - Navbar has no rounded corners (as per design system)
   - Navbar links have hover animations (translateY and background color change)

@@ -12,12 +12,6 @@
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= link_to t("navigation.favorites"), "#",
-        class: "nav-link",
-        data: { turbo_prefetch: false } %>
-    <span class="badge bg-secondary ms-1">#TODO</span>
-  </li>
-  <li class="nav-item">
     <%= link_to t("navigation.dashboard"), dashboard_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
@@ -44,11 +38,6 @@
   </li>
   <li class="nav-item">
     <%= link_to t("navigation.settings"), account_settings_path,
-        class: "nav-link",
-        data: { turbo_prefetch: false } %>
-  </li>
-  <li class="nav-item">
-    <%= link_to t("navigation.account"), account_settings_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
