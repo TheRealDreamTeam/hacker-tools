@@ -38,11 +38,13 @@
   }
   
   // Navbar toggler button
+  // Override Bootstrap's default behavior - keep hamburger visible on all screen sizes
   .navbar-toggler {
     border: none;
     border-radius: 0.75rem; // 12px
-    padding: 0;
+    padding: 0.5rem;
     transition: all 0.2s ease-in-out;
+    display: block !important; // Force display on all screen sizes (override Bootstrap's navbar-expand-lg)
     
     &:hover {
       box-shadow: 0 2px 4px rgba($primary, 0.1);
@@ -51,6 +53,165 @@
     &:focus {
       box-shadow: none;
       outline: none;
+    }
+  }
+
+  // New Submission button - big button with hover text change
+  // On mobile: shows "+" icon
+  // On desktop: shows text with hover effect
+  .new-submission-btn {
+    position: relative;
+    border-radius: 0.75rem; // 12px
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    // Custom styling: black outline, light grey background, black text
+    background-color: #f5f5f5 !important; // Light grey background
+    border: 1px solid #000000 !important; // Black outline
+    color: #000000 !important; // Black text
+    
+    // Remove any default button hover effects
+    &:hover {
+      transform: none;
+      box-shadow: none;
+      background-color: #f5f5f5 !important; // Keep light grey on hover
+      border-color: #000000 !important; // Keep black border on hover
+      color: #000000 !important; // Keep black text on hover
+    }
+    
+    // Ensure text elements also have black color
+    .btn-text-default,
+    .btn-text-hover {
+      color: #000000 !important;
+    }
+    
+    // On mobile, make it a square icon button
+    @media (max-width: 767.98px) {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      
+      i {
+        font-size: 1.5rem;
+      }
+    }
+    
+    // Spacer element maintains button size (invisible, but keeps dimensions)
+    .btn-text-spacer {
+      visibility: hidden;
+      display: inline-block;
+      height: 0;
+      overflow: hidden;
+    }
+    
+    // Both text elements positioned absolutely in the exact same location
+    .btn-text-default,
+    .btn-text-hover {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .btn-text-default {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .btn-text-hover {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    // Text change on hover only on desktop (where text is visible)
+    @media (min-width: 768px) {
+      &:hover {
+        // Only change text opacity, no button effects
+        .btn-text-default {
+          opacity: 0;
+          visibility: hidden;
+        }
+        
+        .btn-text-hover {
+          opacity: 1;
+          visibility: visible;
+        }
+      }
+    }
+  }
+
+  // Search bar styling
+  .navbar-search {
+    position: relative;
+    min-width: 300px; // Ensure minimum width for search bar
+    
+    form {
+      width: 100%; // Ensure form takes full width of container
+    }
+    
+    .form-control {
+      border-radius: 0.75rem; // 12px
+      border: 1px solid #dee2e6;
+      transition: all 0.2s ease-in-out;
+      min-width: 200px; // Ensure input has minimum width
+      flex: 1 1 auto; // Allow flex-grow but with auto basis
+      
+      &:focus {
+        border-color: $primary;
+        box-shadow: 0 0 0 0.2rem rgba($primary, 0.1);
+      }
+    }
+
+    // Search button with magnifying glass icon
+    .btn-primary {
+      border-radius: 0.75rem; // 12px
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease-in-out;
+      
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba($primary, 0.2);
+      }
+      
+      &:focus {
+        box-shadow: 0 0 0 0.2rem rgba($primary, 0.25);
+      }
+      
+      i {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  // Search icon button for mobile
+  .btn-link {
+    color: $primary;
+    padding: 0.5rem;
+    border-radius: 0.75rem; // 12px
+    transition: all 0.2s ease-in-out;
+    
+    &:hover {
+      background-color: rgba($primary, 0.1);
+      color: darken($primary, 10%);
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba($primary, 0.1);
     }
   }
   
@@ -73,12 +234,25 @@
 // Offcanvas menu styling
 .offcanvas,
 .offcanvas-start {
-  width: 80% !important; // Limit drawer to 80% of the viewport width
-  max-width: 80% !important; // Ensure max-width is also 80%
+  // Responsive width: wider on large screens, narrower on mobile
+  width: 80% !important; // Mobile default
+  max-width: 80% !important;
+  
+  // On large screens (≥lg), make it wider and open by default
+  @media (min-width: 992px) {
+    width: 300px !important;
+    max-width: 300px !important;
+  }
   
   .offcanvas-header {
     border-bottom: 1px solid #e9ecef;
     padding: 1.5rem;
+    
+    .offcanvas-title {
+      font-weight: 600;
+      color: $primary;
+      margin: 0;
+    }
   }
   
   .offcanvas-body {
@@ -95,13 +269,65 @@
           display: block;
           width: 100%;
           text-align: left;
+          transition: all 0.2s ease-in-out;
+
+          &:hover {
+            background-color: rgba($primary, 0.05);
+          }
 
           &:focus {
             outline: none;
             box-shadow: none;
           }
+
+          // Bold text for "New Submissions"
+          &.fw-bold {
+            font-weight: 700;
+          }
         }
       }
+    }
+  }
+
+  // Avatar icon on navbar
+  .navbar-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+    background-color: #f5f5f5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .navbar-avatar-img,
+  .navbar-avatar-fallback {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+// Mobile search modal styling
+#mobileSearchModal {
+  .modal-body {
+    .form-control {
+      border-radius: 0.75rem; // 12px
+      border: 1px solid #dee2e6;
+      transition: all 0.2s ease-in-out;
+      
+      &:focus {
+        border-color: $primary;
+        box-shadow: 0 0 0 0.2rem rgba($primary, 0.1);
+      }
+    }
+    
+    .btn-primary {
+      border-radius: 0.75rem; // 12px
     }
   }
 }

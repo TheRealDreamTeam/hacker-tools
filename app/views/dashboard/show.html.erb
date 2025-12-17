@@ -1,3 +1,15 @@
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0"><%= t("navigation.dashboard") %></h1>
+    <%= link_to t("navigation.settings"), account_settings_path, class: "btn btn-primary" %>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <p class="mb-0 text-muted"><%= t("dashboard.subtitle", default: "Your activity across tools, lists, and discussions.") %></p>
+    </div>
+  </div>
+</div>
 <!-- Full-width layout with side banners -->
 <div class="container-fluid px-0">
   <div class="row g-0">
