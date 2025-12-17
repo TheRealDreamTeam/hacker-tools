@@ -97,7 +97,7 @@ en:
       trending: "Trending"
     form:
       placeholder: "Write your comment..."
-      comment_placeholder: "Share your thoughts or questions"
+      comment_placeholder: "Share your thoughts or questions on this..."
       reply_placeholder: "Write a reply..."
       flag_placeholder: "Describe what's wrong (e.g., broken URL, outdated info)"
       bug_placeholder: "Describe the bug, what you tried, and any error message"
@@ -115,6 +115,7 @@ en:
       upvote_removed: "Upvote removed."
       invalid_parent: "Invalid parent object for comment."
     empty:
+      comments: "There's no chat yet. We would love to hear your thoughts:)"
       flags: "No flags yet."
       bugs: "No bugs reported yet."
 

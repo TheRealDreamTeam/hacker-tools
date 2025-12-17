@@ -18,7 +18,7 @@ en:
       title: "Edit Submission"
     show:
       description: "Description"
-      author_note: "Author Note"
+      author_note: "Submitters note"
       picture: "Picture"
       tags_title: "Tags"
       no_tags: "No tags yet."
@@ -26,6 +26,7 @@ en:
       comments_title: "Discussion"
       flags_title: "Flags"
       bugs_title: "Bugs"
+      related_tools_title: "Related Tools"
     by_user: "by %{user}"
     about_tool: "About %{tool}"
     about_tools: "About %{tools}"

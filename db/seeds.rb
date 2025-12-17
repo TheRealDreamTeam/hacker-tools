@@ -217,7 +217,28 @@ ActiveRecord::Base.transaction do
 
   # First pass: create all tags without parent relationships
   tag_defs.each do |attrs|
-    tag = Tag.find_by(id: attrs[:id]) || Tag.new(id: attrs[:id])
+    # Always check by name first to avoid uniqueness validation errors
+    # This ensures we update existing tags instead of trying to create duplicates
+    tag = Tag.find_by("LOWER(tag_name) = ?", attrs[:name].downcase)
+    
+    if tag.nil?
+      # No tag with this name exists - check if we can use the specified ID
+      existing_tag_with_id = Tag.find_by(id: attrs[:id])
+      if existing_tag_with_id
+        # ID is taken by a different tag - create new tag without specifying ID
+        tag = Tag.new
+        Rails.logger.info "Tag ID #{attrs[:id]} is taken by '#{existing_tag_with_id.tag_name}', creating new tag for '#{attrs[:name]}'"
+      else
+        # ID is available - create new tag with specified ID
+        tag = Tag.new(id: attrs[:id])
+      end
+    else
+      # Tag exists - log if ID doesn't match
+      if tag.id != attrs[:id]
+        Rails.logger.info "Tag '#{attrs[:name]}' exists with ID #{tag.id}, seed expects ID #{attrs[:id]}. Using existing tag."
+      end
+    end
+    
     tag.tag_name = attrs[:name]
     tag.tag_slug = attrs[:slug]
     tag.tag_description = attrs[:description]
@@ -228,6 +249,8 @@ ActiveRecord::Base.transaction do
     tag.icon = attrs[:icon]
     tag.tag_alias = nil # Not provided in seed data
     tag.save!
+    
+    # Map the seed ID to the tag (may be different if tag existed with different ID)
     tags_by_id[attrs[:id]] = tag
   end
 

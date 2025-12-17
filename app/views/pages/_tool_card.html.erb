@@ -8,14 +8,15 @@
     <div class="row align-items-center">
       <!-- Left content: star, title, description, tags -->
       <div class="col-12 col-md-5">
-        <div class="d-flex justify-content-between align-items-start mb-1 position-relative">
+        <div class="d-flex justify-content-between align-items-start mb-1">
           <h5 class="card-title mb-0">
-            <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
+            <% title_text = tool.tool_name %>
+            <% if local_assigns[:index] %>
+              <% title_text = "#{index + 1}. #{title_text}" %>
+            <% end %>
+            <%= link_to title_text, tool_path(tool), class: "text-decoration-none" %>
             <%# Tools are community-owned, no owner to display %>
           </h5>
-          <span class="position-absolute top-0 end-0 mt-1 me-1">
-            <%= render "tools/read_state", tool: tool %>
-          </span>
         </div>
         <div class="card-description">
           <% description = tool.tool_description.presence || t("pages.home.card.description", index: 1) %>
@@ -62,6 +63,9 @@
         <%= render "tools/interaction_buttons", tool: tool %>
       </div>
     </div>
+    <span class="position-absolute bottom-0 end-0 mb-1 me-1">
+      <%= render "tools/read_state", tool: tool %>
+    </span>
   </div>
 </div>
 

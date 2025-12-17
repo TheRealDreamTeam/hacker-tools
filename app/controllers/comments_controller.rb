@@ -7,34 +7,53 @@ class CommentsController < ApplicationController
   def create
     @comment = @commentable.comments.new(comment_params.merge(user: current_user))
 
-    if @comment.save
-      redirect_to commentable_path(@commentable, anchor: anchor_for(@comment)), notice: t("comments.flash.created")
-    else
-      redirect_to commentable_path(@commentable), alert: @comment.errors.full_messages.to_sentence
+    respond_to do |format|
+      if @comment.save
+        format.html { redirect_to commentable_path(@commentable, anchor: anchor_for(@comment)), notice: t("comments.flash.created") }
+        format.turbo_stream
+      else
+        format.html { redirect_to commentable_path(@commentable, anchor: "discussion-section"), alert: @comment.errors.full_messages.to_sentence }
+        format.turbo_stream { render :create_error, status: :unprocessable_entity }
+      end
     end
   end
 
   def destroy
+    @comment_id = @comment.id
+    @comment_type = @comment.comment_type
     @comment.destroy
-    redirect_to commentable_path(@commentable), notice: t("comments.flash.deleted")
+    
+    # Check if there are any remaining top-level comments of the same type
+    @has_remaining_comments = @commentable.comments.top_level.where(comment_type: @comment_type).exists?
+    
+    respond_to do |format|
+      format.html { redirect_to commentable_path(@commentable, anchor: "discussion-section"), notice: t("comments.flash.deleted") }
+      format.turbo_stream
+    end
   end
 
   def resolve
     @comment.update(solved: !@comment.solved)
-    redirect_to commentable_path(@commentable), notice: t("comments.flash.resolved")
+    redirect_to commentable_path(@commentable, anchor: "discussion-section"), notice: t("comments.flash.resolved")
   end
 
   def upvote
     upvote_record = @comment.comment_upvotes.find_or_initialize_by(user: current_user)
 
-    if upvote_record.persisted?
-      # Already upvoted, remove upvote
-      upvote_record.destroy
-      redirect_to commentable_path(@commentable, anchor: anchor_for(@comment)), notice: t("comments.flash.upvote_removed")
-    else
-      # Not upvoted, add upvote
-      upvote_record.save
-      redirect_to commentable_path(@commentable, anchor: anchor_for(@comment)), notice: t("comments.flash.upvoted")
+    respond_to do |format|
+      if upvote_record.persisted?
+        # Already upvoted, remove upvote
+        upvote_record.destroy
+        @comment.reload # Reload to get fresh upvote count
+        format.html { redirect_to commentable_path(@commentable, anchor: anchor_for(@comment) || "discussion-section"), notice: t("comments.flash.upvote_removed") }
+        format.turbo_stream
+      else
+        # Not upvoted, add upvote
+        upvote_record.save
+        @comment.reload # Reload to get fresh upvote count
+        format.html { redirect_to commentable_path(@commentable, anchor: anchor_for(@comment) || "discussion-section"), notice: t("comments.flash.upvoted") }
+        format.turbo_stream
+      end
     end
   end
 

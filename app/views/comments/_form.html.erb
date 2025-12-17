@@ -4,18 +4,20 @@
 <%= simple_form_for([commentable, comment]) do |f| %>
   <%= f.input :comment_type, as: :hidden %>
   <%= f.input :parent_id, as: :hidden %>
-  <div class="mb-2">
-    <%= f.input :comment,
-                as: :text,
-                label: false,
-                required: true,
-                input_html: { rows: 3, placeholder: placeholder } %>
-  </div>
-  <div class="d-flex gap-2">
-    <%= f.button :submit, submit_label, class: "btn btn-primary btn-sm" %>
-    <% if defined?(show_cancel) && show_cancel %>
-      <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="##{collapse_target}"><%= t("actions.cancel") %></button>
-    <% end %>
+  <div class="d-flex gap-2 align-items-center">
+    <div class="flex-grow-1">
+      <%= f.input :comment,
+                  as: :text,
+                  label: false,
+                  required: true,
+                  input_html: { rows: 2, placeholder: placeholder } %>
+    </div>
+    <div class="d-flex gap-2 flex-shrink-0">
+      <%= f.button :submit, submit_label, class: "btn btn-primary btn-sm" %>
+      <% if defined?(show_cancel) && show_cancel && defined?(collapse_target) && collapse_target.present? %>
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="collapse" data-bs-target="#<%= collapse_target %>"><%= t("actions.cancel") %></button>
+      <% end %>
+    </div>
   </div>
 <% end %>
 
