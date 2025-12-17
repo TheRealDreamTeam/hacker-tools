@@ -136,13 +136,13 @@ ActiveRecord::Base.transaction do
     { id: 33, name: "RubyGems", slug: "rubygems", description: "Ruby package registry", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
     { id: 34, name: "Docker Hub", slug: "docker-hub", description: "Container image registry", type_id: 1, type: "Platform", type_slug: "platform", parent_id: nil, color: "black", icon: "🔗" },
     # Programming Language tags (tag_type_id: 3)
-    { id: 100, name: "Ruby", slug: "ruby", description: "Ruby programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
+    { id: 100, name: "Ruby", slug: "ruby", description: "Ruby programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️", keys: %i[ruby] },
     { id: 101, name: "Ruby 3.3", slug: "ruby-3-3", description: "Ruby version 3.3", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 100, color: "grey", icon: "🔢" },
     { id: 102, name: "Ruby 3.2", slug: "ruby-3-2", description: "Ruby version 3.2", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 100, color: "grey", icon: "🔢" },
-    { id: 110, name: "Python", slug: "python", description: "Python programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
+    { id: 110, name: "Python", slug: "python", description: "Python programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️", keys: %i[python] },
     { id: 111, name: "Python 3.12", slug: "python-3-12", description: "Python version 3.12", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 110, color: "grey", icon: "🔢" },
     { id: 112, name: "Python 3.11", slug: "python-3-11", description: "Python version 3.11", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 110, color: "grey", icon: "🔢" },
-    { id: 120, name: "JavaScript", slug: "javascript", description: "JavaScript programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
+    { id: 120, name: "JavaScript", slug: "javascript", description: "JavaScript programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️", keys: %i[javascript] },
     { id: 121, name: "TypeScript", slug: "typescript", description: "Typed JavaScript", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
     { id: 130, name: "Go", slug: "go", description: "Go programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
     { id: 131, name: "Go 1.22", slug: "go-1-22", description: "Go version 1.22", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 130, color: "grey", icon: "🔢" },
@@ -152,11 +152,11 @@ ActiveRecord::Base.transaction do
     { id: 151, name: ".NET 8", slug: "dotnet-8", description: ".NET runtime version", type_id: 4, type: "Language Version", type_slug: "programming-language-version", parent_id: 150, color: "grey", icon: "🔢" },
     { id: 160, name: "Rust", slug: "rust", description: "Rust programming language", type_id: 3, type: "Programming Language", type_slug: "programming-language", parent_id: nil, color: "grey", icon: "⌨️" },
     # Framework tags (tag_type_id: 5)
-    { id: 200, name: "Ruby on Rails", slug: "ruby-on-rails", description: "Ruby web framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: nil, color: "green", icon: "🧩" },
+    { id: 200, name: "Ruby on Rails", slug: "ruby-on-rails", description: "Ruby web framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: nil, color: "green", icon: "🧩", keys: %i[rails ruby_on_rails] },
     { id: 201, name: "Rails 7.1", slug: "rails-7-1", description: "Rails framework version", type_id: 6, type: "Framework Version", type_slug: "framework-version", parent_id: 200, color: "green", icon: "🔢" },
     { id: 210, name: "Django", slug: "django", description: "Python web framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: nil, color: "green", icon: "🧩" },
     { id: 211, name: "Django 5.x", slug: "django-5", description: "Django major version", type_id: 6, type: "Framework Version", type_slug: "framework-version", parent_id: 210, color: "green", icon: "🔢" },
-    { id: 220, name: "React", slug: "react", description: "UI library for web apps", type_id: 5, type: "Framework", type_slug: "framework", parent_id: nil, color: "green", icon: "🧩" },
+    { id: 220, name: "React", slug: "react", description: "UI library for web apps", type_id: 5, type: "Framework", type_slug: "framework", parent_id: nil, color: "green", icon: "🧩", keys: %i[react] },
     { id: 221, name: "Next.js", slug: "nextjs", description: "React meta-framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: 220, color: "green", icon: "🧩" },
     { id: 222, name: "Next.js 14", slug: "nextjs-14", description: "Next.js version 14", type_id: 6, type: "Framework Version", type_slug: "framework-version", parent_id: 221, color: "green", icon: "🔢" },
     { id: 230, name: "Vue", slug: "vue", description: "Frontend framework", type_id: 5, type: "Framework", type_slug: "framework", parent_id: nil, color: "green", icon: "🧩" },
@@ -166,10 +166,10 @@ ActiveRecord::Base.transaction do
     # Dev Tool tags (tag_type_id: 7)
     { id: 300, name: "Git", slug: "git", description: "Version control system", type_id: 7, type: "Dev Tool", type_slug: "dev-tool", parent_id: nil, color: "indigo", icon: "🛠️" },
     { id: 301, name: "Docker", slug: "docker", description: "Container platform", type_id: 7, type: "Dev Tool", type_slug: "dev-tool", parent_id: nil, color: "indigo", icon: "🛠️" },
-    { id: 302, name: "Kubernetes", slug: "kubernetes", description: "Container orchestration", type_id: 7, type: "Dev Tool", type_slug: "dev-tool", parent_id: nil, color: "indigo", icon: "🛠️" },
+    { id: 302, name: "Kubernetes", slug: "kubernetes", description: "Container orchestration", type_id: 7, type: "Dev Tool", type_slug: "dev-tool", parent_id: nil, color: "indigo", icon: "🛠️", keys: %i[kubernetes] },
     { id: 303, name: "Postman", slug: "postman", description: "API testing tool", type_id: 7, type: "Dev Tool", type_slug: "dev-tool", parent_id: nil, color: "indigo", icon: "🛠️" },
     # Database tags (tag_type_id: 8)
-    { id: 400, name: "PostgreSQL", slug: "postgresql", description: "Relational database", type_id: 8, type: "Database", type_slug: "database", parent_id: nil, color: "navy", icon: "🗄️" },
+    { id: 400, name: "PostgreSQL", slug: "postgresql", description: "Relational database", type_id: 8, type: "Database", type_slug: "database", parent_id: nil, color: "navy", icon: "🗄️", keys: %i[postgres postgresql] },
     { id: 401, name: "MySQL", slug: "mysql", description: "Relational database", type_id: 8, type: "Database", type_slug: "database", parent_id: nil, color: "navy", icon: "🗄️" },
     { id: 402, name: "SQLite", slug: "sqlite", description: "Embedded database", type_id: 8, type: "Database", type_slug: "database", parent_id: nil, color: "navy", icon: "🗄️" },
     { id: 403, name: "Redis", slug: "redis", description: "In-memory data store", type_id: 8, type: "Database", type_slug: "database", parent_id: nil, color: "navy", icon: "🗄️" },
@@ -182,18 +182,26 @@ ActiveRecord::Base.transaction do
     { id: 611, name: "Cloud Run", slug: "cloud-run", description: "Serverless containers", type_id: 10, type: "Cloud Service", type_slug: "cloud-service", parent_id: 610, color: "purple", icon: "🔧" },
     # Topic tags (tag_type_id: 11)
     { id: 700, name: "Web Development", slug: "web-development", description: "Building web applications", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
-    { id: 701, name: "Backend", slug: "backend", description: "Server-side development", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 700, color: "cyan", icon: "🧠" },
-    { id: 702, name: "Frontend", slug: "frontend", description: "Client-side development", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 700, color: "cyan", icon: "🧠" },
+    { id: 701, name: "Backend", slug: "backend", description: "Server-side development", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 700, color: "cyan", icon: "🧠", keys: %i[backend] },
+    { id: 702, name: "Frontend", slug: "frontend", description: "Client-side development", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 700, color: "cyan", icon: "🧠", keys: %i[frontend] },
     { id: 710, name: "APIs", slug: "apis", description: "API design and usage", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
     { id: 711, name: "REST", slug: "rest", description: "RESTful APIs", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 710, color: "cyan", icon: "🧠" },
     { id: 712, name: "GraphQL", slug: "graphql", description: "GraphQL APIs", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 710, color: "cyan", icon: "🧠" },
-    { id: 720, name: "Testing", slug: "testing", description: "Software testing", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
+    { id: 720, name: "Testing", slug: "testing", description: "Software testing", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠", keys: %i[testing] },
     { id: 721, name: "Unit Testing", slug: "unit-testing", description: "Unit tests", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 720, color: "cyan", icon: "🧠" },
     { id: 722, name: "E2E Testing", slug: "e2e-testing", description: "End-to-end tests", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 720, color: "cyan", icon: "🧠" },
     { id: 730, name: "Security", slug: "security", description: "Application security", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
     { id: 731, name: "OWASP", slug: "owasp", description: "OWASP standards", type_id: 11, type: "Topic", type_slug: "topic", parent_id: 730, color: "cyan", icon: "🧠" },
     { id: 740, name: "Performance", slug: "performance", description: "Optimization and speed", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
     { id: 750, name: "System Design", slug: "system-design", description: "Architecture and scaling", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠" },
+    { id: 760, name: "Productivity", slug: "productivity", description: "Developer experience and workflow speed", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠", keys: %i[productivity] },
+    { id: 761, name: "Data", slug: "data", description: "Data engineering and analytics", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠", keys: %i[data] },
+    { id: 762, name: "AI", slug: "ai", description: "Artificial intelligence", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠", keys: %i[ai] },
+    { id: 763, name: "LLM", slug: "llm", description: "Large language models", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠", keys: %i[llm] },
+    { id: 764, name: "DevOps", slug: "devops", description: "Infrastructure automation and delivery", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠", keys: %i[devops] },
+    { id: 765, name: "Observability", slug: "observability", description: "Monitoring, logging, and tracing", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠", keys: %i[observability] },
+    { id: 766, name: "Framework", slug: "framework", description: "General framework classification", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠", keys: %i[framework] },
+    { id: 767, name: "Language", slug: "language", description: "General programming language classification", type_id: 11, type: "Topic", type_slug: "topic", parent_id: nil, color: "cyan", icon: "🧠", keys: %i[language] },
     # Task tags (tag_type_id: 12)
     { id: 800, name: "Getting Started", slug: "getting-started", description: "Beginner introductions", type_id: 12, type: "Task", type_slug: "task", parent_id: nil, color: "blue", icon: "✅" },
     { id: 801, name: "Setup / Install", slug: "setup-install", description: "Installation instructions", type_id: 12, type: "Task", type_slug: "task", parent_id: nil, color: "blue", icon: "✅" },
@@ -232,6 +240,19 @@ ActiveRecord::Base.transaction do
     if parent_tag
       tag.parent_id = parent_tag.id
       tag.save!
+    end
+  end
+
+  # Build lookup aliases so attach_tags can seed ToolTag/SubmissionTag rows
+  tag_defs.each do |attrs|
+    tag = tags_by_id[attrs[:id]]
+    next unless tag
+
+    key_aliases = Array(attrs[:keys]).compact
+    key_aliases << attrs[:slug]&.tr("-", "_")&.to_sym
+    key_aliases << attrs[:name]&.parameterize(separator: "_")&.to_sym
+    key_aliases.compact.uniq.each do |key|
+      tags[key] = tag
     end
   end
 
