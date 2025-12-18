@@ -98,6 +98,16 @@ ActiveRecord::Base.transaction do
   ghost.soft_delete! unless ghost.deleted?
   users[:ghost] = ghost
 
+  # Admin user for testing admin functionality
+  admin = User.find_or_initialize_by(email: "admin@example.com")
+  admin.username = "admin"
+  admin.user_bio = "Administrator account with elevated permissions."
+  admin.password = DEFAULT_PASSWORD if admin.new_record?
+  admin.user_status = :active
+  admin.user_type = :admin
+  admin.save!
+  users[:admin] = admin
+
   # Tags (comprehensive tag system with new structure)
   log_step "Creating tags"
   tags = {}

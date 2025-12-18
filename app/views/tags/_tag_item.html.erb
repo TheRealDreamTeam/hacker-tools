@@ -15,13 +15,15 @@
         <%= t("tags.labels.tools_count", count: tag.tools.count) %>
       </p>
     </div>
-    <div class="d-flex gap-2">
-      <%= link_to t("actions.edit"), edit_tag_path(tag), class: "btn btn-sm btn-outline-primary" %>
-      <%= button_to t("actions.delete"), tag_path(tag),
-                    method: :delete,
-                    data: { turbo_confirm: t("tags.confirmations.destroy") },
-                    class: "btn btn-sm btn-outline-danger" %>
-    </div>
+    <% if admin_user? %>
+      <div class="d-flex gap-2">
+        <%= link_to t("actions.edit"), edit_tag_path(tag), class: "btn btn-sm btn-outline-primary" %>
+        <%= button_to t("actions.delete"), tag_path(tag),
+                      method: :delete,
+                      data: { turbo_confirm: t("tags.confirmations.destroy") },
+                      class: "btn btn-sm btn-outline-danger" %>
+      </div>
+    <% end %>
   </div>
   <% if tag.children.any? %>
     <ul class="list-unstyled ms-4 mt-2">

@@ -61,4 +61,18 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:sign_up, keys: [:username])
     devise_parameter_sanitizer.permit(:account_update, keys: [:username, :avatar, :user_bio])
   end
+
+  # Admin authorization helpers
+  # Use `before_action :require_admin!` in controllers that need admin-only access
+  def require_admin!
+    unless user_signed_in? && current_user.admin?
+      redirect_to root_path, alert: t("errors.unauthorized")
+    end
+  end
+
+  # Helper method to check if current user is admin (useful in views)
+  def admin_user?
+    user_signed_in? && current_user.admin?
+  end
+  helper_method :admin_user?
 end

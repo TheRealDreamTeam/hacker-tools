@@ -9,6 +9,10 @@ class User < ApplicationRecord
   # (e.g., comment.user should return user even if deleted)
   enum user_status: { active: 0, deleted: 1 }
 
+  # User type enum: regular (0) or admin (1)
+  # Regular users are the default; admin users have elevated permissions
+  enum user_type: { regular: 0, admin: 1 }
+
   # Explicit scopes for filtering users by status
   # Note: No default_scope - we want associations to work with deleted users
   scope :active, -> { where(user_status: :active) }
@@ -92,6 +96,11 @@ class User < ApplicationRecord
   # Check if user is deleted
   def deleted?
     user_status == "deleted"
+  end
+
+  # Check if user is admin
+  def admin?
+    user_type == "admin"
   end
 
   # Soft delete: mark user as deleted and anonymize username/email

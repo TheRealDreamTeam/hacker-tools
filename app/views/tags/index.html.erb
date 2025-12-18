@@ -3,7 +3,9 @@
   <div class="p-2">
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0"><%= t("tags.index.title") %></h1>
-    <%= link_to t("tags.actions.new"), new_tag_path, class: "btn btn-primary" %>
+    <% if admin_user? %>
+      <%= link_to t("tags.actions.new"), new_tag_path, class: "btn btn-primary" %>
+    <% end %>
   </div>
   <% if @tags_by_type.any? %>
     <% @tags_by_type.each do |tag_type, tags| %>
@@ -42,7 +44,9 @@
   <% else %>
     <div class="alert alert-light border">
       <p class="mb-0"><%= t("tags.index.empty") %></p>
-      <%= link_to t("tags.actions.new"), new_tag_path, class: "btn btn-primary mt-2" %>
+      <% if admin_user? %>
+        <%= link_to t("tags.actions.new"), new_tag_path, class: "btn btn-primary mt-2" %>
+      <% end %>
     </div>
   <% end %>
   </div>
