@@ -177,6 +177,8 @@ class SubmissionsController < ApplicationController
     
     # Reload tags association for turbo_stream
     @submission.tags.reload
+    @submission_tags = @submission.tags.includes(:parent)
+    @available_tags = Tag.includes(:parent).order(tag_type_id: :asc, tag_type: :asc, tag_name: :asc)
     
     respond_to do |format|
       format.html { redirect_to @submission }
@@ -197,6 +199,8 @@ class SubmissionsController < ApplicationController
     
     # Reload tags association for turbo_stream
     @submission.tags.reload
+    @submission_tags = @submission.tags.includes(:parent)
+    @available_tags = Tag.includes(:parent).order(tag_type_id: :asc, tag_type: :asc, tag_name: :asc)
     
     respond_to do |format|
       format.html { redirect_to @submission }
@@ -353,8 +357,8 @@ class SubmissionsController < ApplicationController
   end
 
   def submission_params
-    params.require(:submission).permit(:submission_url, :author_note)
-    # Note: tool_id is no longer a parameter - tool linking is automatic via SubmissionProcessingJob
+    params.require(:submission).permit(:submission_url, :submission_name, :submission_description, :author_note, tool_ids: [])
+    # Note: tool_ids is an array for many-to-many association
   end
 
   # Helper method for sorting comments (shared with ToolsController)

@@ -1,0 +1,7 @@
+<%= turbo_stream.append "flash-messages" do %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <%= t("tools.flash.tag_not_found") %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+

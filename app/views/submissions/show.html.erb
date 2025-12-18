@@ -123,11 +123,54 @@
                   <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                       <h2 class="h5 mb-0"><%= t("submissions.show.tags_title") %></h2>
-                      <%# Tag management hidden - tags will be auto-generated during processing pipeline %>
-                      <%# TODO: Re-enable manual tag management in future if needed %>
+                      <% if @submission.user == current_user %>
+                        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#add-tag-form">
+                          <%= t("submissions.show.add_tag") %>
+                        </button>
+                      <% end %>
+                    </div>
+                    <div id="add-tag-form" class="collapse mb-3">
+                      <div class="card card-body">
+                        <h3 class="h6 mb-3"><%= t("submissions.show.select_tag") %></h3>
+                        <% @available_tags.group_by(&:tag_type).each do |tag_type, tags| %>
+                          <div class="mb-3">
+                            <strong class="text-muted"><%= t("tags.tag_types.#{tag_type}") %>:</strong>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                              <% tags.each do |tag| %>
+                                <% unless @submission_tags.include?(tag) %>
+                                  <%= button_to tag.display_name,
+                                              add_tag_submission_path(@submission, tag_id: tag.id),
+                                              method: :post,
+                                              class: "btn btn-sm btn-outline-secondary",
+                                              form: { data: { turbo: true } } %>
+                                <% end %>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
                     </div>
                     <div id="submission-tags">
-                      <%= render "tags_section", submission: @submission %>
+                      <% if @submission_tags.any? %>
+                        <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
+                          <% @submission_tags.each do |tag| %>
+                            <div class="d-inline-flex align-items-center gap-1">
+                              <%= render_tag_link(tag) %>
+                              <% if @submission.user == current_user %>
+                                <%= button_to "×",
+                                            remove_tag_submission_path(@submission, tag_id: tag.id),
+                                            method: :delete,
+                                            class: "btn btn-sm btn-outline-danger p-0",
+                                            style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
+                                            title: t("submissions.actions.remove_tag"),
+                                            form: { data: { turbo: true } } %>
+                              <% end %>
+                            </div>
+                          <% end %>
+                        </div>
+                      <% else %>
+                        <p class="text-muted mb-0"><%= t("submissions.show.no_tags") %></p>
+                      <% end %>
                     </div>
                   </div>
                   <span class="position-absolute bottom-0 end-0 mb-1 me-1">

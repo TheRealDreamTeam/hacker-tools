@@ -32,9 +32,20 @@
                       <% end %>
                     </div>
                     <div class="d-flex gap-2 align-items-start">
-                      <!-- Back Button - same height as title -->
+                      <!-- Edit/Delete Buttons - same height as title -->
                       <div>
-                        <%# TODO: Re-enable edit/delete when we decide on permissions (admin-only or open editing) %>
+                        <%= link_to t("actions.edit"), edit_tool_path(@tool), class: "btn btn-outline-primary" %>
+                        <%= render "shared/confirmation_modal",
+                            id: "delete-tool-modal",
+                            title: t("tools.confirmations.destroy_title"),
+                            message: t("tools.confirmations.destroy_message"),
+                            confirm_text: t("actions.delete"),
+                            confirm_class: "btn-outline-danger",
+                            form_action: tool_path(@tool),
+                            form_method: :delete %>
+                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delete-tool-modal">
+                          <%= t("actions.delete") %>
+                        </button>
                         <%= link_to t("actions.back"), tools_path, class: "btn btn-secondary" %>
                       </div>
                       <% if @tool.icon.attached? %>
@@ -52,7 +63,7 @@
                   <% if @tool.picture.attached? %>
                     <div class="mb-4">
                       <h2 class="h5"><%= t("tools.show.picture") %></h2>
-                      <%= image_tag @tool.picture, class: "img-fluid rounded" %>
+                      <%= image_tag @tool.picture, class: "rounded", style: "max-width: 64px; max-height: 64px; width: auto; height: auto; object-fit: contain;" %>
                     </div>
                   <% end %>
                   
@@ -60,7 +71,9 @@
                   <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                       <h2 class="h5 mb-0"><%= t("tools.show.tags_title") %></h2>
-                      <%# TODO: Re-enable tag management when we decide on permissions (admin-only or open editing) %>
+                      <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#add-tag-form">
+                        <%= t("tools.show.add_tag") %>
+                      </button>
                     </div>
                     <div id="add-tag-form" class="collapse mb-3">
                       <div class="card card-body">
@@ -70,11 +83,12 @@
                             <strong class="text-muted"><%= t("tags.tag_types.#{tag_type}") %>:</strong>
                             <div class="d-flex flex-wrap gap-2 mt-2">
                               <% tags.each do |tag| %>
-                                <% unless @tool_tags.include?(tag) %>
+                                <% unless @all_tool_tags.include?(tag) %>
                                   <%= button_to tag.display_name,
                                               add_tag_tool_path(@tool, tag_id: tag.id),
                                               method: :post,
-                                              class: "btn btn-sm btn-outline-secondary" %>
+                                              class: "btn btn-sm btn-outline-secondary",
+                                              form: { data: { turbo: true } } %>
                                 <% end %>
                               <% end %>
                             </div>
@@ -82,46 +96,66 @@
                         <% end %>
                       </div>
                     </div>
-                    <% if @tool_tags.any? %>
-                      <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
-                        <% @tool_tags.each do |tag| %>
-                          <%= render_tag_link(tag) %>
-                        <% end %>
-                      </div>
-                      <% if @all_tool_tags.count > @tool_tags.count %>
-                        <p class="text-muted small mt-2 mb-0">
-                          <%= t("tools.show.showing_top_tags", count: @tool_tags.count, total: @all_tool_tags.count) %>
-                          <button class="btn btn-link btn-sm p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#all-tags">
-                            <%= t("tools.show.show_all_tags") %>
-                          </button>
-                        </p>
-                        <div id="all-tags" class="collapse mt-2">
-                          <div class="d-flex flex-wrap gap-2">
-                            <% @all_tool_tags.each do |tag| %>
-                              <% unless @tool_tags.map(&:id).include?(tag.id) %>
-                                <% 
-                                  badge_style = ""
-                                  if tag.color.present?
-                                    color_hex = color_name_to_hex(tag.color)
-                                    badge_style = "background-color: #{color_hex};"
-                                    if ["black", "navy", "purple", "indigo", "blue"].include?(tag.color.downcase)
-                                      badge_style += " color: #ffffff;"
-                                    else
-                                      badge_style += " color: #000000;"
-                                    end
-                                  end
-                                %>
-                                <span class="badge <%= tag_badge_class(tag) %>" style="<%= badge_style %>">
-                                  <%= tag.display_name %>
-                                </span>
-                              <% end %>
-                            <% end %>
-                          </div>
+                    <div id="tool-tags">
+                      <% if @tool_tags.any? %>
+                        <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
+                          <% @tool_tags.each do |tag| %>
+                            <div class="d-inline-flex align-items-center gap-1">
+                              <%= render_tag_link(tag) %>
+                              <%= button_to "×",
+                                          remove_tag_tool_path(@tool, tag_id: tag.id),
+                                          method: :delete,
+                                          class: "btn btn-sm btn-outline-danger p-0",
+                                          style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
+                                          title: t("tools.actions.remove_tag"),
+                                          form: { data: { turbo: true } } %>
+                            </div>
+                          <% end %>
                         </div>
+                        <% if @all_tool_tags.count > @tool_tags.count %>
+                          <p class="text-muted small mt-2 mb-0">
+                            <%= t("tools.show.showing_top_tags", count: @tool_tags.count, total: @all_tool_tags.count) %>
+                            <button class="btn btn-link btn-sm p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#all-tags">
+                              <%= t("tools.show.show_all_tags") %>
+                            </button>
+                          </p>
+                          <div id="all-tags" class="collapse mt-2">
+                            <div class="d-flex flex-wrap gap-2">
+                              <% @all_tool_tags.each do |tag| %>
+                                <% unless @tool_tags.map(&:id).include?(tag.id) %>
+                                  <div class="d-inline-flex align-items-center gap-1">
+                                    <% 
+                                      badge_style = ""
+                                      if tag.color.present?
+                                        color_hex = color_name_to_hex(tag.color)
+                                        badge_style = "background-color: #{color_hex};"
+                                        if ["black", "navy", "purple", "indigo", "blue"].include?(tag.color.downcase)
+                                          badge_style += " color: #ffffff;"
+                                        else
+                                          badge_style += " color: #000000;"
+                                        end
+                                      end
+                                    %>
+                                    <span class="badge <%= tag_badge_class(tag) %>" style="<%= badge_style %>">
+                                      <%= tag.display_name %>
+                                    </span>
+                                    <%= button_to "×",
+                                                remove_tag_tool_path(@tool, tag_id: tag.id),
+                                                method: :delete,
+                                                class: "btn btn-sm btn-outline-danger p-0",
+                                                style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
+                                                title: t("tools.actions.remove_tag"),
+                                                form: { data: { turbo: true } } %>
+                                  </div>
+                                <% end %>
+                              <% end %>
+                            </div>
+                          </div>
+                        <% end %>
+                      <% else %>
+                        <p class="text-muted mb-0"><%= t("tools.show.no_tags") %></p>
                       <% end %>
-                    <% else %>
-                      <p class="text-muted mb-0"><%= t("tools.show.no_tags") %></p>
-                    <% end %>
+                    </div>
                   </div>
                   <span class="position-absolute bottom-0 end-0 mb-1 me-1">
                     <%= render "tools/read_state", tool: @tool %>

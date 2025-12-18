@@ -1,0 +1,61 @@
+<%= turbo_stream.replace "tool-tags" do %>
+  <% if @tool_tags.any? %>
+    <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
+      <% @tool_tags.each do |tag| %>
+        <div class="d-inline-flex align-items-center gap-1">
+          <%= render_tag_link(tag) %>
+          <%= button_to "×",
+                      remove_tag_tool_path(@tool, tag_id: tag.id),
+                      method: :delete,
+                      class: "btn btn-sm btn-outline-danger p-0",
+                      style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
+                      title: t("tools.actions.remove_tag"),
+                      form: { data: { turbo: true } } %>
+        </div>
+      <% end %>
+      <% if @all_tool_tags.count > @tool_tags.count %>
+        <p class="text-muted small mt-2 mb-0">
+          <%= t("tools.show.showing_top_tags", count: @tool_tags.count, total: @all_tool_tags.count) %>
+          <button class="btn btn-link btn-sm p-0 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#all-tags">
+            <%= t("tools.show.show_all_tags") %>
+          </button>
+        </p>
+        <div id="all-tags" class="collapse mt-2">
+          <div class="d-flex flex-wrap gap-2">
+            <% @all_tool_tags.each do |tag| %>
+              <% unless @tool_tags.map(&:id).include?(tag.id) %>
+                <div class="d-inline-flex align-items-center gap-1">
+                  <% 
+                    badge_style = ""
+                    if tag.color.present?
+                      color_hex = color_name_to_hex(tag.color)
+                      badge_style = "background-color: #{color_hex};"
+                      if ["black", "navy", "purple", "indigo", "blue"].include?(tag.color.downcase)
+                        badge_style += " color: #ffffff;"
+                      else
+                        badge_style += " color: #000000;"
+                      end
+                    end
+                  %>
+                  <span class="badge <%= tag_badge_class(tag) %>" style="<%= badge_style %>">
+                    <%= tag.display_name %>
+                  </span>
+                  <%= button_to "×",
+                              remove_tag_tool_path(@tool, tag_id: tag.id),
+                              method: :delete,
+                              class: "btn btn-sm btn-outline-danger p-0",
+                              style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
+                              title: t("tools.actions.remove_tag"),
+                              form: { data: { turbo: true } } %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-muted mb-0"><%= t("tools.show.no_tags") %></p>
+  <% end %>
+<% end %>
+

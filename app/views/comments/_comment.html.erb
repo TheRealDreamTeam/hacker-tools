@@ -39,17 +39,29 @@
           </div>
           <div class="d-flex gap-2 align-items-center">
             <% if (comment.commentable_type == "Tool" && comment.user == current_user) || (comment.commentable_type == "Submission" && (comment.user == current_user || comment.commentable.user == current_user)) %>
+              <% modal_id = "delete-comment-#{comment.id}-modal" %>
               <% if comment.commentable_type == "Tool" %>
-                <%= button_to t("comments.actions.delete"), tool_comment_path(comment.commentable, comment),
-                              method: :delete,
-                              data: { turbo_confirm: t("comments.confirmations.delete") },
-                              class: "btn btn-sm btn-outline-danger" %>
+                <%= render "shared/confirmation_modal",
+                    id: modal_id,
+                    title: t("comments.confirmations.delete_title"),
+                    message: t("comments.confirmations.delete"),
+                    confirm_text: t("actions.delete"),
+                    confirm_class: "btn-outline-danger",
+                    form_action: tool_comment_path(comment.commentable, comment),
+                    form_method: :delete %>
               <% elsif comment.commentable_type == "Submission" %>
-                <%= button_to t("comments.actions.delete"), submission_comment_path(comment.commentable, comment),
-                              method: :delete,
-                              data: { turbo_confirm: t("comments.confirmations.delete") },
-                              class: "btn btn-sm btn-outline-danger" %>
+                <%= render "shared/confirmation_modal",
+                    id: modal_id,
+                    title: t("comments.confirmations.delete_title"),
+                    message: t("comments.confirmations.delete"),
+                    confirm_text: t("actions.delete"),
+                    confirm_class: "btn-outline-danger",
+                    form_action: submission_comment_path(comment.commentable, comment),
+                    form_method: :delete %>
               <% end %>
+              <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#<%= modal_id %>">
+                <%= t("comments.actions.delete") %>
+              </button>
             <% end %>
             <% if allow_replies %>
               <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#reply-form-<%= comment.id %>" aria-expanded="false" aria-controls="reply-form-<%= comment.id %>">

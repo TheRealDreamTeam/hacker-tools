@@ -55,70 +55,90 @@ Server-first Rails 7 + Hotwire app for curating and discussing hacking/engineeri
   - Unauthenticated users can search and view tool index/show, tag index/show, public user profiles, and public lists.
 
 ### Submission System
-- **Status**: Complete (Phase 1, Week 1)
+- **Status**: Updated - Enhanced Editing
 - **Description**: Users submit content (articles, guides, repos, etc.) about tools. Tools are community-owned entities, submissions are user-contributed content.
 - **User Stories**:
   - As a user, I want to submit content about a tool so others can discover it.
   - As a user, I want to see my submissions in my dashboard.
   - As a visitor, I want to browse and filter submissions by type, status, and tool.
-  - As a user, I want to tag my submissions for better organization.
+  - As a user, I want to edit my submissions to update information (title, description, URL, tool associations).
+  - As a user, I want to add and remove tags from my submissions to improve categorization.
   - As a user, I want to follow submissions to track updates.
 - **Technical Implementation**:
-  - Models: `Submission`, `SubmissionTag`, `ListSubmission`
+  - Models: `Submission`, `SubmissionTag`, `ListSubmission`, `SubmissionTool` (many-to-many with Tools)
   - Ownership: `Submission` belongs to `User`; `Tool` is community-owned (no user ownership)
   - Submission types: article, guide, documentation, github_repo, etc.
   - Status workflow: pending → processing → completed/failed/rejected
   - Routes: `resources :submissions` with nested comments and member routes for tags/follow
+  - Tag management: `POST /submissions/:id/add_tag`, `DELETE /submissions/:id/remove_tag` with Turbo Stream support
+  - Editable fields: `submission_url`, `submission_name`, `submission_description`, `author_note`, `tool_ids[]` (many-to-many)
   - URL normalization for duplicate detection (preserves content-identifying query params)
   - Polymorphic comments (can comment on both Tools and Submissions)
+  - Delete confirmation modal for destructive actions
 - **UI/UX Considerations**:
   - Submission index with filtering (by type, status, tool)
   - Submission show page with comments, flags, bugs, tags
-  - Tag management (add/remove tags - owner only)
+  - Edit form includes title, description, URL, author note, and tool associations (multi-select)
+  - Tag management UI with add/remove buttons (owner only)
+  - Turbo Streams for live tag updates
   - Follow/unfollow functionality
-  - Turbo Streams for real-time updates
+  - Confirmation modal for submission deletion
 - **Dependencies**:
   - Devise-authenticated users to create/edit submissions
   - Processing pipeline (Step 2.1+) for automatic enrichment
 
 ### Tool Catalog
-- **Status**: Updated - Community-Owned
-- **Description**: Tools are community-owned top-level entities. Users submit content about tools, they don't own tools.
+- **Status**: Updated - Community-Owned with Edit/Delete
+- **Description**: Tools are community-owned top-level entities. Users submit content about tools, they don't own tools. Tools can be edited and deleted by any authenticated user.
 - **User Stories**:
   - As a visitor, I want to browse tools and see submissions about them.
   - As a visitor, I want to filter tools by tags and lists.
+  - As a user, I want to edit tool information (name, description, URL) to keep it up to date.
+  - As a user, I want to add and remove tags from tools to improve categorization.
+  - As a user, I want to delete tools that are no longer relevant.
 - **Technical Implementation**:
   - Models: `Tool`, `Tag`, `ToolTag`, `List`, `ListTool`
   - Ownership: Tools are community-owned (no user ownership)
   - Visibility/list types modeled as enums on `Tool` and `List`
   - Tagging and list inclusion via join tables
   - Routes: `resources :tools` (index, show, new, create, edit, update, destroy)
+  - Tag management: `POST /tools/:id/add_tag`, `DELETE /tools/:id/remove_tag` with Turbo Stream support
+  - Editable fields: `tool_name`, `tool_description`, `tool_url`, `author_note`
   - Active Storage attachments for tool `icon` and `picture`
   - Polymorphic comments (can comment on both Tools and Submissions)
+  - Delete confirmation modal for destructive actions
 - **UI/UX Considerations**:
   - Use Bootstrap grid/cards; responsive at mobile breakpoints
-  - Turbo Streams for live updates when tools are added/edited
+  - Turbo Streams for live updates when tools are added/edited/tagged
+  - Edit and delete buttons visible on tool show page
+  - Tag management UI with add/remove buttons
+  - Confirmation modal for tool deletion
 - **Dependencies**:
   - Devise-authenticated users to create/edit tools
   - Active Storage optional for icons/pictures
 
 ### Engagement & Feedback
-- **Status**: In Progress
+- **Status**: Updated - Enhanced Comment Management
 - **Description**: Users discuss tools and react with upvotes, favorites, follows, and read tracking.
 - **User Stories**:
   - As a user, I want to comment on a tool and reply to threads so I can ask questions or provide feedback.
   - As a user, I want to upvote/favorite/follow tools so I can track what matters.
   - As a user, I want to upvote comments so helpful answers are surfaced.
+  - As a user, I want to delete my own comments or comments on my submissions.
 - **Technical Implementation**:
   - Models: `Comment`, `CommentUpvote`, `UserTool`, `Follow` (polymorphic)
   - Threaded comments via `parent_id` on `Comment`
   - Comment types: `comment`, `flag`, `bug`; `solved` marks resolved flags/bugs
   - Tool show page sections: comments (threaded), flags (resolvable), bugs (resolvable)
   - User-tool interaction flags stored on `UserTool`
+  - Comment deletion: Users can delete their own comments; submission owners can delete comments on their submissions
+  - Delete confirmation modal for comment deletion (replaces browser confirm)
 - **UI/UX Considerations**:
   - Turbo Streams for live comment threads (future)
   - Accessible forms and focus management for replies
   - Inline, collapsible forms for flag/bug submissions
+  - Comment delete buttons styled with `btn-outline-danger` to match submission delete buttons
+  - Confirmation modal for comment deletion (consistent with other destructive actions)
 - **Dependencies**:
   - Devise-authenticated users for interactions
 
