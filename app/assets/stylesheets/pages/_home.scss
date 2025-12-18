@@ -28,6 +28,14 @@
   }
 }
 
+// Ensure container-fluid extends to full width (consistent with tool/submission pages)
+.container-fluid.px-0 {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 // Modest but noticeable hover for cards
 .card-hover {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -40,27 +48,38 @@
 
 // Side banner styling - sticky from navbar to bottom of viewport
 // Only moves when scrolling reaches the very bottom
+// Images are ~300x900px (aspect ratio ~1:3), displayed directly without card wrapper
+// Images are constrained to 80vh max height, centered between navbar end and viewport bottom
+// Banners are positioned relative to content container, so spacing grows equally on wide screens
+// Navbar height: ~92px (60px min-height + 32px padding)
 .side-banner {
   position: sticky;
-  top: 15vh; // Position from top to center the 70vh banner
+  top: 92px; // Start below navbar (navbar is ~92px tall)
   align-self: flex-start; // Align to start of flex container
-  height: 70vh; // 70% of viewport height
-  max-height: 70vh;
-  overflow: visible; // Allow shadows to be visible
-  padding: 0; // Remove all padding to make banners wider
+  padding: 0; // Remove all padding initially
+  padding-top: 5vh; // Add top padding to push banners lower
+  padding-left: 1rem; // Space from left viewport edge (prevents sticking on smaller screens)
+  padding-right: 1rem; // Space from right viewport edge (prevents sticking on smaller screens)
+  height: calc(100vh - 92px); // Height from navbar end to viewport bottom
+  display: flex; // Use flexbox for centering
+  align-items: flex-start; // Align to top of flex container (with padding-top for spacing)
+  justify-content: center; // Center horizontally
 
-  // The card inside should fill the height with 3D effect and animation
-  .card {
-    height: 100%;
-    min-height: 70vh;
-    width: 100%; // Ensure card takes full width
-    border-radius: 0.5rem; // Slightly rounded corners (8px)
-    box-shadow: 
-      0 10px 30px rgba(0, 0, 0, 0.3), // Main shadow for depth
-      0 5px 15px rgba(0, 0, 0, 0.2), // Secondary shadow
-      inset 0 1px 0 rgba(255, 255, 255, 0.1); // Subtle inner highlight for 3D effect
-    animation: float 6s ease-in-out infinite; // Slow floating animation
-    transform-style: preserve-3d; // Enable 3D transforms
+  // The image itself - make it taller and wider to fill more of the container
+  // Images are ~300x900px (1:3 ratio)
+  .side-banner-image {
+    height: 90vh; // Increased to 90% of viewport height (makes them taller)
+    width: 100%; // Fill the container width (makes them wider)
+    max-width: 100%; // Don't exceed container width
+    object-fit: contain; // Maintain aspect ratio, show full image without cropping
+    display: block; // Remove inline spacing
+    border-radius: 0.5rem; // Apply rounded corners to image
+    animation: float 8s ease-in-out infinite; // Slow floating animation
+  }
+
+  // Fallback gradient if image fails to load
+  .side-banner-fallback {
+    border-radius: 0.5rem; // Match rounded corners
   }
 
   @media (max-width: 991.98px) {
@@ -74,13 +93,13 @@
     transform: translateY(0px) rotateX(0deg);
   }
   25% {
-    transform: translateY(-8px) rotateX(0.5deg);
+    transform: translateY(-3px) rotateX(0.3deg);
   }
   50% {
-    transform: translateY(-4px) rotateX(0deg);
+    transform: translateY(-1.5px) rotateX(0deg);
   }
   75% {
-    transform: translateY(-8px) rotateX(-0.5deg);
+    transform: translateY(-3px) rotateX(-0.3deg);
   }
 }
 

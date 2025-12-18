@@ -1,20 +1,5 @@
-<!-- Full-width layout with side banners -->
-<div class="container-fluid px-0">
-  <div class="row g-0">
-    <!-- Left Ad Banner (columns 1-2) - extended inward toward main content -->
-    <div class="col-lg-2 d-none d-lg-block side-banner ps-5 pe-5">
-      <div class="card h-100 rounded-0 border-0 border-end position-relative overflow-hidden" style="border-radius: 0 !important; background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=300&h=800&fit=crop'); background-size: cover; background-position: center;">
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);"></div>
-        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center p-3 position-relative z-1">
-          <p class="fw-semibold mb-1 text-white">Sponsors</p>
-          <p class="text-white-50 small mb-0"><%= t("pages.home.ads.supporting_text") %></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Content (columns 3-10) - adjusted for wider banners -->
-    <div class="col-12 col-lg-8">
-      <div class="container py-4">
+<!-- Full-width layout -->
+<div class="container py-4">
 <div class="p-2">
   <div class="d-flex justify-content-between align-items-start mb-4">
     <div>
@@ -91,19 +76,5 @@
     <%= link_to t("actions.back"), tags_path, class: "btn btn-secondary" %>
   </div>
 </div>
-      </div>
-    </div>
-
-    <!-- Right Ad Banner (columns 11-12) - extended inward toward main content -->
-    <div class="col-lg-2 d-none d-lg-block side-banner ps-5 pe-5">
-      <div class="card h-100 rounded-0 border-0 border-start position-relative overflow-hidden" style="border-radius: 0 !important; background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&h=800&fit=crop'); background-size: cover; background-position: center;">
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);"></div>
-        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center p-3 position-relative z-1">
-          <p class="fw-semibold mb-1 text-white">Sponsors</p>
-          <p class="text-white-50 small mb-0"><%= t("pages.home.ads.supporting_text") %></p>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 

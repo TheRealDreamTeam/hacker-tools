@@ -2,7 +2,8 @@
 <div class="container-fluid px-0">
   <div class="row g-0">
     <!-- Left Ad Banner (columns 1-2) - extended inward toward main content -->
-    <%= render "shared/side_banner", position: "left" %>
+    <% used_images = [] %>
+    <%= render "shared/side_banner", position: "left", used_images: used_images %>
 
     <!-- Main Content (columns 3-10) - adjusted for wider banners -->
     <div class="col-12 col-lg-8">
@@ -348,6 +349,6 @@
     </div>
 
     <!-- Right Ad Banner (columns 11-12) - extended inward toward main content -->
-    <%= render "shared/side_banner", position: "right" %>
+    <%= render "shared/side_banner", position: "right", used_images: used_images %>
   </div>
 </div>

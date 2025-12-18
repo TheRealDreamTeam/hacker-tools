@@ -4,8 +4,9 @@
      data-home-page-guest-message-value="<%= j t('pages.home.card.upvote_guest_alert') %>"
      data-home-page-upvotes-text-value="<%= j t('pages.home.card.upvotes', count: '%{count}') %>">
   <div class="row g-0">
-    <!-- Left Ad Banner (columns 1-2) - extended inward toward main content -->
-    <%= render "shared/side_banner", position: "left" %>
+    <!-- Left Ad Banner (columns 1-2) - positioned relative to main content -->
+    <% used_images = [] %>
+    <%= render "shared/side_banner", position: "left", used_images: used_images %>
 
     <!-- Main Content (columns 3-10) - adjusted for wider banners -->
     <div class="col-lg-8">
@@ -48,8 +49,6 @@
     </div>
   </div>
 
-  <div class="border-bottom mb-4"></div>
-
   <!-- Hero search bar centered within 8-grid width on large screens -->
   <div class="row justify-content-center mb-4">
     <div class="col-12 col-lg-8">
@@ -78,8 +77,6 @@
       </div>
     </div>
   </div>
-
-  <div class="border-bottom mb-4"></div>
 
   <!-- Category toggles to swap tool lists without full reload (JS-ready) -->
   <div class="row justify-content-center mb-4">
@@ -122,7 +119,7 @@
     </div>
 
     <!-- Right Ad Banner (columns 11-12) - extended inward toward main content -->
-    <%= render "shared/side_banner", position: "right" %>
+    <%= render "shared/side_banner", position: "right", used_images: used_images %>
   </div>
 </div>
 
