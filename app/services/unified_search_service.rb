@@ -54,14 +54,15 @@ class UnifiedSearchService
   end
 
   # Keyword search using ILIKE matching
+  # Searches tool_name, tool_description, tags, and tool_url
   def keyword_search_tools
     return [] if @query.blank?
 
     Tool.public_tools
         .left_joins(:tags)
         .where(
-          "tools.tool_name ILIKE ? OR tools.tool_description ILIKE ? OR tags.tag_name ILIKE ?",
-          "%#{@query}%", "%#{@query}%", "%#{@query}%"
+          "tools.tool_name ILIKE ? OR tools.tool_description ILIKE ? OR tags.tag_name ILIKE ? OR tools.tool_url ILIKE ?",
+          "%#{@query}%", "%#{@query}%", "%#{@query}%", "%#{@query}%"
         )
         .distinct
         .includes(:tags, :user_tools)

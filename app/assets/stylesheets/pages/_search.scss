@@ -1,0 +1,17 @@
+// Search page specific styles
+
+// Remove hover animation from search submit button
+.search-submit-btn {
+  &:hover {
+    transform: none !important;
+  }
+  
+  &:active {
+    transform: none !important;
+  }
+  
+  &:focus {
+    transform: none !important;
+  }
+}
+

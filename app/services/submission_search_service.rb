@@ -48,19 +48,63 @@ class SubmissionSearchService
 
   private
 
-  # Full-text search using pg_search
+  # Full-text search using pg_search with additional tag, tool, and URL matching
   # Returns submissions with relevance scores
   def fulltext_search(base_scope)
     return [] if @query.blank?
 
-    # Use pg_search scope for full-text search
+    # Use pg_search scope for full-text search (searches submission_name, submission_description, author_note)
     # This uses PostgreSQL's full-text search with trigram for fuzzy matching
     # Must chain .with_pg_search_rank to access the pg_search_rank attribute
-    results = base_scope.search_by_text(@query).with_pg_search_rank
+    pg_search_results = base_scope.search_by_text(@query).with_pg_search_rank.to_a
     
-    # Return as array with relevance scores
-    # pg_search adds a `pg_search_rank` attribute to each result
-    results.to_a
+    # Track IDs already included to avoid duplicates
+    included_ids = Set.new(pg_search_results.map(&:id))
+    
+    # Also search by associated tags for better coverage
+    # These use ILIKE matching and are added to results
+    tag_matches = base_scope.joins(:tags)
+                            .where("tags.tag_name ILIKE ?", "%#{@query}%")
+                            .where.not(id: included_ids.to_a)
+                            .distinct
+                            .limit(20) # Limit to prevent too many results
+    
+    # Also search by associated tools for better coverage
+    tool_matches = base_scope.joins(:tools)
+                             .where("tools.tool_name ILIKE ?", "%#{@query}%")
+                             .where.not(id: included_ids.to_a)
+                             .distinct
+                             .limit(20)
+    
+    # Also search by URL (domain or partial URL)
+    url_matches = base_scope.where("submission_url ILIKE ?", "%#{@query}%")
+                            .where.not(id: included_ids.to_a)
+                            .limit(20)
+    
+    # Add tag matches (avoid duplicates)
+    tag_matches.each do |submission|
+      next if included_ids.include?(submission.id)
+      pg_search_results << submission
+      included_ids.add(submission.id)
+    end
+    
+    # Add tool matches (avoid duplicates)
+    tool_matches.each do |submission|
+      next if included_ids.include?(submission.id)
+      pg_search_results << submission
+      included_ids.add(submission.id)
+    end
+    
+    # Add URL matches (avoid duplicates)
+    url_matches.each do |submission|
+      next if included_ids.include?(submission.id)
+      pg_search_results << submission
+      included_ids.add(submission.id)
+    end
+    
+    # Return as array with relevance scores (pg_search results have pg_search_rank)
+    # Results are ordered: pg_search results first (with ranking), then tag/tool/URL matches
+    pg_search_results
   rescue StandardError => e
     Rails.logger.error "Full-text search error: #{e.message}"
     []
@@ -136,11 +180,26 @@ class SubmissionSearchService
 
     # Add full-text search results (weight: 0.6)
     # pg_search provides pg_search_rank (lower is better), so we normalize it
+    # Note: tag/tool/URL matches don't have pg_search_rank, so we handle them separately
     if fulltext_results.any?
-      max_rank = fulltext_results.map { |r| r.pg_search_rank || 1.0 }.max
-      fulltext_results.each do |submission|
-        normalized_rank = (submission.pg_search_rank || 1.0) / (max_rank + 0.1)
-        score = 0.6 * (1.0 - normalized_rank) # Invert so higher score = better match
+      # Separate pg_search results (have pg_search_rank) from other matches (tag/tool/URL)
+      pg_search_matches = fulltext_results.select { |r| r.respond_to?(:pg_search_rank) && r.pg_search_rank.present? }
+      other_matches = fulltext_results.reject { |r| r.respond_to?(:pg_search_rank) && r.pg_search_rank.present? }
+      
+      # Score pg_search results by their rank
+      if pg_search_matches.any?
+        max_rank = pg_search_matches.map { |r| r.pg_search_rank || 1.0 }.max
+        pg_search_matches.each do |submission|
+          normalized_rank = (submission.pg_search_rank || 1.0) / (max_rank + 0.1)
+          score = 0.6 * (1.0 - normalized_rank) # Invert so higher score = better match
+          submission_scores[submission.id] ||= { submission: submission, score: 0.0 }
+          submission_scores[submission.id][:score] += score
+        end
+      end
+      
+      # Score other matches (tag/tool/URL) with lower weight since they're less precise
+      other_matches.each do |submission|
+        score = 0.4 # Lower weight for non-pg_search matches
         submission_scores[submission.id] ||= { submission: submission, score: 0.0 }
         submission_scores[submission.id][:score] += score
       end

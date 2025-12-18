@@ -75,6 +75,22 @@ export default class extends Controller {
       })
     }
 
+    // Check if this is the navbar panel or homepage panel (both should have sticky footer)
+    const isNavbar = this.panelTarget.id === "navbar-search-suggestions" || 
+                     this.panelTarget.id === "mobile-search-suggestions" ||
+                     this.panelTarget.hasAttribute("data-is-navbar")
+    const isHomepage = this.panelTarget.id === "home-search-suggestions"
+    
+    // Add navbar flag to URL if it's the navbar or homepage (both get sticky footer)
+    if (isNavbar || isHomepage) {
+      url.searchParams.set("navbar", "true")
+    }
+    
+    // Add homepage flag to URL if it's the homepage (for positioning above input)
+    if (isHomepage) {
+      url.searchParams.set("homepage", "true")
+    }
+
     fetch(url.toString(), {
       headers: {
         Accept: "text/html"

@@ -39,30 +39,33 @@
             <%= render "notifications/badge" %>
           </ul>
         <% end %>
-        <!-- Search bar for medium/large screens -->
-        <div class="d-none d-md-block navbar-search position-relative" style="width: 33.333%; min-width: 300px; flex-shrink: 0;">
-          <%= form_with url: search_path,
-                        method: :get,
-                        local: true,
-                        role: "search",
-                        data: { controller: "search-suggestions", "search-suggestions-url-value": search_suggestions_path },
-                        class: "d-flex align-items-center gap-2" do |form| %>
-            <%= form.search_field :query,
-                                value: params[:query],
-                                class: "form-control flex-grow-1",
-                                placeholder: t("navigation.search_placeholder"),
-                                aria: { label: t("navigation.search_placeholder") },
-                                data: { "search-suggestions-target": "input", action: "input->search-suggestions#onInput blur->search-suggestions#hide" } %>
-            <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center justify-content-center", style: "min-width: 44px; height: 44px;", aria: { label: t("navigation.search") } do %>
-              <i class="bi bi-search"></i>
+        <!-- Search bar for medium/large screens - hidden on homepage and search page -->
+        <% unless (controller_name == "pages" && action_name == "home") || (controller_name == "search" && action_name == "show") %>
+          <div class="d-none d-md-block navbar-search position-relative" style="width: 33.333%; min-width: 300px; flex-shrink: 0;">
+            <%= form_with url: search_path,
+                          method: :get,
+                          local: true,
+                          role: "search",
+                          data: { controller: "search-suggestions", "search-suggestions-url-value": search_suggestions_path },
+                          class: "d-flex align-items-center gap-2" do |form| %>
+              <%= form.search_field :query,
+                                  value: params[:query],
+                                  class: "form-control flex-grow-1",
+                                  placeholder: t("navigation.search_placeholder"),
+                                  aria: { label: t("navigation.search_placeholder") },
+                                  autocomplete: "off",
+                                  data: { "search-suggestions-target": "input", action: "input->search-suggestions#onInput blur->search-suggestions#hide" } %>
+              <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center justify-content-center", style: "min-width: 44px; height: 44px;", aria: { label: t("navigation.search") } do %>
+                <i class="bi bi-search"></i>
+              <% end %>
+              <div id="navbar-search-suggestions" class="position-absolute top-100 end-0 mt-1" data-search-suggestions-target="panel" style="z-index: 10001; min-width: 300px; max-width: 500px;"></div>
             <% end %>
-            <div id="navbar-search-suggestions" class="position-absolute top-100 end-0 mt-1" data-search-suggestions-target="panel" style="z-index: 10001; min-width: 300px; max-width: 500px;"></div>
-          <% end %>
-        </div>
-        <!-- Search icon for mobile -->
-        <button type="button" class="btn btn-link text-decoration-none d-md-none mobile-search-btn" data-bs-toggle="modal" data-bs-target="#mobileSearchModal" aria-label="<%= t("navigation.search") %>">
-          <i class="bi bi-search fs-4"></i>
-        </button>
+          </div>
+          <!-- Search icon for mobile - hidden on homepage and search page -->
+          <button type="button" class="btn btn-link text-decoration-none d-md-none mobile-search-btn" data-bs-toggle="modal" data-bs-target="#mobileSearchModal" aria-label="<%= t("navigation.search") %>">
+            <i class="bi bi-search fs-4"></i>
+          </button>
+        <% end %>
       <% end %>
     </div>
   </div>
@@ -102,6 +105,7 @@
                                 class: "form-control flex-grow-1",
                                 placeholder: t("navigation.mobile_search_placeholder"),
                                 aria: { label: t("navigation.mobile_search_placeholder") },
+                                autocomplete: "off",
                                 data: { "search-suggestions-target": "input", action: "input->search-suggestions#onInput blur->search-suggestions#hide" } %>
             <%= form.button type: "submit", class: "btn btn-primary d-flex align-items-center justify-content-center", style: "min-width: 44px; height: 44px;", aria: { label: t("navigation.search") } do %>
               <i class="bi bi-search"></i>

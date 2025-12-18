@@ -34,20 +34,25 @@ class SearchController < ApplicationController
         GlobalSearchService::Result.new(items: [], total_count: 0, page: 1, per_page: 5)
       end
     else
-      # Enable semantic search for suggestions to handle typos (e.g., "htwire" -> "Hotwire")
-      # Use both semantic and full-text search for better suggestions
+      # Use full-text search only for suggestions (faster, better UX)
+      # Semantic search is disabled for suggestions to improve responsiveness
+      # Main search results still use semantic search for better accuracy
       @results = GlobalSearchService.search(
         query: @query,
         categories: @selected_categories,
         page_params: {},
         per_page: 5,
-        use_semantic: true, # Enable semantic search for suggestions
+        use_semantic: false, # Disabled for suggestions - use full-text only for speed
         use_fulltext: true
       )
     end
 
+    # Check if this is for navbar (navbar or mobile search suggestions) or homepage (both get sticky footer)
+    is_navbar = params[:navbar] == "true"
+    is_homepage = params[:homepage] == "true"
+
     render partial: "search/suggestions_panel",
-           locals: { query: @query, results: @results, selected_categories: @selected_categories }
+           locals: { query: @query, results: @results, selected_categories: @selected_categories, is_navbar: is_navbar, is_homepage: is_homepage }
   end
 
   private

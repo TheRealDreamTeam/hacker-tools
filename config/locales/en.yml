@@ -295,7 +295,7 @@ en:
     form:
       label: "Search"
       placeholder: "Search tools, submissions, tags, users, or lists"
-      reset: "Clear search"
+      reset: "Clear"
     filters:
       title: "Filter categories"
       select_all: "Select all"

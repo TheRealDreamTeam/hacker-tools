@@ -89,6 +89,8 @@
 .btn-group.w-100 {
   display: flex !important; // Force flexbox for equal distribution
   width: 100%;
+  position: relative; // Create stacking context
+  z-index: 1; // Ensure buttons stay below search suggestions dropdown (z-index: 1010)
   
   // Ensure buttons can shrink on small screens
   @media (max-width: 575.98px) {
@@ -107,6 +109,8 @@
   justify-content: center; // Horizontally center text
   text-align: center; // Center text alignment
   padding: 0.5rem 0.75rem; // Responsive padding
+  position: relative; // Create stacking context
+  z-index: 1 !important; // Ensure buttons stay below search suggestions dropdown (z-index: 1010)
   
   // Remove hover jump effect - no transform on hover
   &:hover {
