@@ -1,0 +1,26 @@
+<%= turbo_stream.update "list-visibility-form" do %>
+  <div id="list-visibility-form" 
+       data-controller="visibility-toggle" 
+       data-visibility-toggle-url-value="<%= list_path(@list) %>">
+    <%= form_with model: @list, url: list_path(@list), method: :patch,
+                  data: { turbo: true, action: "turbo:submit-end->visibility-toggle#updateButtons" } do |f| %>
+      <%= f.hidden_field :visibility, 
+          value: @list.visibility_private? ? "private" : "public",
+          data: { visibility_toggle_target: "hiddenField" } %>
+      <div class="btn-group" role="group" aria-label="<%= t('lists.show.visibility_label') %>">
+        <button type="button" 
+                class="btn btn-outline-primary <%= 'active' if @list.visibility_public? %>"
+                data-visibility-toggle-target="publicButton"
+                data-action="click->visibility-toggle#selectPublic">
+          <%= t("lists.show.public") %>
+        </button>
+        <button type="button" 
+                class="btn btn-outline-primary <%= 'active' if @list.visibility_private? %>"
+                data-visibility-toggle-target="privateButton"
+                data-action="click->visibility-toggle#selectPrivate">
+          <%= t("lists.show.private") %>
+        </button>
+      </div>
+    <% end %>
+  </div>
+<% end %>

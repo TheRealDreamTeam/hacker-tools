@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # Handle Chrome DevTools requests (harmless, but prevents routing errors in logs)
+  get "/.well-known/appspecific/com.chrome.devtools.json", to: proc { |env| [404, {}, []] }
+  
   # Scope routes with locale parameter
   # This allows URLs like /en/users or /es/users
   # The locale is optional and defaults to the configured default locale

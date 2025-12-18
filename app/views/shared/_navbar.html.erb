@@ -8,9 +8,9 @@
         </button>
         <% if user_signed_in? %>
           <%= link_to new_submission_path,
-              class: "btn btn-primary btn-lg new-submission-btn d-none d-md-inline-flex",
+              class: "btn btn-primary btn-lg square-plus-btn new-submission-btn d-none d-md-inline-flex",
               data: { turbo_prefetch: false, navbar_offcanvas_target: "newSubmissionBtn" } do %>
-            <%= t("navigation.new_submission") %>
+            <i class="bi bi-plus-lg"></i>
           <% end %>
         <% else %>
           <%= link_to new_user_session_path,

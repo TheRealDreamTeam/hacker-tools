@@ -121,6 +121,34 @@ h6,
     padding-top: 0.75rem !important; // Ensure consistent top padding
     line-height: 1.5 !important; // Ensure proper line height for text centering
   }
+
+  // Square plus button - perfectly square with only icon
+  &.square-plus-btn {
+    width: 2.75rem !important; // Match height for square
+    height: 2.75rem !important;
+    min-width: 2.75rem !important;
+    padding: 0 !important; // Remove all padding for perfect square
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0;
+    
+    i {
+      line-height: 1;
+      margin: 0;
+    }
+  }
+  
+  // Square plus button for large size
+  &.btn-lg.square-plus-btn {
+    width: 3rem !important; // Match btn-lg height for square
+    height: 3rem !important;
+    min-width: 3rem !important;
+  }
   
   // Input buttons (type="submit", type="button") need special handling for text centering
   &[type="submit"],
@@ -406,6 +434,36 @@ textarea {
 
   &:hover {
     color: $primary;
+  }
+}
+
+// Toggle switch styling for form-switch
+.form-switch {
+  .form-check-input {
+    width: 2.5em !important;
+    height: 1.25em !important;
+    cursor: pointer;
+    border-radius: 2em !important;
+    background-color: #dee2e6 !important;
+    border: 1px solid #adb5bd !important;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    margin-top: 0 !important;
+    
+    &:checked {
+      background-color: $primary !important;
+      border-color: $primary !important;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e") !important;
+    }
+    
+    &:hover:not(:disabled) {
+      transform: none !important; // Remove scale transform for toggle switches
+    }
+    
+    &:focus {
+      border-color: $primary !important;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba($primary, 0.25) !important;
+    }
   }
 }
 

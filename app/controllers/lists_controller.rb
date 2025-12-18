@@ -44,9 +44,17 @@ class ListsController < ApplicationController
   
     def update
       if @list.update(list_params)
-        redirect_to @list, notice: "List was successfully updated."
+        respond_to do |format|
+          format.html { redirect_to @list, notice: "List was successfully updated." }
+          format.json { render json: { list_name: @list.list_name, visibility: @list.visibility, visibility_text: @list.visibility_private? ? t("lists.show.private") : t("lists.show.public") } }
+          format.turbo_stream { redirect_to @list, notice: "List was successfully updated.", status: :see_other }
+        end
       else
-        render :edit, status: :unprocessable_entity
+        respond_to do |format|
+          format.html { render :edit, status: :unprocessable_entity }
+          format.json { render json: { errors: @list.errors.full_messages }, status: :unprocessable_entity }
+          format.turbo_stream { render :update, status: :unprocessable_entity }
+        end
       end
     end
   

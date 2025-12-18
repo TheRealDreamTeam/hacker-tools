@@ -1,63 +1,181 @@
 <!-- Full-width layout -->
 <div class="container py-4">
-<div class="container mt-4">
-  <h1><%= @list.list_name %></h1>
+  <div class="p-2">
+    <!-- Header section -->
+    <div class="d-flex flex-row justify-content-between align-items-center gap-3 mb-4">
+      <div class="flex-grow-1">
+        <!-- Title and Edit button -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <h1 class="h3 mb-0"><%= @list.list_name %></h1>
+          <% if user_signed_in? && @list.user == current_user %>
+            <%= link_to edit_list_path(@list), class: "btn btn-outline-primary" do %>
+              <%= t("actions.edit") %>
+            <% end %>
+          <% end %>
+        </div>
+        
+        <!-- Visibility badge -->
+        <div class="mb-2">
+          <span class="badge <%= @list.visibility_private? ? 'bg-secondary' : 'bg-primary' %>">
+            <%= @list.visibility_private? ? t("lists.show.private") : t("lists.show.public") %>
+          </span>
+        </div>
+      </div>
+      
+      <!-- Plus button -->
+      <div class="flex-shrink-0">
+        <% if user_signed_in? && @list.user == current_user %>
+          <%= link_to search_path, class: "btn btn-primary square-plus-btn" do %>
+            <i class="bi bi-plus-lg"></i>
+          <% end %>
+        <% else %>
+          <%= link_to t("profiles.show.tabs.by_user", username: @list.user.username), profile_path(@list.user.username), class: "btn btn-outline-secondary" %>
+        <% end %>
+      </div>
+    </div>
 
-  <p>
-    <strong>Visibility:</strong>
-    <%= @list.visibility_private? ? "Private" : "Public" %>
-    <% unless user_signed_in? && @list.user == current_user %>
-      • <%= t("lists.show.by_user", username: link_to(@list.user.username, profile_path(@list.user.username), class: "text-decoration-none")).html_safe %>
+    <!-- Informational card about lists -->
+    <% if @list.tools.empty? && @list.submissions.empty? %>
+      <div class="card shadow-sm mb-4" style="border-radius: 0.75rem;">
+        <div class="card-body">
+          <div class="d-flex align-items-start gap-3">
+            <div class="flex-shrink-0">
+              <i class="bi bi-info-circle fs-4 text-primary"></i>
+            </div>
+            <div class="flex-grow-1">
+              <h5 class="card-title mb-2"><%= t("lists.show.info.title") %></h5>
+              <p class="card-text text-muted mb-2"><%= t("lists.show.info.description") %></p>
+              <ul class="list-unstyled mb-0 small text-muted">
+                <li class="mb-1">
+                  <i class="bi bi-check-circle-fill text-success me-2"></i>
+                  <%= t("lists.show.info.step_1") %>
+                </li>
+                <li class="mb-1">
+                  <i class="bi bi-check-circle-fill text-success me-2"></i>
+                  <%= t("lists.show.info.step_2") %>
+                </li>
+                <li class="mb-0">
+                  <i class="bi bi-check-circle-fill text-success me-2"></i>
+                  <%= t("lists.show.info.step_3") %>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     <% end %>
-  </p>
 
-  <div class="mb-3">
-    <% if user_signed_in? && @list.user == current_user %>
-    <%= link_to "Back to lists", lists_path, class: "btn btn-secondary" %>
-    <%= link_to "Edit", edit_list_path(@list), class: "btn btn-primary ms-2" %>
-    <%= link_to t("lists.show.add_item"), root_path, class: "btn btn-outline-primary ms-2" %>
+    <!-- Items grid -->
+    <% if @list.tools.any? || @list.submissions.any? %>
+      <div class="mb-3">
+        <h2 class="h5 mb-0">
+          <%= t("lists.show.items_title") %>
+          <span class="badge bg-secondary"><%= @list.tools.count + @list.submissions.count %></span>
+        </h2>
+      </div>
+      
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        <!-- Tools -->
+        <% @list.tools.each do |tool| %>
+          <div class="col">
+            <div class="card h-100 shadow-sm card-hover position-relative" style="border-radius: 0.75rem;">
+              <div class="card-body d-flex flex-column">
+                <!-- Preview image -->
+                <div class="mb-3 text-center" style="min-height: 80px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa; border-radius: 0.5rem;">
+                  <% if tool.icon.attached? %>
+                    <%= image_tag tool.icon, class: "rounded", style: "max-height: 80px; max-width: 100%; object-fit: contain;" %>
+                  <% elsif tool.picture.attached? %>
+                    <%= image_tag tool.picture, class: "rounded", style: "max-height: 80px; max-width: 100%; object-fit: contain;" %>
+                  <% else %>
+                    <i class="bi bi-tools fs-1 text-muted"></i>
+                  <% end %>
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-info"><%= t("lists.show.item_type.tool") %></span>
+                  </div>
+                  <h5 class="card-title mb-2">
+                    <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
+                  </h5>
+                  <% if tool.tool_description.present? %>
+                    <p class="card-text text-muted small mb-0">
+                      <%= truncate(tool.tool_description, length: 100) %>
+                    </p>
+                  <% end %>
+                </div>
+                
+                <!-- Remove button (only for owner) -->
+                <% if user_signed_in? && @list.user == current_user %>
+                  <div class="mt-3 pt-3 border-top">
+                    <%= button_to t("lists.show.remove_item"), remove_tool_list_path(@list, tool_id: tool.id), 
+                                  method: :delete,
+                                  class: "btn btn-sm btn-outline-danger w-100",
+                                  data: { turbo_confirm: t("lists.show.confirm_remove") } %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+        
+        <!-- Submissions -->
+        <% @list.submissions.each do |submission| %>
+          <div class="col">
+            <div class="card h-100 shadow-sm card-hover position-relative" style="border-radius: 0.75rem;">
+              <div class="card-body d-flex flex-column">
+                <!-- Preview image -->
+                <div class="mb-3 text-center" style="min-height: 80px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa; border-radius: 0.5rem;">
+                  <% if submission.icon.attached? %>
+                    <%= image_tag submission.icon, class: "rounded", style: "max-height: 80px; max-width: 100%; object-fit: contain;" %>
+                  <% elsif submission.picture.attached? %>
+                    <%= image_tag submission.picture, class: "rounded", style: "max-height: 80px; max-width: 100%; object-fit: contain;" %>
+                  <% else %>
+                    <i class="bi bi-file-text fs-1 text-muted"></i>
+                  <% end %>
+                </div>
+                
+                <!-- Content -->
+                <div class="flex-grow-1">
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="badge bg-primary"><%= t("lists.show.item_type.submission") %></span>
+                  </div>
+                  <h5 class="card-title mb-2">
+                    <%= link_to submission.submission_name.presence || truncate(submission.submission_url, length: 40), 
+                                submission_path(submission), 
+                                class: "text-decoration-none" %>
+                  </h5>
+                  <% if submission.submission_description.present? %>
+                    <p class="card-text text-muted small mb-0">
+                      <%= truncate(submission.submission_description, length: 100) %>
+                    </p>
+                  <% elsif submission.author_note.present? %>
+                    <p class="card-text text-muted small mb-0">
+                      <%= truncate(submission.author_note, length: 100) %>
+                    </p>
+                  <% end %>
+                </div>
+                
+                <!-- Remove button (only for owner) -->
+                <% if user_signed_in? && @list.user == current_user %>
+                  <div class="mt-3 pt-3 border-top">
+                    <%= button_to t("lists.show.remove_item"), remove_submission_list_path(@list, submission_id: submission.id), 
+                                  method: :delete,
+                                  class: "btn btn-sm btn-outline-danger w-100",
+                                  data: { turbo_confirm: t("lists.show.confirm_remove") } %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
     <% else %>
-      <%= link_to "Back", :back, class: "btn btn-secondary" %>
-      <%= link_to t("profiles.show.tabs.by_user", username: @list.user.username), profile_path(@list.user.username), class: "btn btn-outline-secondary ms-2" %>
+      <div class="alert alert-info mb-0" role="status">
+        <i class="bi bi-info-circle me-2"></i>
+        <%= t("lists.show.empty_state") %>
+      </div>
     <% end %>
   </div>
-
-  <h2 class="h5 mb-3">Items in this list</h2>
-  
-  <% if @list.tools.any? || @list.submissions.any? %>
-    <ul class="list-group">
-      <% @list.tools.each do |tool| %>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center gap-2">
-            <span class="badge bg-info" style="font-size: 0.75rem;">Tool</span>
-            <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
-          </div>
-          <% if user_signed_in? && @list.user == current_user %>
-            <%= button_to "Remove", remove_tool_list_path(@list, tool_id: tool.id), 
-                          method: :delete, 
-                          class: "btn btn-sm btn-outline-danger" %>
-          <% end %>
-        </li>
-      <% end %>
-      
-      <% @list.submissions.each do |submission| %>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <div class="d-flex align-items-center gap-2">
-            <span class="badge bg-primary" style="font-size: 0.75rem;">Submission</span>
-            <%= link_to submission.submission_name.presence || submission.submission_url, 
-                        submission_path(submission), 
-                        class: "text-decoration-none" %>
-          </div>
-          <% if user_signed_in? && @list.user == current_user %>
-            <%= button_to "Remove", remove_submission_list_path(@list, submission_id: submission.id), 
-                          method: :delete, 
-                          class: "btn btn-sm btn-outline-danger" %>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
-  <% else %>
-    <p class="text-muted">No items in this list yet.</p>
-  <% end %>
-</div>
 </div>
