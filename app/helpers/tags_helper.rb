@@ -81,13 +81,11 @@ module TagsHelper
     end
     
     # Ensure explicit text color is always included for good contrast
-    # Dark backgrounds get white text, light backgrounds get dark text
-    if base_class.include?("bg-dark") || base_class.include?("bg-primary") || 
-       base_class.include?("bg-success") || base_class.include?("bg-danger") || 
-       base_class.include?("bg-info")
-      base_class += " text-white" unless base_class.include?("text-")
-    else
+    # All badges use white text for consistency (except warning which uses dark text)
+    if base_class.include?("bg-warning")
       base_class += " text-dark" unless base_class.include?("text-")
+    else
+      base_class += " text-white" unless base_class.include?("text-")
     end
     
     base_class
@@ -115,15 +113,15 @@ module TagsHelper
       # Map color name to hex value for background
       color_hex = color_name_to_hex(tag.color)
       inline_styles << "background-color: #{color_hex};"
-      # Use white text for dark backgrounds, dark text for light backgrounds
-      # First try to use color name, then fall back to hex calculation
-      if is_dark_color?(tag.color)
-        inline_styles << "color: #ffffff !important;"
-      elsif is_dark_background?(color_hex)
-        inline_styles << "color: #ffffff !important;"
+      # Use white text for all badges for consistency (except warning/yellow which uses dark text)
+      if tag.color.downcase == "yellow" || tag.color.downcase == "light orange"
+        inline_styles << "color: #212529 !important;" # Dark text for light backgrounds
       else
-        inline_styles << "color: #212529 !important;" # Dark text for better contrast
+        inline_styles << "color: #ffffff !important;" # White text for all other badges
       end
+    else
+      # Ensure white text even when no color is set (for grey badges)
+      inline_styles << "color: #ffffff !important;"
     end
     
     # Add any additional styles from options

@@ -38,7 +38,7 @@
             <% if tool.tags.count > 3 %>
               <% hidden_tags = tool.tags.offset(3) %>
               <% hidden_tag_names = hidden_tags.pluck(:tag_name).join(", ") %>
-              <span class="badge bg-secondary"
+              <span class="badge bg-secondary text-white"
                     data-bs-toggle="tooltip"
                     data-bs-title="<%= hidden_tag_names %>"
                     data-bs-placement="top">
