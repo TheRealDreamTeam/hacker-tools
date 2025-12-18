@@ -47,38 +47,50 @@ module TagsHelper
   end
 
   # Get badge class for a tag (uses tag.color if set, otherwise falls back to tag_type_slug)
+  # Always includes explicit text color class for good contrast
   def tag_badge_class(tag)
-    # If tag has a color attribute, use it
-    if tag.respond_to?(:color) && tag.color.present?
-      return COLOR_BADGE_CLASSES[tag.color.downcase] || "bg-secondary"
-    end
-
-    # Fallback to tag_type_slug-based badge class
-    tag_type_slug = tag.respond_to?(:tag_type_slug) ? tag.tag_type_slug : tag.to_s
-    case tag_type_slug
-    when "content-type"
-      "bg-warning text-dark"
-    when "platform"
-      "bg-dark"
-    when "programming-language", "programming-language-version"
-      "bg-secondary"
-    when "framework", "framework-version"
-      "bg-success"
-    when "dev-tool"
-      "bg-primary"
-    when "database"
-      "bg-dark"
-    when "cloud-platform", "cloud-service"
-      "bg-primary"
-    when "topic"
-      "bg-info text-dark"
-    when "task"
-      "bg-primary"
-    when "level"
-      "bg-success"
+    base_class = if tag.respond_to?(:color) && tag.color.present?
+      COLOR_BADGE_CLASSES[tag.color.downcase] || "bg-secondary"
     else
-      "bg-secondary"
+      # Fallback to tag_type_slug-based badge class
+      tag_type_slug = tag.respond_to?(:tag_type_slug) ? tag.tag_type_slug : tag.to_s
+      case tag_type_slug
+      when "content-type"
+        "bg-warning"
+      when "platform"
+        "bg-dark"
+      when "programming-language", "programming-language-version"
+        "bg-secondary"
+      when "framework", "framework-version"
+        "bg-success"
+      when "dev-tool"
+        "bg-primary"
+      when "database"
+        "bg-dark"
+      when "cloud-platform", "cloud-service"
+        "bg-primary"
+      when "topic"
+        "bg-info"
+      when "task"
+        "bg-primary"
+      when "level"
+        "bg-success"
+      else
+        "bg-secondary"
+      end
     end
+    
+    # Ensure explicit text color is always included for good contrast
+    # Dark backgrounds get white text, light backgrounds get dark text
+    if base_class.include?("bg-dark") || base_class.include?("bg-primary") || 
+       base_class.include?("bg-success") || base_class.include?("bg-danger") || 
+       base_class.include?("bg-info")
+      base_class += " text-white" unless base_class.include?("text-")
+    else
+      base_class += " text-dark" unless base_class.include?("text-")
+    end
+    
+    base_class
   end
 
   # Render a clickable tag link with hover tooltip showing description
@@ -104,10 +116,13 @@ module TagsHelper
       color_hex = color_name_to_hex(tag.color)
       inline_styles << "background-color: #{color_hex};"
       # Use white text for dark backgrounds, dark text for light backgrounds
-      if ["black", "navy", "purple", "indigo", "blue"].include?(tag.color.downcase)
-        inline_styles << "color: #ffffff;"
+      # First try to use color name, then fall back to hex calculation
+      if is_dark_color?(tag.color)
+        inline_styles << "color: #ffffff !important;"
+      elsif is_dark_background?(color_hex)
+        inline_styles << "color: #ffffff !important;"
       else
-        inline_styles << "color: #000000;"
+        inline_styles << "color: #212529 !important;" # Dark text for better contrast
       end
     end
     
@@ -164,6 +179,37 @@ module TagsHelper
     
     dark_colors = ["black", "navy", "purple", "indigo", "blue"]
     dark_colors.include?(color_name.downcase)
+  end
+  
+  # Calculate if a hex color is dark (needs white text) or light (needs dark text)
+  # Uses relative luminance calculation (WCAG standard)
+  def is_dark_background?(hex_color)
+    return false if hex_color.blank?
+    
+    # Remove # if present
+    hex = hex_color.gsub("#", "")
+    
+    # Convert hex to RGB
+    r = hex[0..1].to_i(16)
+    g = hex[2..3].to_i(16)
+    b = hex[4..5].to_i(16)
+    
+    # Calculate relative luminance (WCAG formula)
+    # Normalize RGB values to 0-1 range
+    r_norm = r / 255.0
+    g_norm = g / 255.0
+    b_norm = b / 255.0
+    
+    # Apply gamma correction
+    r_gamma = r_norm <= 0.03928 ? r_norm / 12.92 : ((r_norm + 0.055) / 1.055) ** 2.4
+    g_gamma = g_norm <= 0.03928 ? g_norm / 12.92 : ((g_norm + 0.055) / 1.055) ** 2.4
+    b_gamma = b_norm <= 0.03928 ? b_norm / 12.92 : ((b_norm + 0.055) / 1.055) ** 2.4
+    
+    # Calculate luminance
+    luminance = 0.2126 * r_gamma + 0.7152 * g_gamma + 0.0722 * b_gamma
+    
+    # If luminance is less than 0.5, it's a dark background (needs white text)
+    luminance < 0.5
   end
 end
 

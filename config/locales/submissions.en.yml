@@ -14,6 +14,11 @@ en:
         most_followed: "Most Followed"
     new:
       title: "Create Submission"
+      description_title: "How it works"
+      description_text: "Share a link to an article, guide, documentation, or any helpful resource. We'll automatically extract the title and description, then process it for the community."
+      step_1: "Enter the URL of the content you want to share"
+      step_2: "We'll automatically extract the title and description"
+      step_3: "Your submission will be processed and made available to the community"
     edit:
       title: "Edit Submission"
     show:
@@ -68,6 +73,9 @@ en:
       submission_description_hint: "Description of the submission (optional, will be auto-filled from URL)"
       author_note: "Author Note"
       author_note_hint: "Optional description or notes about this submission"
+      author_note_placeholder: "Add any additional context or notes about this submission..."
+      optional: "optional"
+      submit: "Submit"
       tools: "Related Tools"
       tools_hint: "Select one or more tools this submission is about"
       tool: "Related Tool"

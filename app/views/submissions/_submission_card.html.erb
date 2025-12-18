@@ -51,16 +51,15 @@
         <% end %>
 
         <% if submission.tags.any? %>
-          <div class="mb-2 d-flex flex-wrap gap-1" data-controller="tooltip">
+          <div class="mb-2 d-flex flex-wrap gap-2" data-controller="tooltip">
             <% displayed_tags = submission.tags.limit(5) %>
             <% displayed_tags.each do |tag| %>
-              <%= render_tag_link(tag, style: "font-size: 0.75rem;") %>
+              <%= render_tag_link(tag) %>
             <% end %>
             <% if submission.tags.count > 5 %>
               <% hidden_tags = submission.tags.offset(5) %>
               <% hidden_tag_names = hidden_tags.pluck(:tag_name).join(", ") %>
-              <span class="badge bg-secondary"
-                    style="font-size: 0.75rem;"
+              <span class="badge bg-secondary text-dark"
                     data-bs-toggle="tooltip"
                     data-bs-title="<%= hidden_tag_names %>"
                     data-bs-placement="top">

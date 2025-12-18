@@ -549,10 +549,47 @@ div.card > .card-body,
   }
 }
 
-// Badges
+// Badges - ensure good contrast and readability
 .badge {
   border-radius: 0.5rem; // Slightly less rounded for badges
   padding: 0.375rem 0.75rem;
+  font-weight: 400; // Normal weight (not bold)
+  font-size: 0.875rem; // Consistent font size
+  line-height: 1.2;
+  
+  // Ensure all badges have explicit text colors for good contrast
+  // Bootstrap classes that need white text
+  &.bg-primary,
+  &.bg-dark,
+  &.bg-success,
+  &.bg-danger,
+  &.bg-info {
+    color: #ffffff !important;
+  }
+  
+  // Bootstrap classes that need dark text
+  &.bg-warning,
+  &.bg-light,
+  &.bg-secondary {
+    color: #212529 !important; // Dark text for light backgrounds
+  }
+  
+  // Ensure tag links are readable
+  &.tag-link {
+    // If no explicit text color is set, ensure contrast
+    &:not(.text-white):not(.text-dark) {
+      color: #212529 !important; // Default to dark text
+    }
+    
+    // Override for dark backgrounds
+    &.bg-primary,
+    &.bg-dark,
+    &.bg-success,
+    &.bg-danger,
+    &.bg-info {
+      color: #ffffff !important;
+    }
+  }
 }
 
 // Pagination

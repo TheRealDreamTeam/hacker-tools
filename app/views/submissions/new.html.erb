@@ -15,18 +15,53 @@
     <!-- Main Content (columns 3-10) - adjusted for wider banners -->
     <div class="col-12 col-lg-8">
       <div class="container py-4">
-<div class="p-2">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3 m-0"><%= t("submissions.new.title") %></h1>
-    <%= link_to t("actions.back"), submissions_path, class: "btn btn-secondary" %>
-  </div>
-  <div id="submission-form-container" data-submission-form-target="formContainer">
-    <%= render "form", submission: @submission %>
-    
-    <%# Processing status container (updated via Turbo Streams) %>
-    <div id="submission-processing-status-container">    </div>
-  </div>
-</div>
+        <div class="p-2">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 m-0"><%= t("submissions.new.title") %></h1>
+            <%= link_to t("actions.back"), submissions_path, class: "btn btn-secondary" %>
+          </div>
+          
+          <!-- Description card -->
+          <div class="card shadow-sm mb-4" style="border-radius: 0.75rem;">
+            <div class="card-body">
+              <div class="d-flex align-items-start gap-3">
+                <div class="flex-shrink-0">
+                  <i class="bi bi-info-circle fs-4 text-primary"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <h5 class="card-title mb-2"><%= t("submissions.new.description_title") %></h5>
+                  <p class="card-text text-muted mb-2"><%= t("submissions.new.description_text") %></p>
+                  <ul class="list-unstyled mb-0 small text-muted">
+                    <li class="mb-1">
+                      <i class="bi bi-check-circle-fill text-success me-2"></i>
+                      <%= t("submissions.new.step_1") %>
+                    </li>
+                    <li class="mb-1">
+                      <i class="bi bi-check-circle-fill text-success me-2"></i>
+                      <%= t("submissions.new.step_2") %>
+                    </li>
+                    <li class="mb-0">
+                      <i class="bi bi-check-circle-fill text-success me-2"></i>
+                      <%= t("submissions.new.step_3") %>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Form card -->
+          <div class="card shadow-sm" style="border-radius: 0.75rem;">
+            <div class="card-body">
+              <div id="submission-form-container" data-submission-form-target="formContainer">
+                <%= render "form", submission: @submission %>
+                
+                <%# Processing status container (updated via Turbo Streams) %>
+                <div id="submission-processing-status-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

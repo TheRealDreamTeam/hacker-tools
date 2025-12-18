@@ -17,13 +17,22 @@
   <%# Processing status will be inserted here via Turbo Streams %>
   <div id="submission-processing-status-container"></div>
 
-  <div class="row g-3" data-submission-form-target="formContainer">
+  <div class="row g-4" data-submission-form-target="formContainer">
     <div class="col-12">
+      <label class="form-label fw-semibold mb-2">
+        <%= t("submissions.form.submission_url") %>
+        <% if @submission.new_record? %>
+          <span class="text-danger">*</span>
+        <% end %>
+      </label>
       <%= f.input :submission_url, 
-          label: t("submissions.form.submission_url"), 
-          required: @submission.new_record?,
+          label: false,
+          required: false,
           hint: t("submissions.form.submission_url_hint"),
           input_html: { 
+            class: "form-control",
+            placeholder: "https://example.com/article",
+            autocomplete: "off",
             data: { 
               submission_form_target: "urlInput",
               action: "input->submission-form#urlChanged"
@@ -39,7 +48,7 @@
 
     <%# Processing status %>
     <div class="col-12" data-submission-form-target="processingStatus" style="display: none;">
-      <div class="alert alert-info">
+      <div class="alert alert-info d-flex align-items-center">
         <div class="spinner-border spinner-border-sm me-2" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
@@ -48,46 +57,32 @@
     </div>
 
     <div class="col-12">
-      <%= f.input :submission_name, 
-          label: t("submissions.form.submission_name"),
-          hint: t("submissions.form.submission_name_hint") %>
-    </div>
-
-    <div class="col-12">
-      <%= f.input :submission_description, 
-          as: :text,
-          label: t("submissions.form.submission_description"),
-          input_html: { rows: 5 },
-          hint: t("submissions.form.submission_description_hint") %>
-    </div>
-
-    <div class="col-12">
-      <%= f.input :author_note, as: :text, label: t("submissions.form.author_note"),
-                  input_html: { 
-                    rows: 3,
-                    data: { submission_form_target: "authorNoteInput" }
-                  },
-                  hint: t("submissions.form.author_note_hint") %>
-    </div>
-
-    <%# Tool selection - allow editing associations %>
-    <div class="col-12">
-      <%= f.association :tools,
-          collection: Tool.public_tools.alphabetical,
-          label_method: :tool_name,
-          value_method: :id,
-          label: t("submissions.form.tools"),
-          hint: t("submissions.form.tools_hint"),
-          input_html: { multiple: true, class: "form-select", size: 5 } %>
+      <label class="form-label fw-semibold mb-2">
+        <%= t("submissions.form.author_note") %>
+        <span class="text-muted small fw-normal">(<%= t("submissions.form.optional") %>)</span>
+      </label>
+      <%= f.input :author_note, 
+          as: :text, 
+          label: false,
+          input_html: { 
+            class: "form-control",
+            rows: 3,
+            placeholder: t("submissions.form.author_note_placeholder"),
+            data: { submission_form_target: "authorNoteInput" }
+          },
+          hint: t("submissions.form.author_note_hint") %>
     </div>
   </div>
 
-  <div class="mt-4 d-flex gap-2">
+  <div class="mt-4 pt-3 border-top d-flex gap-2">
     <%= f.button :submit, 
-        class: "btn btn-primary",
+        class: "btn btn-primary btn-lg",
         disabled: true,
-        data: { submission_form_target: "submitButton" } %>
-    <%= link_to t("actions.cancel"), submissions_path, class: "btn btn-outline-secondary" %>
+        data: { submission_form_target: "submitButton" } do %>
+      <i class="bi bi-send me-2"></i>
+      <%= t("submissions.form.submit") %>
+    <% end %>
+    <%= link_to t("actions.cancel"), submissions_path, class: "btn btn-outline-secondary btn-lg" %>
   </div>
 <% end %>
 
