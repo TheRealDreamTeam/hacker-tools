@@ -58,7 +58,9 @@ class PagesController < ApplicationController
     upvotes_map = trending_data.to_h
     
     # Load full records with associations, preserving order
+    # Filter out rejected submissions for non-owners
     submissions_by_id = Submission.where(id: trending_submission_ids)
+                                  .public_or_owned_by(current_user)
                                   .includes(:user, :tools, :tags, :user_submissions)
                                   .index_by(&:id)
     trending_submissions = trending_submission_ids.map { |id| submissions_by_id[id] }.compact
@@ -88,7 +90,9 @@ class PagesController < ApplicationController
     upvotes_map = new_hot_data.to_h
     
     # Load full records with associations, preserving order
+    # Filter out rejected submissions for non-owners
     submissions_by_id = Submission.where(id: new_hot_submission_ids)
+                                  .public_or_owned_by(current_user)
                                   .includes(:user, :tools, :tags, :user_submissions)
                                   .index_by(&:id)
     new_hot_submissions = new_hot_submission_ids.map { |id| submissions_by_id[id] }.compact
@@ -117,7 +121,9 @@ class PagesController < ApplicationController
     upvotes_map = most_upvoted_data.to_h
     
     # Load full records with associations, preserving order
+    # Filter out rejected submissions for non-owners
     submissions_by_id = Submission.where(id: most_upvoted_submission_ids)
+                                  .public_or_owned_by(current_user)
                                   .includes(:user, :tools, :tags, :user_submissions)
                                   .index_by(&:id)
     most_upvoted_submissions = most_upvoted_submission_ids.map { |id| submissions_by_id[id] }.compact

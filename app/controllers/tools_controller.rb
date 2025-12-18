@@ -67,7 +67,9 @@ class ToolsController < ApplicationController
 
     # Load related submissions for this tool, sorted by newest (most recent first)
     # Eager load associations to avoid N+1 queries when rendering submission cards
+    # Exclude rejected submissions for non-owners
     @related_submissions = @tool.submissions
+                                 .public_or_owned_by(current_user)
                                  .includes(:user, :tools, :tags, :user_submissions)
                                  .order(created_at: :desc)
   end

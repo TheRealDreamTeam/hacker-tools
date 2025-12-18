@@ -12,7 +12,8 @@
   
   // Wider container for account settings (2-column layout)
   &.account-settings-container {
-    max-width: 900px; // Wider to accommodate 2 columns
+    max-width: 100%; // Use full available width
+    margin: 0; // Remove auto margins to fill container
 
     .form-text {
       padding-left: 4px;
@@ -23,7 +24,7 @@
     }
     
     @media (min-width: 992px) {
-      max-width: 1000px;
+      max-width: 100%; // Use full available width on desktop too
     }
   }
   

@@ -1,0 +1,16 @@
+<%# Compact tool card for profile view - only title, truncated description, and created at %>
+<div class="card shadow-sm h-100 card-hover">
+  <div class="card-body">
+    <h6 class="card-title mb-2">
+      <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
+    </h6>
+    <% description = tool.tool_description.presence || t("pages.home.card.description", index: 1) %>
+    <p class="card-text text-muted small mb-2">
+      <%= truncate(description, length: 100) %>
+    </p>
+    <small class="text-muted">
+      <%= l(tool.created_at, format: :short) %>
+    </small>
+  </div>
+</div>
+

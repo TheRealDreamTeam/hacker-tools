@@ -26,13 +26,16 @@ class SubmissionSearchService
     @status = options[:status] || :completed
     @use_semantic = options.fetch(:use_semantic, true)
     @use_fulltext = options.fetch(:use_fulltext, true)
+    @current_user = options[:current_user]
   end
 
   def search
     return [] if @query.blank?
 
     # Start with base scope (only completed submissions by default)
+    # Exclude rejected submissions for non-owners
     base_scope = Submission.where(status: Submission.statuses[@status])
+    base_scope = base_scope.public_or_owned_by(@current_user)
     base_scope = base_scope.by_type(@submission_type) if @submission_type.present?
 
     # Get results from both search methods
@@ -133,18 +136,21 @@ class SubmissionSearchService
     # Use raw SQL for vector similarity search (pgvector)
     # Cosine distance: 1 - cosine_similarity (lower is more similar)
     # We want submissions where embedding <=> query_embedding < 0.8 (similarity > 0.2)
+    # Build SQL with rejection filter
+    user_id_condition = @current_user ? "OR user_id = #{@current_user.id}" : ""
     sql = <<-SQL.squish
       SELECT submissions.*,
              (embedding <=> ?::vector) AS similarity_distance
       FROM submissions
       WHERE embedding IS NOT NULL
         AND status = ?
+        AND (status != ? #{user_id_condition})
         #{@submission_type.present? ? "AND submission_type = ?" : ""}
       ORDER BY embedding <=> ?::vector
       LIMIT ?
     SQL
 
-    params = [vector_string, Submission.statuses[@status]]
+    params = [vector_string, Submission.statuses[@status], Submission.statuses[:rejected]]
     params << Submission.submission_types[@submission_type] if @submission_type.present?
     params << vector_string
     params << @limit * 2 # Get more results for ranking

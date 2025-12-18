@@ -15,7 +15,8 @@ class SearchController < ApplicationController
                    page_params: @page_params,
                    per_page: @per_page,
                    use_semantic: true,
-                   use_fulltext: true
+                   use_fulltext: true,
+                   current_user: current_user
                  )
                else
                  GlobalSearchService::CATEGORIES.index_with do |category|
@@ -43,7 +44,8 @@ class SearchController < ApplicationController
         page_params: {},
         per_page: 5,
         use_semantic: false, # Disabled for suggestions - use full-text only for speed
-        use_fulltext: true
+        use_fulltext: true,
+        current_user: current_user
       )
     end
 

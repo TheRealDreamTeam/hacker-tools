@@ -1,0 +1,24 @@
+<%# Compact submission card for profile view - only title, type, truncated description, and created at %>
+<div class="card shadow-sm h-100 card-hover">
+  <div class="card-body">
+    <h6 class="card-title mb-2">
+      <% title_text = submission.submission_name.presence || submission.submission_url %>
+      <%= link_to title_text, submission_path(submission), class: "text-decoration-none" %>
+    </h6>
+    <div class="d-flex align-items-center gap-2 mb-2">
+      <span class="badge bg-primary" style="font-size: 0.75rem;">
+        <%= t("submissions.types.#{submission.submission_type}") %>
+      </span>
+    </div>
+    <% description = submission.submission_description.presence || submission.author_note %>
+    <% if description.present? %>
+      <p class="card-text text-muted small mb-2">
+        <%= truncate(description, length: 100) %>
+      </p>
+    <% end %>
+    <small class="text-muted">
+      <%= l(submission.created_at, format: :short) %>
+    </small>
+  </div>
+</div>
+

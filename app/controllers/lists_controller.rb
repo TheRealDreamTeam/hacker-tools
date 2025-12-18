@@ -24,6 +24,9 @@ class ListsController < ApplicationController
           return
         end
       end
+      
+      # Filter out rejected submissions for non-owners
+      @public_submissions = @list.submissions.public_or_owned_by(current_user)
     end
   
     def new

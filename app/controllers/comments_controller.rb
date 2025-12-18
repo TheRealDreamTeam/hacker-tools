@@ -83,8 +83,8 @@ class CommentsController < ApplicationController
   end
 
   def authorize_commentable_owner!
-    # Only submission owners can resolve flags/bugs (tools are community-owned)
-    return if @commentable.is_a?(Submission) && @commentable.user == current_user
+    # Only submission owners or admins can resolve flags/bugs (tools are community-owned)
+    return if @commentable.is_a?(Submission) && (@commentable.user == current_user || admin_user?)
     return if @commentable.is_a?(Tool) # Tools are community-owned, anyone can resolve
 
     redirect_to commentable_path(@commentable), alert: t("comments.flash.unauthorized")

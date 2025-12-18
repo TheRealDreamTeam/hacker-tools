@@ -21,7 +21,8 @@ class SubmissionsController < ApplicationController
         submission_type: @submission_type,
         status: @status,
         use_semantic: params[:use_semantic] != "false", # Default to true
-        use_fulltext: params[:use_fulltext] != "false"  # Default to true
+        use_fulltext: params[:use_fulltext] != "false", # Default to true
+        current_user: current_user # Pass current_user to filter rejected submissions
       )
       
       # RAG enhancement disabled for now - will be used later for:
@@ -35,11 +36,19 @@ class SubmissionsController < ApplicationController
       # Regular listing without search - apply sorting
       base_scope = Submission.includes(:user, :tools, :tags, :user_submissions, :follows)
       
+      # Exclude rejected submissions for non-owners (rejected submissions only visible to owner)
+      base_scope = base_scope.public_or_owned_by(current_user)
+      
       # Filter by submission type if provided
       base_scope = base_scope.by_type(@submission_type) if @submission_type.present?
       
-      # Filter by status if provided
-      base_scope = base_scope.where(status: @status) if @status.present?
+      # Filter by status if provided (but don't show rejected to non-owners)
+      if @status.present? && @status.to_sym != :rejected
+        base_scope = base_scope.where(status: @status)
+      elsif @status.present? && @status.to_sym == :rejected
+        # Only show rejected if user is owner
+        base_scope = base_scope.where(status: @status, user_id: current_user&.id)
+      end
       
       # Filter by tool if provided
       base_scope = base_scope.for_tool(Tool.find(params[:tool_id])) if params[:tool_id].present?
@@ -67,6 +76,12 @@ class SubmissionsController < ApplicationController
 
   # GET /submissions/:id
   def show
+    # Rejected submissions should only be visible to their owners
+    if @submission.rejected? && @submission.user != current_user
+      redirect_to submissions_path, alert: t("submissions.show.not_found")
+      return
+    end
+    
     @sort_by = params[:sort_by] || "recent"
     @sort_by_flags = params[:sort_by_flags] || "recent"
     @sort_by_bugs = params[:sort_by_bugs] || "recent"
@@ -352,6 +367,7 @@ class SubmissionsController < ApplicationController
 
   def authorize_owner!
     return if @submission.user == current_user
+    return if admin_user?
 
     redirect_to submissions_path, alert: t("submissions.flash.unauthorized")
   end

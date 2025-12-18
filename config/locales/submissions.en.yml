@@ -33,6 +33,7 @@ en:
       flags_title: "Flags"
       bugs_title: "Bugs"
       related_tools_title: "Related Tools"
+      not_found: "Submission not found or you don't have permission to view it."
     by_user: "by %{user}"
     about_tool: "About %{tool}"
     about_tools: "About %{tools}"

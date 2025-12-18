@@ -35,7 +35,7 @@
     </div>
 
     <!-- Informational card about lists -->
-    <% if @list.tools.empty? && @list.submissions.empty? %>
+    <% if @list.tools.empty? && @public_submissions.empty? %>
       <div class="card shadow-sm mb-4" style="border-radius: 0.75rem;">
         <div class="card-body">
           <div class="d-flex align-items-start gap-3">
@@ -66,11 +66,11 @@
     <% end %>
 
     <!-- Items grid -->
-    <% if @list.tools.any? || @list.submissions.any? %>
+    <% if @list.tools.any? || @public_submissions.any? %>
       <div class="mb-3">
         <h2 class="h5 mb-0">
           <%= t("lists.show.items_title") %>
-          <span class="badge bg-secondary"><%= @list.tools.count + @list.submissions.count %></span>
+          <span class="badge bg-secondary"><%= @list.tools.count + @public_submissions.count %></span>
         </h2>
       </div>
       
@@ -121,7 +121,7 @@
         <% end %>
         
         <!-- Submissions -->
-        <% @list.submissions.each do |submission| %>
+        <% @public_submissions.each do |submission| %>
           <div class="col">
             <div class="card h-100 shadow-sm card-hover position-relative" style="border-radius: 0.75rem;">
               <div class="card-body d-flex flex-column">

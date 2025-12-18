@@ -10,24 +10,26 @@ class GlobalSearchService
     end
   end
 
-  def self.search(query:, categories:, page_params:, per_page: DEFAULT_PER_PAGE, use_semantic: true, use_fulltext: true)
+  def self.search(query:, categories:, page_params:, per_page: DEFAULT_PER_PAGE, use_semantic: true, use_fulltext: true, current_user: nil)
     new(
       query: query,
       categories: categories,
       page_params: page_params,
       per_page: per_page,
       use_semantic: use_semantic,
-      use_fulltext: use_fulltext
+      use_fulltext: use_fulltext,
+      current_user: current_user
     ).search
   end
 
-  def initialize(query:, categories:, page_params:, per_page:, use_semantic:, use_fulltext:)
+  def initialize(query:, categories:, page_params:, per_page:, use_semantic:, use_fulltext:, current_user: nil)
     @query = query.to_s.strip
     @selected_categories = (categories & CATEGORIES).presence || CATEGORIES
     @per_page = per_page.presence || DEFAULT_PER_PAGE
     @page_params = page_params || {}
     @use_semantic = use_semantic
     @use_fulltext = use_fulltext
+    @current_user = current_user
   end
 
   def search
@@ -69,7 +71,8 @@ class GlobalSearchService
       limit: buffer_limit,
       status: :completed,
       use_semantic: @use_semantic,
-      use_fulltext: @use_fulltext
+      use_fulltext: @use_fulltext,
+      current_user: @current_user
     )
 
     # Eager load associations to avoid N+1 queries
