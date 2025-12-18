@@ -1,7 +1,22 @@
-<%# Notification badge with dropdown - shows unread count %>
+<%# Notification badge - dropdown on desktop, direct link on mobile %>
 <li class="nav-item dropdown" data-controller="notifications">
+  <%# Mobile: Direct link to notifications page (hidden on desktop) %>
+  <%= link_to notifications_path,
+      class: "nav-link position-relative d-flex align-items-center justify-content-center d-md-none",
+      id: "notification-badge-mobile",
+      data: { turbo_prefetch: false },
+      aria: { label: t("notifications.title") } do %>
+    <i class="bi bi-bell"></i>
+    <% if current_user.has_unread_notifications? %>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notification-count-mobile">
+        <%= current_user.unread_notifications_count %>
+      </span>
+    <% end %>
+  <% end %>
+  
+  <%# Desktop: Dropdown toggle (hidden on mobile) %>
   <%= link_to "#",
-      class: "nav-link position-relative",
+      class: "nav-link position-relative d-none d-md-inline-flex align-items-center justify-content-center",
       id: "notification-badge",
       data: { 
         bs_toggle: "dropdown",
@@ -17,9 +32,10 @@
     <% end %>
   <% end %>
   
-  <%# Dropdown menu with notifications %>
-  <div class="dropdown-menu dropdown-menu-end notification-dropdown" style="min-width: 350px; max-height: 500px; overflow-y: auto; z-index: 10001;">
-    <div class="d-flex justify-content-between align-items-center p-2 border-bottom">
+  <%# Dropdown menu with notifications - desktop only (hidden on mobile) %>
+  <div class="dropdown-menu dropdown-menu-end notification-dropdown">
+    <%# Sticky header %>
+    <div class="notification-dropdown-header d-flex justify-content-between align-items-center p-2 border-bottom">
       <h6 class="mb-0"><%= t("notifications.title") %></h6>
       <% if current_user.has_unread_notifications? %>
         <%= button_to mark_all_as_read_notifications_path,
@@ -30,10 +46,12 @@
         <% end %>
       <% end %>
     </div>
-    <div id="notifications-list">
+    <%# Scrollable notifications list %>
+    <div class="notification-dropdown-body" id="notifications-list">
       <%= render "notifications/list", notifications: current_user.notifications.limit(10).order(created_at: :desc) %>
     </div>
-    <div class="p-2 border-top text-center">
+    <%# Sticky footer %>
+    <div class="notification-dropdown-footer p-2 border-top text-center">
       <%= link_to t("notifications.view_all"), notifications_path, class: "btn btn-sm btn-outline-primary" %>
     </div>
   </div>

@@ -288,6 +288,7 @@ en:
     submit: "Submit"
     search: "Search"
     confirm: "Confirm"
+    visit_source: "Visit Source"
   
   search:
     title: "Search"

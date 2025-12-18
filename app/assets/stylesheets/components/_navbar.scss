@@ -28,10 +28,17 @@
     z-index: 2; // Higher than logo to ensure clickability
   }
   
-  // Right side container (search) - ensure it's above centered logo
+  // Right side container (search + notifications) - ensure it's above centered logo
   .container-fluid > div:last-child {
     position: relative;
     z-index: 2; // Higher than logo to ensure clickability
+  }
+  
+  // Centered logo/title
+  h1 {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin: 0;
   }
   
   // Ensure navbar-nav maintains height even when empty
@@ -90,6 +97,7 @@
     flex-shrink: 0 !important; // Prevent button from shrinking
     visibility: visible !important;
     opacity: 1 !important;
+    
     
     &:hover {
       box-shadow: 0 2px 4px rgba($primary, 0.1);
@@ -153,22 +161,33 @@
   }
 
   // New Submission button - simple button, visible on desktop only
-  // Hidden on mobile via Bootstrap utility classes (d-none d-md-inline-block)
+  // Hidden on mobile via Bootstrap utility classes (d-none d-md-inline-flex)
+  // Force hide on mobile to ensure it doesn't show
   .new-submission-btn {
+    @media (max-width: 767.98px) {
+      display: none !important; // Force hide on mobile
+    }
     border-radius: 0.75rem; // 12px
     font-weight: 600;
     white-space: nowrap;
+    margin: 0 !important; // Remove any margin that causes vertical misalignment
+    padding-top: 0 !important; // Remove top padding that causes extra space
+    padding-bottom: 0 !important; // Remove bottom padding
+    display: inline-flex !important; // Use flexbox for proper vertical centering
+    align-items: center !important; // Center content vertically
+    justify-content: center !important; // Center content horizontally
+    vertical-align: middle !important; // Ensure proper vertical alignment
     
-    // Custom styling: black outline, light grey background, black text
-    background-color: #f5f5f5 !important; // Light grey background
-    border: 1px solid #000000 !important; // Black outline
-    color: #000000 !important; // Black text
+    // Use primary color styling (not grey)
+    background-color: $primary !important; // Primary color background
+    border: 1px solid $primary !important; // Primary color border
+    color: white !important; // White text
     
     // Simple hover effect
     &:hover {
-      background-color: #e9e9e9 !important; // Slightly darker grey on hover
-      border-color: #000000 !important; // Keep black border
-      color: #000000 !important; // Keep black text
+      background-color: darken($primary, 10%) !important; // Darker primary on hover
+      border-color: darken($primary, 10%) !important; // Darker border on hover
+      color: white !important; // Keep white text
     }
   }
 
@@ -217,6 +236,16 @@
     }
   }
 
+  // Search icon button for mobile - ensure it's only visible on mobile
+  .mobile-search-btn {
+    // Force hide on desktop (medium screens and up)
+    @media (min-width: 768px) {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
+  }
+  
   // Search icon button for mobile
   .btn-link {
     color: $primary;
@@ -232,6 +261,11 @@
     &:focus {
       box-shadow: 0 0 0 0.2rem rgba($primary, 0.1);
     }
+  }
+  
+  // Mobile-specific compact styling for right side items
+  .navbar-right-items {
+    gap: 0.5rem; // Default gap
   }
   
   // Navbar links - use primary color by default
@@ -289,22 +323,206 @@
       border: 1px solid rgba(0, 0, 0, 0.1);
     }
     
-    // Notification bell icon styling
-    #notification-badge {
+    // Notification bell icon styling - applies to both mobile and desktop versions
+    #notification-badge,
+    #notification-badge-mobile {
+      padding: 0.5rem !important; // Ensure proper padding
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-width: 44px !important; // Minimum touch target
+      min-height: 44px !important; // Minimum touch target
+      
       i {
         font-size: 1.1rem; // Match text size
         vertical-align: middle;
       }
+      
+      // Badge count styling - ensure it's not squished
+      .badge,
+      #notification-count,
+      #notification-count-mobile {
+        font-size: 0.7rem !important; // Slightly larger font
+        padding: 0.35em 0.6em !important; // More padding to prevent squishing
+        min-width: 1.5em !important; // Minimum width for proper display
+        min-height: 1.5em !important; // Minimum height for proper display
+        line-height: 1.2 !important; // Proper line height
+        display: inline-flex !important; // Use flexbox
+        align-items: center !important; // Center content vertically
+        justify-content: center !important; // Center content horizontally
+        top: 0.25rem !important;
+        right: 0.25rem !important;
+        border-radius: 0.75rem !important; // Rounded corners
+      }
+    }
+    
+    // Ensure mobile badge is only visible on mobile
+    #notification-badge-mobile {
+      @media (min-width: 768px) {
+        display: none !important; // Hide on desktop
+      }
+    }
+    
+    // Ensure desktop badge is only visible on desktop
+    #notification-badge {
+      @media (max-width: 767.98px) {
+        display: none !important; // Hide on mobile
+      }
     }
   }
   
-  // Notification dropdown specific styling
+  // Notification dropdown specific styling - desktop only
   .notification-dropdown {
     z-index: 10001 !important; // Ensure it's above navbar
     position: absolute;
     right: 0;
     top: 100%;
     margin-top: 0.5rem;
+    min-width: 350px; // Desktop width
+    max-width: 500px; // Desktop max width
+    max-height: 500px; // Desktop max height
+    display: none; // Hidden by default - Bootstrap will add 'show' class to display it
+    flex-direction: column; // Use flexbox for sticky header/footer layout
+    padding: 0; // Remove default padding to allow full control
+    border-radius: 0.75rem !important; // 12px rounded corners - match design system
+    overflow: hidden; // Clip content to rounded corners
+    overflow-x: hidden; // Prevent horizontal scrolling
+    
+    // Show dropdown when Bootstrap adds 'show' class (desktop only)
+    &.show {
+      display: flex !important; // Use flexbox for layout
+    }
+    
+    // Sticky header - stays at top when scrolling
+    .notification-dropdown-header {
+      position: sticky;
+      top: 0;
+      background-color: white; // Match dropdown background
+      z-index: 1; // Ensure it's above scrolling content
+      flex-shrink: 0; // Don't shrink
+      border-top-left-radius: 0.75rem; // Match dropdown top-left corner
+      border-top-right-radius: 0.75rem; // Match dropdown top-right corner
+      overflow-x: hidden; // Prevent horizontal scrolling
+      min-height: 57px; // Maintain consistent height whether button is present or not
+      display: flex; // Ensure flexbox layout
+      align-items: center; // Vertically center content
+    }
+    
+    // Scrollable notifications list - middle section
+    .notification-dropdown-body {
+      overflow-y: auto; // Enable scrolling for long lists
+      overflow-x: hidden; // Prevent horizontal scrolling
+      flex: 1; // Take remaining space
+      min-height: 0; // Allow flexbox to shrink below content size
+      max-height: calc(500px - 120px); // Account for header and footer height
+      
+      // Ensure notification items don't cause horizontal overflow
+      .dropdown-item,
+      .notification-item {
+        word-wrap: break-word; // Break long words
+        overflow-wrap: break-word; // Break long words
+        white-space: normal; // Allow text to wrap
+        max-width: 100%; // Prevent items from exceeding container width
+        
+        p {
+          word-wrap: break-word; // Break long words in paragraphs
+          overflow-wrap: break-word; // Break long words in paragraphs
+          max-width: 100%; // Prevent paragraphs from exceeding container width
+        }
+      }
+    }
+    
+    // Sticky footer - stays at bottom when scrolling
+    .notification-dropdown-footer {
+      position: sticky;
+      bottom: 0;
+      background-color: white; // Match dropdown background
+      z-index: 1; // Ensure it's above scrolling content
+      flex-shrink: 0; // Don't shrink
+      border-bottom-left-radius: 0.75rem; // Match dropdown bottom-left corner
+      border-bottom-right-radius: 0.75rem; // Match dropdown bottom-right corner
+      overflow-x: hidden; // Prevent horizontal scrolling
+      display: flex; // Use flexbox for centering
+      align-items: center; // Vertically center content
+      justify-content: center; // Horizontally center content
+      
+      // Rebuild button with proper vertical centering - override all possible conflicting styles
+      .btn,
+      a.btn,
+      .btn-sm,
+      a.btn-sm,
+      .btn-outline-primary,
+      a.btn-sm.btn-outline-primary {
+        // Reset all positioning and alignment
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        vertical-align: middle !important;
+        margin: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        
+        // Explicit padding and height
+        padding: 0 !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        padding-left: 1.25rem !important;
+        padding-right: 1.25rem !important;
+        height: 2.5rem !important; // btn-sm height (40px)
+        min-height: 2.5rem !important;
+        max-height: 2.5rem !important;
+        box-sizing: border-box !important;
+        
+        // Text alignment and line height
+        line-height: 2.5rem !important; // Match height exactly for perfect centering
+        text-align: center !important;
+        font-size: inherit !important;
+        
+        // Remove any transforms or positioning that might affect centering
+        transform: none !important;
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        
+        // Ensure text content is centered
+        &::before,
+        &::after {
+          display: none !important;
+          content: none !important;
+        }
+        
+        // Ensure any child elements don't interfere
+        > * {
+          line-height: inherit !important;
+          vertical-align: middle !important;
+        }
+      }
+    }
+    
+    // Remove hover effect from "Mark all as read" button in header
+    .notification-dropdown-header {
+      .btn-link {
+        &:hover {
+          background-color: transparent !important;
+          color: inherit !important;
+        }
+        
+        &:focus {
+          box-shadow: none !important;
+        }
+      }
+    }
+    
+    // Force hide dropdown on mobile - override Bootstrap's show class
+    @media (max-width: 767.98px) {
+      display: none !important; // Completely hide on mobile
+      visibility: hidden !important;
+      opacity: 0 !important;
+      
+      &.show {
+        display: none !important; // Even if Bootstrap adds 'show' class, hide on mobile
+      }
+    }
   }
 }
 
@@ -442,3 +660,4 @@ nav#navbar ul.navbar-nav {
     }
   }
 }
+

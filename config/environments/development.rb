@@ -65,6 +65,13 @@ Rails.application.configure do
 
   # Suppress logger output for asset requests.
   config.assets.quiet = true
+  
+  # CRITICAL: Always compile assets on-the-fly in development
+  # Never use precompiled assets - always compile fresh from source
+  config.assets.compile = true
+  config.assets.digest = false
+  # Ensure Rails doesn't use precompiled assets even if they exist
+  config.public_file_server.enabled = true
 
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true

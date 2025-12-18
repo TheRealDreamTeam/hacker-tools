@@ -30,9 +30,17 @@
                   <!-- Submission Container with Title and Back Button on same height -->
                   <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                      <h1 class="h3 mb-2" id="submission-title">
-                        <%= @submission.submission_name.presence || @submission.submission_url %>
-                      </h1>
+                      <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                        <h1 class="h3 mb-0" id="submission-title">
+                          <%= @submission.submission_name.presence || @submission.submission_url %>
+                        </h1>
+                        <% if @submission.submission_url.present? %>
+                          <%= link_to @submission.submission_url, target: "_blank", rel: "noopener noreferrer", class: "btn btn-sm btn-outline-primary visit-source-btn" do %>
+                            <%= t("actions.visit_source") %>
+                            <i class="bi bi-box-arrow-up-right"></i>
+                          <% end %>
+                        <% end %>
+                      </div>
                       <div class="d-flex align-items-center gap-2 mb-2" id="submission-status-badges">
                         <span class="badge bg-primary">
                           <%= t("submissions.types.#{@submission.submission_type}") %>
@@ -48,11 +56,6 @@
                           <%= t("submissions.by_user", user: link_to(display_user_name(@submission.user), profile_path(@submission.user.username), class: "text-decoration-none")).html_safe %>
                         </span>
                       </p>
-                      <% if @submission.submission_url.present? %>
-                        <p class="mb-0">
-                          <%= link_to @submission.submission_url, @submission.submission_url, target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none" %>
-                        </p>
-                      <% end %>
                       <div id="submission-tools-section">
                         <% if @submission.tools.any? %>
                           <p class="mb-0 text-secondary">
