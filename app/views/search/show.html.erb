@@ -18,8 +18,8 @@
         <div class="row justify-content-center">
           <div class="col-12 col-lg-10">
             <div class="d-flex flex-column gap-3">
-          <div class="card shadow-sm">
-            <div class="card-body">
+          <div class="card shadow-sm" style="overflow: visible;">
+            <div class="card-body" style="overflow: visible;">
               <%= form_with url: search_path,
                             method: :get,
                             local: true,
@@ -28,7 +28,7 @@
                             role: "search" do |form| %>
                 <div class="row g-3 align-items-end">
                   <div class="col-12 col-lg-9">
-                    <div class="position-relative">
+                    <div class="position-relative" style="overflow: visible; z-index: 1;">
                       <%= form.label :query, t("search.form.label"), class: "form-label fw-semibold" %>
                       <%= form.search_field :query,
                                             value: @query,

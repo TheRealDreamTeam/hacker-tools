@@ -34,12 +34,14 @@ class SearchController < ApplicationController
         GlobalSearchService::Result.new(items: [], total_count: 0, page: 1, per_page: 5)
       end
     else
+      # Enable semantic search for suggestions to handle typos (e.g., "htwire" -> "Hotwire")
+      # Use both semantic and full-text search for better suggestions
       @results = GlobalSearchService.search(
         query: @query,
         categories: @selected_categories,
         page_params: {},
         per_page: 5,
-        use_semantic: false,
+        use_semantic: true, # Enable semantic search for suggestions
         use_fulltext: true
       )
     end

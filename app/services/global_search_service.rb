@@ -72,10 +72,19 @@ class GlobalSearchService
       use_fulltext: @use_fulltext
     )
 
-    ActiveRecord::Associations::Preloader.new.preload(combined_results, [:tags, :tools, :user])
+    # Eager load associations to avoid N+1 queries
+    # Rails 7.1+ requires keyword arguments for Preloader
+    if combined_results.any?
+      ActiveRecord::Associations::Preloader.new(
+        records: combined_results,
+        associations: [:tags, :tools, :user]
+      ).call
+    end
+
     paginate_array(combined_results, :submissions)
   rescue StandardError => e
     Rails.logger.error("Submission search error: #{e.message}")
+    Rails.logger.error(e.backtrace.first(5).join("\n"))
     Result.new(items: [], total_count: 0, page: current_page(:submissions), per_page: @per_page)
   end
 
