@@ -33,6 +33,11 @@
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
+    <%= link_to t("navigation.lists"), lists_path,
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
     <%= link_to t("navigation.profile"), profile_path(current_user.username),
         class: "nav-link",
         data: { turbo_prefetch: false } %>

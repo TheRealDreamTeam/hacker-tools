@@ -101,7 +101,7 @@
       <% panels = { "trending" => @trending_items, "new" => @new_hot_items, "upvoted" => @most_upvoted_items } %>
 
       <% panels.each_with_index do |(panel, items), panel_idx| %>
-        <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless @category == panel %>" data-category-panel="<%= panel %>" id="category-panel-<%= panel %>">
+        <div class="card shadow-sm mb-3 <%= 'd-none' unless @category == panel %>" data-category-panel="<%= panel %>" id="category-panel-<%= panel %>">
           <div class="card-body">
             <% if items.blank? %>
               <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>

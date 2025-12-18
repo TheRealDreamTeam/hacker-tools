@@ -9,36 +9,20 @@
       <% end %>
     </div>
 
-    <!-- Informational card about lists -->
-    <% if @lists.empty? %>
-      <div class="card shadow-sm mb-4" style="border-radius: 0.75rem;">
-        <div class="card-body">
-          <div class="d-flex align-items-start gap-3">
-            <div class="flex-shrink-0">
-              <i class="bi bi-info-circle fs-4 text-primary"></i>
-            </div>
-            <div class="flex-grow-1">
-              <h5 class="card-title mb-2"><%= t("lists.index.info.title") %></h5>
-              <p class="card-text text-muted mb-2"><%= t("lists.index.info.description") %></p>
-              <ul class="list-unstyled mb-0 small text-muted">
-                <li class="mb-1">
-                  <i class="bi bi-check-circle-fill text-success me-2"></i>
-                  <%= t("lists.index.info.step_1") %>
-                </li>
-                <li class="mb-1">
-                  <i class="bi bi-check-circle-fill text-success me-2"></i>
-                  <%= t("lists.index.info.step_2") %>
-                </li>
-                <li class="mb-0">
-                  <i class="bi bi-check-circle-fill text-success me-2"></i>
-                  <%= t("lists.index.info.step_3") %>
-                </li>
-              </ul>
-            </div>
+    <!-- Description card -->
+    <div class="card shadow-sm mb-4" style="border-radius: 0.75rem;">
+      <div class="card-body">
+        <div class="d-flex align-items-start gap-3">
+          <div class="flex-shrink-0">
+            <i class="bi bi-bookmark-heart fs-4 text-primary"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h5 class="card-title mb-2"><%= t("lists.index.description_title") %></h5>
+            <p class="card-text text-muted mb-0"><%= t("lists.index.description_text") %></p>
           </div>
         </div>
       </div>
-    <% end %>
+    </div>
 
     <!-- Lists grid -->
     <% if @lists.any? %>
@@ -52,7 +36,7 @@
                     <h5 class="card-title mb-0">
                       <%= link_to list.list_name, list_path(list), class: "text-decoration-none" %>
                     </h5>
-                    <span class="badge <%= list.visibility_private? ? 'bg-secondary' : 'bg-primary' %>">
+                    <span class="badge <%= list.visibility_private? ? 'bg-secondary text-white' : 'bg-primary text-white' %>">
                       <%= list.visibility_private? ? t("lists.index.private") : t("lists.index.public") %>
                     </span>
                   </div>

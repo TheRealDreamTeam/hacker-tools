@@ -572,6 +572,8 @@ en:
         other: "%{count} items"
       confirm_delete: "Are you sure you want to delete this list?"
       empty_state: "You have no lists yet. Create your first list to get started!"
+      description_title: "Organize Your Favorites! 🎯"
+      description_text: "Lists are your personal collections of tools and submissions. Create lists for projects, topics, or anything that sparks your interest. Build your knowledge base, share with others, or keep it private—it's all up to you!"
       info:
         title: "What are Lists?"
         description: "Lists help you organize and save your favorite tools and submissions. Create collections for different projects, topics, or purposes."

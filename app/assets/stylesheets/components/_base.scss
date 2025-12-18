@@ -607,6 +607,11 @@ div.card > .card-body,
   }
 }
 
+// Enhanced 3D shadow for all cards with shadow-sm
+.card.shadow-sm {
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08), 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.06) !important;
+}
+
 // Badges - ensure good contrast and readability
 .badge {
   border-radius: 0.5rem; // Slightly less rounded for badges
@@ -627,9 +632,13 @@ div.card > .card-body,
   
   // Bootstrap classes that need dark text
   &.bg-warning,
-  &.bg-light,
-  &.bg-secondary {
+  &.bg-light {
     color: #212529 !important; // Dark text for light backgrounds
+  }
+  
+  // bg-secondary uses white text for consistency
+  &.bg-secondary {
+    color: #ffffff !important; // White text for consistency
   }
   
   // Ensure tag links are readable
@@ -755,10 +764,6 @@ div.card > .card-body,
   // Enhanced 3D look for compact cards in profile tabs
   .card.shadow-sm.card-hover {
     box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08), 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.06) !important; // More pronounced 3D shadow
-    
-    &:hover {
-      box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.12), 0 0.1875rem 0.375rem rgba(0, 0, 0, 0.08) !important; // Enhanced shadow on hover for more 3D effect
-    }
   }
 }
 

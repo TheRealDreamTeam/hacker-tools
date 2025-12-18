@@ -36,14 +36,9 @@
   padding: 0;
 }
 
-// Modest but noticeable hover for cards
+// Card hover styling (no transform, just for layout)
 .card-hover {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.05);
-  }
+  // Fixed height for consistent card sizing
 }
 
 // Side banner styling - sticky from navbar to bottom of viewport

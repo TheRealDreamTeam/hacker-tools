@@ -16,7 +16,7 @@
         
         <!-- Visibility badge -->
         <div class="mb-2">
-          <span class="badge <%= @list.visibility_private? ? 'bg-secondary' : 'bg-primary' %>">
+          <span class="badge <%= @list.visibility_private? ? 'bg-secondary text-white' : 'bg-primary text-white' %>">
             <%= @list.visibility_private? ? t("lists.show.private") : t("lists.show.public") %>
           </span>
         </div>
@@ -70,7 +70,7 @@
       <div class="mb-3">
         <h2 class="h5 mb-0">
           <%= t("lists.show.items_title") %>
-          <span class="badge bg-secondary"><%= @list.tools.count + @public_submissions.count %></span>
+          <span class="badge bg-secondary text-white"><%= @list.tools.count + @public_submissions.count %></span>
         </h2>
       </div>
       
