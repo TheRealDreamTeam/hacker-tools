@@ -1,8 +1,8 @@
 class ToolsController < ApplicationController
   before_action :authenticate_user!, except: %i[index show]
   before_action :set_tool, only: %i[show edit update destroy add_tag remove_tag upvote favorite follow]
-  # TODO: Re-enable authorization when we decide on permissions (admin-only or open editing)
-  # before_action :authorize_owner!, only: %i[edit update destroy add_tag remove_tag]
+  # Admin-only actions: editing, deleting, and managing tags
+  before_action :require_admin!, only: %i[new create edit update destroy add_tag remove_tag]
 
   # GET /tools
   def index

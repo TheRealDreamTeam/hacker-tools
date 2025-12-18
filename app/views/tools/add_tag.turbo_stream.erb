@@ -4,13 +4,15 @@
       <% @tool_tags.each do |tag| %>
         <div class="d-inline-flex align-items-center gap-1">
           <%= render_tag_link(tag) %>
-          <%= button_to "×",
-                      remove_tag_tool_path(@tool, tag_id: tag.id),
-                      method: :delete,
-                      class: "btn btn-sm btn-outline-danger p-0",
-                      style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
-                      title: t("tools.actions.remove_tag"),
-                      form: { data: { turbo: true } } %>
+          <% if admin_user? %>
+            <%= button_to "×",
+                        remove_tag_tool_path(@tool, tag_id: tag.id),
+                        method: :delete,
+                        class: "btn btn-sm btn-outline-danger p-0",
+                        style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
+                        title: t("tools.actions.remove_tag"),
+                        form: { data: { turbo: true } } %>
+          <% end %>
         </div>
       <% end %>
       <% if @all_tool_tags.count > @tool_tags.count %>
@@ -40,13 +42,15 @@
                   <span class="badge <%= tag_badge_class(tag) %>" style="<%= badge_style %>">
                     <%= tag.display_name %>
                   </span>
-                  <%= button_to "×",
-                              remove_tag_tool_path(@tool, tag_id: tag.id),
-                              method: :delete,
-                              class: "btn btn-sm btn-outline-danger p-0",
-                              style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
-                              title: t("tools.actions.remove_tag"),
-                              form: { data: { turbo: true } } %>
+                  <% if admin_user? %>
+                    <%= button_to "×",
+                                remove_tag_tool_path(@tool, tag_id: tag.id),
+                                method: :delete,
+                                class: "btn btn-sm btn-outline-danger p-0",
+                                style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
+                                title: t("tools.actions.remove_tag"),
+                                form: { data: { turbo: true } } %>
+                  <% end %>
                 </div>
               <% end %>
             <% end %>

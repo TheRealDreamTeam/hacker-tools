@@ -1,8 +1,8 @@
 .navbar {
   border-radius: 0 !important; // Explicitly no rounded corners
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  padding: 1rem 0;
-  min-height: 60px; // Maintain consistent height even when nav items are hidden
+  padding: 0.75rem; // Consistent padding on all sides (matches px-3)
+  min-height: auto; // Let height be determined by content
   
   // Fixed navbar - stays at top while content scrolls
   position: fixed;
@@ -17,9 +17,12 @@
   .container-fluid {
     padding-left: 0;
     padding-right: 0;
-    min-height: 60px; // Ensure container maintains height
+    min-height: auto; // Let height be determined by content
+    height: auto; // Remove fixed height
     position: relative; // Ensure proper stacking context
     z-index: 1; // Ensure navbar content is above centered logo
+    display: flex;
+    align-items: center; // Vertically center content
   }
   
   // Left side container (burger + new submission button) - ensure it's above centered logo
@@ -541,7 +544,17 @@
   
   .offcanvas-header {
     border-bottom: 1px solid #e9ecef;
-    padding: 1.5rem;
+    padding: 0.75rem 1.5rem; // Match navbar padding (0.75rem vertical, 1.5rem horizontal)
+    height: 68.57px; // Match navbar height on mobile
+    min-height: 68.57px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    @media (min-width: 992px) {
+      height: 72.57px; // Match navbar height on desktop
+      min-height: 72.57px;
+    }
     
     .offcanvas-title {
       font-weight: 600;

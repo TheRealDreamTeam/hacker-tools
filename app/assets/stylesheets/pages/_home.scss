@@ -51,16 +51,24 @@
 // Images are ~300x900px (aspect ratio ~1:3), displayed directly without card wrapper
 // Images are constrained to 80vh max height, centered between navbar end and viewport bottom
 // Banners are positioned relative to content container, so spacing grows equally on wide screens
-// Navbar height: ~92px (60px min-height + 32px padding)
+// Navbar height: 68.57px on mobile, 72.57px on desktop
 .side-banner {
   position: sticky;
-  top: 92px; // Start below navbar (navbar is ~92px tall)
+  top: 68.57px; // Start below navbar (mobile navbar height)
+  
+  @media (min-width: 992px) {
+    top: 72.57px; // Desktop navbar height
+  }
   align-self: flex-start; // Align to start of flex container
   padding: 0; // Remove all padding initially
   padding-top: 5vh; // Add top padding to push banners lower
   padding-left: 1rem; // Space from left viewport edge (prevents sticking on smaller screens)
   padding-right: 1rem; // Space from right viewport edge (prevents sticking on smaller screens)
-  height: calc(100vh - 92px); // Height from navbar end to viewport bottom
+  height: calc(100vh - 68.57px); // Height from navbar end to viewport bottom (mobile)
+  
+  @media (min-width: 992px) {
+    height: calc(100vh - 72.57px); // Desktop navbar height
+  }
   display: flex; // Use flexbox for centering
   align-items: flex-start; // Align to top of flex container (with padding-top for spacing)
   justify-content: center; // Center horizontally

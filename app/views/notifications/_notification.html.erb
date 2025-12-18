@@ -7,13 +7,13 @@
       action: "click->notifications#markAsRead",
       notification_id: notification.id
     } do %>
-  <div class="flex-grow-1">
-    <div class="d-flex justify-content-between align-items-start mb-1">
-      <p class="mb-0 small text-muted">
+  <div class="flex-grow-1 min-w-0">
+    <div class="d-flex justify-content-between align-items-start mb-1 gap-2">
+      <p class="mb-0 small text-muted text-break">
         <%= notification.message %>
       </p>
       <% unless notification.read_at? %>
-        <span class="badge bg-primary rounded-pill ms-2">New</span>
+        <span class="badge bg-primary rounded-pill flex-shrink-0">New</span>
       <% end %>
     </div>
     <small class="text-muted">

@@ -82,9 +82,14 @@
       }
       
       /* Add padding-top to content to account for fixed navbar */
-      /* Navbar has min-height: 60px + padding: 1rem 0 (16px top + 16px bottom) = ~92px total */
+      /* Navbar height: 68.57px on mobile, 72.57px on desktop */
       .page-transition-content {
-        padding-top: 92px; /* Account for navbar full height including padding */
+        padding-top: 68.57px; /* Mobile navbar height */
+      }
+      @media (min-width: 992px) {
+        .page-transition-content {
+          padding-top: 72.57px; /* Desktop navbar height */
+        }
       }
       
       /* Fallback: Show content if JavaScript fails to load (after 1 second) */
