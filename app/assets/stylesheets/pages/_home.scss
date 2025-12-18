@@ -116,6 +116,28 @@
   }
 }
 
+// Enhanced 3D shadow effect for homepage article cards
+// Creates a pronounced depth effect that makes cards appear elevated
+// Use maximum specificity to override _base.scss styles
+a.card.shadow-sm.text-decoration-none.card-hover.h-100.overflow-hidden.article-card,
+.card.shadow-sm.article-card.card-hover,
+.article-card.shadow-sm.card-hover {
+  // Base 3D shadow - very pronounced for visible depth effect
+  // Using multiple shadow layers with increasing blur and opacity
+  box-shadow: 0 0.625rem 1.25rem rgba(0, 0, 0, 0.18), 
+              0 0.375rem 0.75rem rgba(0, 0, 0, 0.12),
+              0 0.1875rem 0.375rem rgba(0, 0, 0, 0.1) !important;
+  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+  
+  // Enhanced shadow on hover for interactive feedback
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.25), 
+                0 0.5rem 1rem rgba(0, 0, 0, 0.18),
+                0 0.25rem 0.5rem rgba(0, 0, 0, 0.12) !important;
+  }
+}
+
 // Make article cards look like list items on mobile - narrow and compact
 @media (max-width: 767.98px) {
   .article-card {

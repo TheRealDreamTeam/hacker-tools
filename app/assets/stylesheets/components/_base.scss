@@ -612,6 +612,44 @@ div.card > .card-body,
   box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08), 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.06) !important;
 }
 
+// Only add transition to cards with card-hover (clickable/interactive cards)
+.card.shadow-sm.card-hover,
+.card-hover,
+.article-card.card-hover {
+  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+}
+
+// Ensure article cards have the 3D shadow
+.article-card.shadow-sm {
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08), 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.06) !important;
+}
+
+// Hover translate up for cards in grid layouts
+// Only apply to cards with card-hover class (indicates clickable/interactive cards)
+// Exclude category panel containers (they contain cards, not cards themselves)
+// Exclude main show page cards, related section containers, and comments (not clickable)
+.card-hover:hover:not([data-category-panel]) {
+  transform: translateY(-3px);
+  box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.12), 0 0.1875rem 0.375rem rgba(0, 0, 0, 0.08) !important;
+}
+
+// Also apply to shadow-sm cards that have card-hover (for backwards compatibility)
+.card.shadow-sm.card-hover:hover:not([data-category-panel]),
+.article-card.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.12), 0 0.1875rem 0.375rem rgba(0, 0, 0, 0.08) !important;
+}
+
+// Disable hover translate on read-only pages (newest_articles, user_guide, about_us)
+// These pages are informational only, so cards shouldn't indicate clickability
+body.read-only-page {
+  .card.shadow-sm:hover,
+  .card-hover:hover {
+    transform: none !important;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08), 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.06) !important;
+  }
+}
+
 // Badges - ensure good contrast and readability
 .badge {
   border-radius: 0.5rem; // Slightly less rounded for badges

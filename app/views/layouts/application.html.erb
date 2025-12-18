@@ -111,7 +111,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body data-controller="page-transition" style="visibility: hidden; opacity: 0;" class="d-flex flex-column min-vh-100">
+  <body data-controller="page-transition" style="visibility: hidden; opacity: 0;" class="d-flex flex-column min-vh-100 <%= 'read-only-page' if controller_name == 'pages' && ['newest_articles', 'user_guide', 'about_us'].include?(action_name) %>">
     <%= render "shared/navbar" %>
     <div id="main-content" class="page-transition-content flex-grow-1">
       <div id="flash-messages">

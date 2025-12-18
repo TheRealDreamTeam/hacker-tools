@@ -1,13 +1,17 @@
 <!-- Full-width layout -->
 <div class="container py-4">
-<div class="devise-container account-settings-container">
-  <h2 class="border-bottom pb-3"><%= t("account_settings.title") %></h2>
+  <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+    <div>
+      <h1 class="h3 mb-1"><%= t("account_settings.title") %></h1>
+      <p class="text-muted mb-0"><%= t("account_settings.subtitle") %></p>
+    </div>
+  </div>
 
   <!-- Flash messages container for Turbo Stream updates -->
   <div id="flash-messages"></div>
 
   <!-- Two column layout on desktop, single column on mobile -->
-  <div class="row g-3 pt-3">
+  <div class="row g-3">
     <!-- Left Column: Profile Information -->
       <!-- Section 1: Avatar Update -->
       <div class="col-12 col-md-6 ">
@@ -85,6 +89,5 @@
       <% end %>
     </div>
   </div>
-</div>
 </div>
 

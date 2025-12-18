@@ -22,7 +22,7 @@
       <!-- Article cards -->
       <div class="row g-3 mb-4">
         <div class="col-12 col-md-4">
-          <%= link_to newest_articles_path, class: "card text-decoration-none card-hover h-100 overflow-hidden article-card" do %>
+          <%= link_to newest_articles_path, class: "card shadow-sm text-decoration-none card-hover h-100 overflow-hidden article-card" do %>
             <div class="card-body d-flex align-items-center justify-content-center position-relative" style="min-height: 120px; background-image: url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop'); background-size: cover; background-position: center;">
               <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%);"></div>
               <h5 class="card-title mb-0 text-white position-relative z-1"><%= t("pages.home.hero.articles.newest") %></h5>
@@ -30,7 +30,7 @@
           <% end %>
         </div>
         <div class="col-12 col-md-4">
-          <%= link_to user_guide_path, class: "card text-decoration-none card-hover h-100 overflow-hidden article-card" do %>
+          <%= link_to user_guide_path, class: "card shadow-sm text-decoration-none card-hover h-100 overflow-hidden article-card" do %>
             <div class="card-body d-flex align-items-center justify-content-center position-relative" style="min-height: 120px; background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=200&fit=crop'); background-size: cover; background-position: center;">
               <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(240, 147, 251, 0.8) 0%, rgba(245, 87, 108, 0.8) 100%);"></div>
               <h5 class="card-title mb-0 text-black fw-bold position-relative z-1 text-center"><%= t("pages.home.hero.articles.user_guide") %></h5>
@@ -38,7 +38,7 @@
           <% end %>
         </div>
         <div class="col-12 col-md-4">
-          <%= link_to about_us_path, class: "card text-decoration-none card-hover h-100 overflow-hidden article-card" do %>
+          <%= link_to about_us_path, class: "card shadow-sm text-decoration-none card-hover h-100 overflow-hidden article-card" do %>
             <div class="card-body d-flex align-items-center justify-content-center position-relative" style="min-height: 120px; background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=200&fit=crop'); background-size: cover; background-position: center;">
               <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(79, 172, 254, 0.8) 0%, rgba(0, 242, 254, 0.8) 100%);"></div>
               <h5 class="card-title mb-0 text-white fw-bold position-relative z-1"><%= t("pages.home.hero.articles.about_us") %></h5>
