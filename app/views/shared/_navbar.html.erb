@@ -30,15 +30,9 @@
       <h1><%= t("app.name") %></h1>
     <% end %>
 
-    <!-- Right side: Notification badge and Search -->
+    <!-- Right side: Search and Notification badge -->
     <div class="d-flex align-items-center navbar-right-items">
       <% unless devise_controller? %>
-        <% if user_signed_in? %>
-          <!-- Notification badge - always visible in navbar, to the left of search -->
-          <ul class="navbar-nav d-flex flex-row align-items-center mobile-notification-nav">
-            <%= render "notifications/badge" %>
-          </ul>
-        <% end %>
         <!-- Search bar for medium/large screens - hidden on homepage and search page -->
         <% unless (controller_name == "pages" && action_name == "home") || (controller_name == "search" && action_name == "show") %>
           <div class="d-none d-md-block navbar-search position-relative" style="width: 33.333%; min-width: 300px; flex-shrink: 0;">
@@ -61,10 +55,18 @@
               <div id="navbar-search-suggestions" class="position-absolute top-100 end-0 mt-1" data-search-suggestions-target="panel" style="z-index: 10001; min-width: 300px; max-width: 500px;"></div>
             <% end %>
           </div>
-          <!-- Search icon for mobile - hidden on homepage and search page -->
+        <% end %>
+        <!-- Search icon for mobile - visible on homepage, hidden only on search page -->
+        <% unless controller_name == "search" && action_name == "show" %>
           <button type="button" class="btn btn-link text-decoration-none d-md-none mobile-search-btn" data-bs-toggle="modal" data-bs-target="#mobileSearchModal" aria-label="<%= t("navigation.search") %>">
             <i class="bi bi-search fs-4"></i>
           </button>
+        <% end %>
+        <% if user_signed_in? %>
+          <!-- Notification badge - always visible in navbar, to the right of search -->
+          <ul class="navbar-nav d-flex flex-row align-items-center mobile-notification-nav">
+            <%= render "notifications/badge" %>
+          </ul>
         <% end %>
       <% end %>
     </div>
