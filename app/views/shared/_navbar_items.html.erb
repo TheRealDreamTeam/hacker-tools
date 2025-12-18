@@ -6,7 +6,6 @@
         class: "nav-link fw-bold",
         data: { turbo_prefetch: false } %>
   </li>
-  <%= render "notifications/badge" %>
   <li class="nav-item">
     <%= link_to t("navigation.profile"), profile_path(current_user.username),
         class: "nav-link",

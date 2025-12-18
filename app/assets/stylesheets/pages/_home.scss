@@ -108,6 +108,19 @@
   text-align: center; // Center text alignment
   padding: 0.5rem 0.75rem; // Responsive padding
   
+  // Remove hover jump effect - no transform on hover
+  &:hover {
+    transform: none !important; // Remove any transform that causes jumping
+  }
+  
+  &:active {
+    transform: none !important; // Remove any transform on active state
+  }
+  
+  &:focus {
+    transform: none !important; // Remove any transform on focus
+  }
+  
   // Smaller padding and font size on mobile for better fit
   @media (max-width: 575.98px) {
     padding: 0.375rem 0.5rem;

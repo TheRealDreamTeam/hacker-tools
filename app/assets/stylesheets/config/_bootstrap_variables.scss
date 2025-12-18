@@ -37,4 +37,8 @@ $input-height-lg:              3rem;    // 48px
 $btn-line-height:              1.5;
 $input-line-height:            1.5;
 
+// Card border radius - ensure cards and card-body have matching rounded corners
+$card-border-radius: 0.75rem; // 12px - match our design system
+$card-inner-border-radius: 0.75rem; // 12px - ensure card-body matches
+
 // Override other variables below!

@@ -8,13 +8,13 @@
         </button>
         <% if user_signed_in? %>
           <%= link_to new_submission_path,
-              class: "btn btn-primary btn-lg new-submission-btn d-none d-md-inline-block",
+              class: "btn btn-primary btn-lg new-submission-btn d-none d-md-inline-flex",
               data: { turbo_prefetch: false, navbar_offcanvas_target: "newSubmissionBtn" } do %>
             <%= t("navigation.new_submission") %>
           <% end %>
         <% else %>
           <%= link_to new_user_session_path,
-              class: "btn btn-primary btn-lg new-submission-btn d-none d-md-inline-block",
+              class: "btn btn-primary btn-lg new-submission-btn d-none d-md-inline-flex",
               data: { turbo_prefetch: false, navbar_offcanvas_target: "newSubmissionBtn" } do %>
             <%= t("navigation.login") %>
           <% end %>
@@ -30,9 +30,15 @@
       <h1><%= t("app.name") %></h1>
     <% end %>
 
-    <!-- Right side: Search -->
-    <div class="d-flex align-items-center gap-3">
+    <!-- Right side: Notification badge and Search -->
+    <div class="d-flex align-items-center navbar-right-items">
       <% unless devise_controller? %>
+        <% if user_signed_in? %>
+          <!-- Notification badge - always visible in navbar, to the left of search -->
+          <ul class="navbar-nav d-flex flex-row align-items-center mobile-notification-nav">
+            <%= render "notifications/badge" %>
+          </ul>
+        <% end %>
         <!-- Search bar for medium/large screens -->
         <div class="d-none d-md-block navbar-search position-relative" style="width: 33.333%; min-width: 300px; flex-shrink: 0;">
           <%= form_with url: search_path,
@@ -54,7 +60,7 @@
           <% end %>
         </div>
         <!-- Search icon for mobile -->
-        <button type="button" class="btn btn-link text-decoration-none d-md-none" data-bs-toggle="modal" data-bs-target="#mobileSearchModal" aria-label="<%= t("navigation.search") %>">
+        <button type="button" class="btn btn-link text-decoration-none d-md-none mobile-search-btn" data-bs-toggle="modal" data-bs-target="#mobileSearchModal" aria-label="<%= t("navigation.search") %>">
           <i class="bi bi-search fs-4"></i>
         </button>
       <% end %>

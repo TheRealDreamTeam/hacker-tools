@@ -98,16 +98,65 @@ h6,
   padding: 0.625rem 1.5rem; // Vertical padding for comfortable touch targets
   font-weight: 500;
   transition: all 0.2s ease-in-out;
+  margin: 0 !important; // Remove any default margins that cause spacing issues
+  margin-top: 0 !important; // Explicitly remove top margin
+  padding-top: 0.625rem !important; // Ensure consistent top padding
+  display: inline-flex !important; // Use flexbox for proper alignment
+  align-items: center !important; // Center content vertically
+  justify-content: center !important; // Center content horizontally
+  vertical-align: middle !important; // Ensure proper vertical alignment
+  line-height: 1.5 !important; // Proper line height for text centering
+  text-align: center !important; // Center text horizontally
 
   // Ensure all button sizes have same height
   &.btn-sm {
     height: 2.5rem; // 40px
     padding: 0.5rem 1.25rem;
+    padding-top: 0.5rem !important;
   }
 
   &.btn-lg {
     height: 3rem; // 48px
     padding: 0.75rem 2rem;
+    padding-top: 0.75rem !important; // Ensure consistent top padding
+    line-height: 1.5 !important; // Ensure proper line height for text centering
+  }
+  
+  // Input buttons (type="submit", type="button") need special handling for text centering
+  &[type="submit"],
+  &[type="button"] {
+    line-height: 1.5 !important; // Proper line height for vertical centering
+    text-align: center !important; // Center text horizontally
+  }
+}
+
+// Input buttons that have btn class - ensure proper text centering
+input.btn,
+input.btn[type="submit"],
+input.btn[type="button"] {
+  text-align: center !important; // Center text horizontally
+  display: inline-flex !important; // Use flexbox for proper alignment
+  align-items: center !important; // Center content vertically
+  justify-content: center !important; // Center content horizontally
+  margin: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  vertical-align: middle !important;
+  box-sizing: border-box !important;
+  
+  // Default line-height for standard buttons (2.75rem / 44px)
+  line-height: 2.75rem !important;
+  
+  // Small buttons (2.5rem / 40px)
+  &.btn-sm {
+    line-height: 2.5rem !important; // Match height exactly for perfect centering
+  }
+  
+  // Large buttons (3rem / 48px)
+  &.btn-lg {
+    line-height: 3rem !important; // Match height exactly for perfect centering
   }
 
   // Hover and focus states for better UX
@@ -125,6 +174,21 @@ h6,
 .btn-outline-danger {
   &:hover {
     color: white;
+  }
+}
+
+// Visit source button - with border and external link icon
+.visit-source-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.375rem !important; // Space between text and icon
+  padding: 0.25rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  
+  // Icon styling
+  i {
+    font-size: 0.875rem !important;
+    line-height: 1 !important;
   }
 }
 
@@ -353,10 +417,56 @@ textarea {
   border: none;
   box-shadow: 0 2px 8px rgba($primary, 0.1);
   transition: box-shadow 0.2s ease-in-out;
+  overflow: hidden; // Ensure inner content respects border-radius
 
   &:hover {
     box-shadow: 0 4px 12px rgba($primary, 0.15);
   }
+  
+  // Ensure card-body matches parent card's border-radius
+  // This prevents square corners when card-body has different background color
+  .card-body {
+    border-radius: 0.75rem !important; // Match parent card's border-radius (12px) - use !important to override any inline styles
+  }
+  
+  // If card-body is the first child, ensure top corners are rounded
+  > .card-body:first-child {
+    border-top-left-radius: 0.75rem !important;
+    border-top-right-radius: 0.75rem !important;
+  }
+  
+  // If card-body is the last child, ensure bottom corners are rounded
+  > .card-body:last-child {
+    border-bottom-left-radius: 0.75rem !important;
+    border-bottom-right-radius: 0.75rem !important;
+  }
+  
+  // If card-body is the only child, all corners should be rounded
+  > .card-body:only-child {
+    border-radius: 0.75rem !important;
+  }
+}
+
+// Additional rule to ensure card-body always has rounded corners when inside a card
+// This is more specific and will override Bootstrap defaults
+// Target all possible card-body scenarios with maximum specificity
+.card .card-body,
+.card > .card-body,
+div.card .card-body,
+div.card > .card-body,
+.card.shadow-sm .card-body,
+.card.shadow-sm > .card-body,
+.card.shadow-sm.d-flex .card-body,
+.card.shadow-sm.d-flex.flex-column .card-body,
+.card.shadow-sm.d-flex.flex-column.position-relative .card-body,
+.card-body[style*="background-color"] {
+  border-radius: 0.75rem !important; // Match parent card's border-radius (12px)
+  border-top-left-radius: 0.75rem !important;
+  border-top-right-radius: 0.75rem !important;
+  border-bottom-left-radius: 0.75rem !important;
+  border-bottom-right-radius: 0.75rem !important;
+  -webkit-border-radius: 0.75rem !important; // Webkit prefix for older browsers
+  -moz-border-radius: 0.75rem !important; // Mozilla prefix
 }
 
 // Alert boxes should also have rounded corners
@@ -502,4 +612,34 @@ textarea {
   padding-bottom: 0;
   margin-top: 0;
   margin-bottom: 0;
+}
+
+// CRITICAL: Final override for card-body border-radius - must be at the end
+// This ensures ALL card-body elements have rounded corners matching parent card
+// This rule has maximum specificity and uses !important to override everything
+// Target every possible combination to ensure it applies
+.card-body,
+div.card-body,
+.card .card-body,
+.card > .card-body,
+.card.shadow-sm .card-body,
+.card.shadow-sm > .card-body,
+.card.shadow-sm.d-flex .card-body,
+.card.shadow-sm.d-flex.flex-column .card-body,
+.card.shadow-sm.d-flex.flex-column.position-relative .card-body,
+.card.shadow-sm.d-flex.flex-column.position-relative > .card-body,
+div.card.shadow-sm.d-flex.flex-column.position-relative .card-body,
+div.card.shadow-sm.d-flex.flex-column.position-relative > .card-body,
+.card-body.d-flex,
+.card-body.d-flex.flex-column,
+.card-body.d-flex.flex-column.position-relative,
+div.card-body.d-flex.flex-column.position-relative,
+.card-body[style*="background-color"] {
+  border-radius: 0.75rem !important;
+  -webkit-border-radius: 0.75rem !important;
+  -moz-border-radius: 0.75rem !important;
+  border-top-left-radius: 0.75rem !important;
+  border-top-right-radius: 0.75rem !important;
+  border-bottom-left-radius: 0.75rem !important;
+  border-bottom-right-radius: 0.75rem !important;
 }
