@@ -1,6 +1,20 @@
 <!-- Full-width layout -->
 <div class="container py-4">
 <div class="container mt-4">
+  <!-- Information panel for profile owner -->
+  <% if @is_own_profile %>
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm mb-4" style="border-radius: 0.75rem;">
+          <div class="card-body">
+            <h5 class="card-title mb-2"><%= t("profiles.show.info.title") %></h5>
+            <p class="card-text text-muted mb-0"><%= t("profiles.show.info.description") %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
   <!-- Profile Header -->
   <div class="row mb-4">
     <div class="col-12">

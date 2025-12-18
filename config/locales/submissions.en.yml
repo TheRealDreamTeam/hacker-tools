@@ -14,10 +14,10 @@ en:
         most_followed: "Most Followed"
     new:
       title: "Create Submission"
-      description_title: "How it works"
-      description_text: "Share a link to an article, guide, documentation, or any helpful resource. We'll automatically extract the title and description, then process it for the community."
+      description_title: "Share Your Discoveries! 🚀"
+      description_text: "Found something amazing? Share it with the community! Just paste a URL to any article, guide, documentation, or helpful resource. Our system automatically extracts the title and description, then processes it for everyone to discover. Help others learn and grow by sharing what you've found!"
       step_1: "Enter the URL of the content you want to share"
-      step_2: "We'll automatically extract the title and description"
+      step_2: "We'll automatically extract the title and description from the page"
       step_3: "Your submission will be processed and made available to the community"
     edit:
       title: "Edit Submission"

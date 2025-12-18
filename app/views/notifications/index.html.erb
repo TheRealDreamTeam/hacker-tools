@@ -13,6 +13,14 @@
           <% end %>
         <% end %>
       </div>
+
+      <!-- Information panel -->
+      <div class="card shadow-sm mb-4" style="border-radius: 0.75rem;">
+        <div class="card-body">
+          <h5 class="card-title mb-2"><%= t("notifications.info.title") %></h5>
+          <p class="card-text text-muted mb-0"><%= t("notifications.info.description") %></p>
+        </div>
+      </div>
       
       <%# Subscribe to real-time updates via Action Cable %>
       <%= turbo_stream_from "noticed::notification_channel", current_user %>

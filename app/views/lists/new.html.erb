@@ -1,43 +1,71 @@
 <!-- Full-width layout -->
 <div class="container py-4">
-<div class="container mt-4">
-  <h1>Create New List</h1>
+  <div class="p-2">
+    <div class="mb-4">
+      <h1 class="h3 m-0"><%= t("lists.new.title") %></h1>
+    </div>
 
-  <% if @list.errors.any? %>
-    <div class="alert alert-danger">
-      <p><strong>There were some problems:</strong></p>
-      <ul>
-        <% @list.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
+    <!-- Information panel -->
+    <div class="card shadow-sm mb-4" style="border-radius: 0.75rem;">
+      <div class="card-body">
+        <h5 class="card-title mb-2"><%= t("lists.new.info.title") %></h5>
+        <p class="card-text text-muted mb-0"><%= t("lists.new.info.description") %></p>
+      </div>
+    </div>
+
+    <!-- Form card -->
+    <div class="card shadow-sm" style="border-radius: 0.75rem;">
+      <div class="card-body">
+        <% if @list.errors.any? %>
+          <div class="alert alert-danger">
+            <p class="mb-1"><strong><%= t("submissions.flash.validation_error") %></strong></p>
+            <ul class="mb-0">
+              <% @list.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
         <% end %>
-      </ul>
-    </div>
-  <% end %>
 
-  <%= form_with model: @list, local: true do |f| %>
+        <%= form_with model: @list, local: true do |f| %>
+          <div class="row g-4">
+            <div class="col-12">
+              <label class="form-label fw-semibold mb-2">
+                <%= t("lists.new.form.list_name") %>
+                <span class="text-danger">*</span>
+              </label>
+              <%= f.text_field :list_name, 
+                  class: "form-control", 
+                  required: true,
+                  placeholder: t("lists.new.form.list_name_placeholder") %>
+              <small class="form-text text-muted"><%= t("lists.new.form.list_name_hint") %></small>
+            </div>
 
-    <div class="mb-3">
-      <%= f.label :list_name, "List name" %>
-      <%= f.text_field :list_name, class: "form-control", required: true %>
-    </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold mb-2">
+                <%= t("lists.new.form.visibility") %>
+              </label>
+              <div class="d-flex gap-3">
+                <div class="form-check">
+                  <%= f.radio_button :visibility, "public", id: "visibility_public", class: "form-check-input", checked: true %>
+                  <%= f.label :visibility, t("lists.new.form.public"), for: "visibility_public", class: "form-check-label" %>
+                  <small class="form-text text-muted d-block"><%= t("lists.new.form.public_hint") %></small>
+                </div>
+                <div class="form-check">
+                  <%= f.radio_button :visibility, "private", id: "visibility_private", class: "form-check-input" %>
+                  <%= f.label :visibility, t("lists.new.form.private"), for: "visibility_private", class: "form-check-label" %>
+                  <small class="form-text text-muted d-block"><%= t("lists.new.form.private_hint") %></small>
+                </div>
+              </div>
+            </div>
+          </div>
 
-    <!-- list_type: bruker DB-default, ingen felt i formen -->
-
-    <div class="mb-3">
-      <%= f.label :visibility, "Visibility" %><br>
-
-      <div class="form-check form-check-inline">
-        <%= f.radio_button :visibility, "private", id: "visibility_private", class: "form-check-input" %>
-        <%= f.label :visibility, "Private", for: "visibility_private", class: "form-check-label" %>
+          <div class="mt-4 pt-3 border-top d-flex gap-2">
+            <%= f.submit t("lists.new.form.submit"), class: "btn btn-primary btn-lg" %>
+            <%= link_to t("actions.cancel"), lists_path, class: "btn btn-outline-secondary btn-lg" %>
+          </div>
+        <% end %>
       </div>
-
-      <div class="form-check form-check-inline">
-        <%= f.radio_button :visibility, "public", id: "visibility_public", class: "form-check-input" %>
-        <%= f.label :visibility, "Public", for: "visibility_public", class: "form-check-label" %>
-      </div>
     </div>
-
-    <%= f.submit "Create list", class: "btn btn-primary" %>
-  <% end %>
-</div>
+  </div>
 </div>

@@ -198,10 +198,24 @@ input.btn[type="button"] {
   }
 }
 
-// Override btn-outline-danger hover text color to white
+// Danger button styling - red text, no black border
 .btn-outline-danger {
+  color: #dc3545 !important; // Red text color
+  border-color: #dc3545 !important; // Red border, not black
+  background-color: transparent !important;
+  
   &:hover {
-    color: white;
+    color: white !important; // White text on hover
+    background-color: #dc3545 !important; // Red background on hover
+    border-color: #dc3545 !important; // Red border on hover
+  }
+  
+  &:active,
+  &:focus {
+    color: white !important;
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important; // Red focus ring
   }
 }
 
@@ -220,8 +234,9 @@ input.btn[type="button"] {
   }
 }
 
-// Interaction buttons (upvote/favorite/follow) - allow compact sizing and icon alignment
-.interaction-buttons .btn {
+// Interaction buttons (upvote/favorite/follow/add-to-list) - allow compact sizing and icon alignment
+.interaction-buttons .btn,
+.interaction-item .btn {
   width: 64px;
   height: 64px;
   padding: 0.4rem !important;
@@ -232,11 +247,13 @@ input.btn[type="button"] {
   justify-content: center;
   gap: 0.25rem;
   text-align: center;
+  transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, color 0.4s ease; // Slower, smoother transitions
 
   i {
     line-height: 1;
     font-size: 2rem;
     margin: 0 auto;
+    transition: opacity 0.4s ease, color 0.4s ease; // Slower icon transitions
   }
 
   .badge {
@@ -248,11 +265,57 @@ input.btn[type="button"] {
     margin: 0 auto;
   }
 
-  // Keep icons visible on hover by using a light background and stable icon color
+  // Very subtle hover effect - minimal background change
   &:hover {
-    background-color: #f8f9fa !important;
-    border-color: #d8dde4 !important;
-    box-shadow: none !important;
+    background-color: rgba(248, 249, 250, 0.3) !important; // Very subtle, almost transparent
+    border-color: #e9ecef !important; // Lighter border for subtlety
+    box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.03) !important; // Extremely subtle shadow
+    transform: none !important; // Prevent any transform that might affect readability
+    color: inherit !important; // Preserve text color for readability
+  }
+  
+  // Ensure icons and text remain readable on hover
+  &:hover i {
+    opacity: 1 !important; // Keep icons fully visible
+  }
+  
+  // Ensure interaction count remains readable
+  &:hover + .interaction-count,
+  .interaction-count {
+    color: #6c757d !important; // Keep count readable
+  }
+  
+  // Active state - slightly more visible but still subtle
+  &:active {
+    background-color: rgba(248, 249, 250, 0.5) !important;
+    border-color: #e9ecef !important;
+    box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  // Keep btn-outline-secondary (add-to-list button) grey on hover
+  // Override Bootstrap's default hover styles that change color
+  &.btn-outline-secondary {
+    &:hover {
+      background-color: rgba(248, 249, 250, 0.3) !important;
+      border-color: #e9ecef !important;
+      color: #6c757d !important; // Keep grey text color, override Bootstrap default
+      
+      i {
+        color: #6c757d !important; // Keep icon grey
+      }
+    }
+    
+    &:active,
+    &:focus {
+      background-color: rgba(248, 249, 250, 0.5) !important;
+      border-color: #e9ecef !important;
+      color: #6c757d !important; // Keep grey text color
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.05) !important;
+      
+      i {
+        color: #6c757d !important; // Keep icon grey
+      }
+    }
   }
 }
 
@@ -262,6 +325,14 @@ input.btn[type="button"] {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  
+  // Ensure all buttons inside interaction items have consistent sizing
+  .btn {
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    min-height: 64px !important;
+  }
 }
 
 .interaction-buttons .interaction-count {

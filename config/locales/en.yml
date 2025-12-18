@@ -367,6 +367,9 @@ en:
       followers: "Followers"
       following: "Following"
       user_not_found: "User not found"
+      info:
+        title: "Share Your Journey! 🌟"
+        description: "Your profile is your public presence on HackerTools! People can follow you to discover your submissions, upvoted tools, and curated lists. Build your reputation, connect with the community, and showcase your expertise. Every submission, comment, and upvote helps others learn from your discoveries."
       tabs:
         posts: "Posts"
         submissions: "Submissions"
@@ -390,6 +393,9 @@ en:
   dashboard:
     title: "Dashboard"
     subtitle: "Your private view of activity across tools, lists, and discussions."
+    onboarding:
+      title: "Welcome to Your Dashboard! 🚀"
+      description: "This is your personal command center! Start by sharing a submission, creating a list, or exploring tools. Your activity, favorites, and follows will appear here. The more you engage, the more useful your dashboard becomes!"
     metrics:
       tools: "Tools"
       submissions: "Submissions"
@@ -562,6 +568,21 @@ en:
       submit_button: "Update lists"
       no_lists_message: "You don't have any lists yet. Create your first list to get started!"
       create_list_button: "Create new list"
+    new:
+      title: "Create New List"
+      info:
+        title: "Organize Your Favorites! 🎯"
+        description: "Lists are your personal collections of tools and submissions. Create lists for projects, topics, or anything that sparks your interest. Build your knowledge base, share with others, or keep it private—it's all up to you!"
+      form:
+        list_name: "List Name"
+        list_name_placeholder: "e.g., My Favorite Tools, React Resources, Learning Path"
+        list_name_hint: "Choose a descriptive name that helps you organize your collection"
+        visibility: "Visibility"
+        public: "Public"
+        public_hint: "Anyone can see and follow your list"
+        private: "Private"
+        private_hint: "Only you can see this list"
+        submit: "Create List"
     index:
       title: "Your Lists"
       create_new: "Create new list"
@@ -624,6 +645,9 @@ en:
     all_marked_as_read: "All notifications marked as read"
     mark_all_as_read: "Mark all as read"
     view_all: "View all notifications"
+    info:
+      title: "Stay in the Loop! 🔔"
+      description: "Get notified when people comment on your submissions, reply to your comments, or when followed users share new content. Notifications update in real-time, so you'll never miss important updates!"
     new_submission_from_followed_user:
       message: "%{username} created a new submission: %{submission_name}"
     new_submission_on_followed_tool:

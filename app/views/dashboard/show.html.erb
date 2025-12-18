@@ -7,6 +7,16 @@
     </div>
   </div>
 
+  <!-- Onboarding panel for new users -->
+  <% if @user.submissions.completed.count == 0 && @user.lists.count == 0 && @user.comments.count == 0 && @user.favorited_tools.count == 0 && @user.follows.count == 0 %>
+    <div class="card shadow-sm mb-4" style="border-radius: 0.75rem;">
+      <div class="card-body">
+        <h5 class="card-title mb-2"><%= t("dashboard.onboarding.title") %></h5>
+        <p class="card-text text-muted mb-0"><%= t("dashboard.onboarding.description") %></p>
+      </div>
+    </div>
+  <% end %>
+
   <div class="row g-3 mb-4">
     <div class="col-12 col-md-4 col-xl-2">
       <div class="card h-100">
