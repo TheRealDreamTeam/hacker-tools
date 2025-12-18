@@ -1,8 +1,5 @@
 <!-- Full-width layout with side banners -->
-<div class="container-fluid px-0" data-controller="home-page" 
-     data-home-page-signed-in-value="<%= user_signed_in? %>"
-     data-home-page-guest-message-value="<%= j t('pages.home.card.upvote_guest_alert') %>"
-     data-home-page-upvotes-text-value="<%= j t('pages.home.card.upvotes', count: '%{count}') %>">
+<div class="container-fluid px-0">
   <div class="row g-0">
     <!-- Left Ad Banner (columns 1-2) - positioned relative to main content -->
     <% used_images = [] %>
@@ -78,41 +75,72 @@
     </div>
   </div>
 
-  <!-- Category toggles to swap tool lists without full reload (JS-ready) -->
+  <!-- Category tabs to switch between lists -->
   <div class="row justify-content-center mb-4">
     <div class="col-12 col-lg-8">
-      <div class="btn-group w-100" role="group" aria-label="<%= t('pages.home.category_aria_label') %>" data-controller="tooltip">
-        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'trending' %> category-toggle" data-category="trending" aria-pressed="<%= @category == 'trending' %>" data-bs-toggle="tooltip" data-bs-title="<%= t('pages.home.categories.tooltips.trending') %>" data-bs-placement="top">
+      <div class="btn-group w-100" role="group" aria-label="<%= t('pages.home.category_aria_label') %>" data-controller="home-tabs tooltip">
+        <%= link_to root_path(category: "trending"),
+                    class: "btn btn-outline-primary #{'active' if @category == 'trending'}",
+                    id: "home-tab-trending",
+                    data: {
+                      "home-tabs-target": "tab",
+                      "home-tabs-category-value": "trending",
+                      "bs-toggle": "tooltip",
+                      "bs-title": t('pages.home.categories.tooltips.trending'),
+                      "bs-placement": "top"
+                    },
+                    aria: { pressed: @category == 'trending' } do %>
           <%= t("pages.home.categories.trending") %>
-        </button>
-        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'new' %> category-toggle" data-category="new" aria-pressed="<%= @category == 'new' %>" data-bs-toggle="tooltip" data-bs-title="<%= t('pages.home.categories.tooltips.new_hot') %>" data-bs-placement="top">
+        <% end %>
+        <%= link_to root_path(category: "new"),
+                    class: "btn btn-outline-primary #{'active' if @category == 'new'}",
+                    id: "home-tab-new",
+                    data: {
+                      "home-tabs-target": "tab",
+                      "home-tabs-category-value": "new",
+                      "bs-toggle": "tooltip",
+                      "bs-title": t('pages.home.categories.tooltips.new_hot'),
+                      "bs-placement": "top"
+                    },
+                    aria: { pressed: @category == 'new' } do %>
           <%= t("pages.home.categories.new_hot") %>
-        </button>
-        <button type="button" class="btn btn-outline-primary <%= 'active' if @category == 'upvoted' %> category-toggle" data-category="upvoted" aria-pressed="<%= @category == 'upvoted' %>" data-bs-toggle="tooltip" data-bs-title="<%= t('pages.home.categories.tooltips.most_upvoted') %>" data-bs-placement="top">
+        <% end %>
+        <%= link_to root_path(category: "upvoted"),
+                    class: "btn btn-outline-primary #{'active' if @category == 'upvoted'}",
+                    id: "home-tab-upvoted",
+                    data: {
+                      "home-tabs-target": "tab",
+                      "home-tabs-category-value": "upvoted",
+                      "bs-toggle": "tooltip",
+                      "bs-title": t('pages.home.categories.tooltips.most_upvoted'),
+                      "bs-placement": "top"
+                    },
+                    aria: { pressed: @category == 'upvoted' } do %>
           <%= t("pages.home.categories.most_upvoted") %>
-        </button>
+        <% end %>
       </div>
     </div>
   </div>
 
-  <!-- Three-column layout: side rails for promos and center column for unified cards -->
+  <!-- Single list container that gets replaced via Turbo Streams -->
   <div class="row g-3 justify-content-center">
     <div class="col-12 col-lg-10">
-      <% panels = { "trending" => @trending_items, "new" => @new_hot_items, "upvoted" => @most_upvoted_items } %>
-
-      <% panels.each_with_index do |(panel, items), panel_idx| %>
-        <div class="card shadow-sm mb-3 <%= 'd-none' unless @category == panel %>" data-category-panel="<%= panel %>" id="category-panel-<%= panel %>">
-          <div class="card-body">
-            <% if items.blank? %>
-              <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
-            <% else %>
-              <% items.each_with_index do |item, i| %>
-                <%= render partial: "unified_card", locals: { item: item, index: i } %>
-              <% end %>
+      <div class="card shadow-sm mb-3" id="home-items-list">
+        <div class="card-body">
+          <% items = case @category
+                     when 'new' then @new_hot_items
+                     when 'upvoted' then @most_upvoted_items
+                     else @trending_items
+                     end %>
+          <% if items.blank? %>
+            <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
+          <% else %>
+            <% items.each_with_index do |item, i| %>
+              <%= render partial: "unified_card", locals: { item: item, index: i } %>
             <% end %>
-          </div>
+          <% end %>
         </div>
-      <% end %>
+      </div>
     </div>
   </div>
       </div>

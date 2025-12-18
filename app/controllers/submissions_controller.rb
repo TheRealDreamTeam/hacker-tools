@@ -418,6 +418,9 @@ class SubmissionsController < ApplicationController
     user_submission.read_at ||= Time.current
     user_submission.update(flag => new_value, read_at: user_submission.read_at)
 
+    # Set flash message for both HTML and Turbo Stream responses
+    flash[:notice] = t("submissions.flash.#{i18n_key}")
+
     respond_to do |format|
       format.turbo_stream { render "submissions/interaction_update" }
       format.html { redirect_back fallback_location: submission_path(@submission), notice: t("submissions.flash.#{i18n_key}") }

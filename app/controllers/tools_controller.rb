@@ -199,6 +199,9 @@ class ToolsController < ApplicationController
       end
     end
 
+    # Set flash message for both HTML and Turbo Stream responses
+    flash[:notice] = t("tools.flash.tool_follow")
+
     respond_to do |format|
       format.turbo_stream { render "tools/interaction_update" }
       format.html { redirect_back fallback_location: tool_path(@tool), notice: t("tools.flash.tool_follow") }
@@ -208,6 +211,7 @@ class ToolsController < ApplicationController
     # The follow now exists, so destroy it (toggle behavior)
     follow_record = current_user.follows.find_by(followable: @tool)
     follow_record&.destroy
+    flash[:notice] = t("tools.flash.tool_follow")
 
     respond_to do |format|
       format.turbo_stream { render "tools/interaction_update" }
@@ -274,6 +278,9 @@ class ToolsController < ApplicationController
     new_value = !user_tool.public_send(flag)
     user_tool.read_at ||= Time.current
     user_tool.update(flag => new_value, read_at: user_tool.read_at)
+
+    # Set flash message for both HTML and Turbo Stream responses
+    flash[:notice] = t("tools.flash.#{i18n_key}")
 
     respond_to do |format|
       format.turbo_stream { render "tools/interaction_update" }

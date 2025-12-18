@@ -1,10 +1,17 @@
-<%= turbo_stream.replace "category-panel-trending" do %>
-  <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless @category == 'trending' %>" data-category-panel="trending" id="category-panel-trending">
+<%# Replace the single list container with the selected category's items %>
+<% items = case @category
+         when 'new' then @new_hot_items
+         when 'upvoted' then @most_upvoted_items
+         else @trending_items
+         end %>
+
+<%= turbo_stream.replace "home-items-list" do %>
+  <div class="card shadow-sm mb-3" id="home-items-list">
     <div class="card-body">
-      <% if @trending_items.blank? %>
+      <% if items.blank? %>
         <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
       <% else %>
-        <% @trending_items.each_with_index do |item, i| %>
+        <% items.each_with_index do |item, i| %>
           <%= render partial: "unified_card", locals: { item: item, index: i } %>
         <% end %>
       <% end %>
@@ -12,30 +19,51 @@
   </div>
 <% end %>
 
-<%= turbo_stream.replace "category-panel-new" do %>
-  <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless @category == 'new' %>" data-category-panel="new" id="category-panel-new">
-    <div class="card-body">
-      <% if @new_hot_items.blank? %>
-        <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
-      <% else %>
-        <% @new_hot_items.each_with_index do |item, i| %>
-          <%= render partial: "unified_card", locals: { item: item, index: i } %>
-        <% end %>
-      <% end %>
-    </div>
-  </div>
+<%# Update tab active states %>
+<%= turbo_stream.update "home-tab-trending" do %>
+  <%= link_to root_path(category: "trending"),
+              class: "btn btn-outline-primary #{'active' if @category == 'trending'}",
+              data: {
+                "home-tabs-target": "tab",
+                "home-tabs-category-value": "trending",
+                "bs-toggle": "tooltip",
+                "bs-title": t('pages.home.categories.tooltips.trending'),
+                "bs-placement": "top"
+              },
+              aria: { pressed: @category == 'trending' },
+              id: "home-tab-trending" do %>
+    <%= t("pages.home.categories.trending") %>
+  <% end %>
 <% end %>
 
-<%= turbo_stream.replace "category-panel-upvoted" do %>
-  <div class="card shadow-sm mb-3 card-hover <%= 'd-none' unless @category == 'upvoted' %>" data-category-panel="upvoted" id="category-panel-upvoted">
-    <div class="card-body">
-      <% if @most_upvoted_items.blank? %>
-        <p class="text-muted mb-0"><%= t("pages.home.list_placeholder") %></p>
-      <% else %>
-        <% @most_upvoted_items.each_with_index do |item, i| %>
-          <%= render partial: "unified_card", locals: { item: item, index: i } %>
-        <% end %>
-      <% end %>
-    </div>
-  </div>
+<%= turbo_stream.update "home-tab-new" do %>
+  <%= link_to root_path(category: "new"),
+              class: "btn btn-outline-primary #{'active' if @category == 'new'}",
+              data: {
+                "home-tabs-target": "tab",
+                "home-tabs-category-value": "new",
+                "bs-toggle": "tooltip",
+                "bs-title": t('pages.home.categories.tooltips.new_hot'),
+                "bs-placement": "top"
+              },
+              aria: { pressed: @category == 'new' },
+              id: "home-tab-new" do %>
+    <%= t("pages.home.categories.new_hot") %>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.update "home-tab-upvoted" do %>
+  <%= link_to root_path(category: "upvoted"),
+              class: "btn btn-outline-primary #{'active' if @category == 'upvoted'}",
+              data: {
+                "home-tabs-target": "tab",
+                "home-tabs-category-value": "upvoted",
+                "bs-toggle": "tooltip",
+                "bs-title": t('pages.home.categories.tooltips.most_upvoted'),
+                "bs-placement": "top"
+              },
+              aria: { pressed: @category == 'upvoted' },
+              id: "home-tab-upvoted" do %>
+    <%= t("pages.home.categories.most_upvoted") %>
+  <% end %>
 <% end %>

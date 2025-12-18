@@ -222,3 +222,24 @@ a.card.shadow-sm.text-decoration-none.card-hover.h-100.overflow-hidden.article-c
   margin-bottom: 0 !important;
   padding-bottom: 0 !important;
 }
+
+// Category panel hiding - use display: none
+// Global script in application.html.erb temporarily makes panels accessible (but invisible) during Turbo Stream updates
+.category-panel-hidden {
+  display: none !important;
+}
+
+// Temporary class used during Turbo Stream updates - keeps elements in DOM but invisible
+// This allows Turbo Stream to find elements without showing them to the user
+.turbo-stream-updating {
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  // Elements are in DOM and accessible to Turbo Stream, but completely invisible and off-screen
+}
