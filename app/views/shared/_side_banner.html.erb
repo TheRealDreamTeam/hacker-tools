@@ -1,0 +1,31 @@
+<%# 
+  Side banner partial for sponsor/advertising banners
+  Usage: render "shared/side_banner", position: "left"
+  
+  Parameters:
+  - position: "left" or "right" (determines which image to use)
+  - Available images: eventease banner.png, pato's gym.png, doglog banner.png, storypile banner.png
+%>
+<% 
+  # Map positions to images - rotate through 4 images
+  # Left banner: EventEase, Doglog
+  # Right banner: Pato's Gym, StoryPile
+  banner_images = {
+    "left" => ["eventease banner.png", "doglog banner.png"],
+    "right" => ["pato's gym.png", "storypile banner.png"]
+  }
+  
+  # Use first image for left, second for right (or cycle based on page)
+  image_index = position == "left" ? 0 : 1
+  image_name = banner_images[position][image_index]
+  # Use asset_path for images in app/assets/images
+  # asset_path automatically handles URL encoding for spaces and special characters
+  image_path = asset_path("banners/#{image_name}")
+  
+  border_class = position == "left" ? "border-end" : "border-start"
+%>
+<div class="col-lg-2 d-none d-lg-block side-banner ps-2 pe-2">
+  <div class="card h-100 border-0 <%= border_class %> position-relative overflow-hidden" style="background-image: url('<%= image_path %>'); background-size: cover; background-position: center;">
+  </div>
+</div>
+

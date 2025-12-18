@@ -39,16 +39,48 @@
 }
 
 // Side banner styling - sticky from navbar to bottom of viewport
+// Only moves when scrolling reaches the very bottom
 .side-banner {
   position: sticky;
-  top: 2rem; // Add space between navbar and banner
-  height: calc(100vh - 56px - 2rem); // Subtract navbar height and top spacing
-  max-height: calc(100vh - 56px - 2rem);
-  overflow-y: auto;
-  padding-top: 1rem; // Additional padding for visual spacing
+  top: 15vh; // Position from top to center the 70vh banner
+  align-self: flex-start; // Align to start of flex container
+  height: 70vh; // 70% of viewport height
+  max-height: 70vh;
+  overflow: visible; // Allow shadows to be visible
+  padding: 0; // Remove all padding to make banners wider
+
+  // The card inside should fill the height with 3D effect and animation
+  .card {
+    height: 100%;
+    min-height: 70vh;
+    width: 100%; // Ensure card takes full width
+    border-radius: 0.5rem; // Slightly rounded corners (8px)
+    box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.3), // Main shadow for depth
+      0 5px 15px rgba(0, 0, 0, 0.2), // Secondary shadow
+      inset 0 1px 0 rgba(255, 255, 255, 0.1); // Subtle inner highlight for 3D effect
+    animation: float 6s ease-in-out infinite; // Slow floating animation
+    transform-style: preserve-3d; // Enable 3D transforms
+  }
 
   @media (max-width: 991.98px) {
     display: none !important;
+  }
+}
+
+// Floating animation - subtle water-like movement
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotateX(0deg);
+  }
+  25% {
+    transform: translateY(-8px) rotateX(0.5deg);
+  }
+  50% {
+    transform: translateY(-4px) rotateX(0deg);
+  }
+  75% {
+    transform: translateY(-8px) rotateX(-0.5deg);
   }
 }
 
