@@ -31,6 +31,7 @@ en:
       picture: "Picture"
       tags_title: "Tags"
       no_tags: "No tags yet."
+      add_tag: "Add tag"
       select_tag: "Select a tag to add"
       showing_top_tags: "Showing top %{count} of %{total} tags"
       show_all_tags: "Show all tags"
@@ -58,12 +59,16 @@ en:
       visibility: "Visibility"
       icon: "Icon"
       picture: "Picture"
+      picture_hint: "Upload a picture for this tool (optional)"
+      current_picture: "Current picture"
     visibility:
       private: "Private"
       unlisted: "Unlisted"
       public: "Public"
     confirmations:
       destroy: "Are you sure you want to delete this tool?"
+      destroy_title: "Delete Tool"
+      destroy_message: "Are you sure you want to delete this tool? This action cannot be undone."
     flash:
       created: "Tool created successfully."
       updated: "Tool updated successfully."
@@ -74,6 +79,7 @@ en:
       tag_added: "Tag added successfully."
       tag_removed: "Tag removed successfully."
       tag_not_found: "Tag not found."
+      tag_already_exists: "Tag already exists."
       tool_upvote: "Upvote updated."
       tool_favorite: "Favorite updated."
       tool_follow: "Follow state updated."
@@ -106,6 +112,7 @@ en:
       unresolved: "Unresolved"
     confirmations:
       delete: "Delete this comment?"
+      delete_title: "Delete Comment"
     flash:
       created: "Comment submitted."
       deleted: "Comment deleted."

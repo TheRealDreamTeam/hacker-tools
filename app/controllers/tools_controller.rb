@@ -112,19 +112,57 @@ class ToolsController < ApplicationController
   # POST /tools/:id/add_tag
   def add_tag
     tag = Tag.find(params[:tag_id])
-    @tool.tags << tag unless @tool.tags.include?(tag)
-    redirect_to tool_path(@tool), notice: t("tools.flash.tag_added")
+    
+    unless @tool.tags.include?(tag)
+      @tool.tags << tag
+      flash[:notice] = t("tools.flash.tag_added")
+    else
+      flash[:alert] = t("tools.flash.tag_already_exists")
+    end
+    
+    # Reload tags association for turbo_stream
+    @tool.tags.reload
+    @tool_tags = @tool.top_tags(limit: 10)
+    @all_tool_tags = @tool.tags.includes(:parent)
+    @available_tags = Tag.includes(:parent).order(tag_type_id: :asc, tag_type: :asc, tag_name: :asc)
+    
+    respond_to do |format|
+      format.html { redirect_to tool_path(@tool) }
+      format.turbo_stream { render :add_tag }
+    end
   rescue ActiveRecord::RecordNotFound
-    redirect_to tool_path(@tool), alert: t("tools.flash.tag_not_found")
+    respond_to do |format|
+      format.html { redirect_to tool_path(@tool), alert: t("tools.flash.tag_not_found") }
+      format.turbo_stream { render :add_tag_error, status: :unprocessable_entity }
+    end
   end
 
   # DELETE /tools/:id/remove_tag
   def remove_tag
     tag = Tag.find(params[:tag_id])
-    @tool.tags.delete(tag)
-    redirect_to tool_path(@tool), notice: t("tools.flash.tag_removed")
+    
+    if @tool.tags.include?(tag)
+      @tool.tags.delete(tag)
+      flash[:notice] = t("tools.flash.tag_removed")
+    else
+      flash[:alert] = t("tools.flash.tag_not_found")
+    end
+    
+    # Reload tags association for turbo_stream
+    @tool.tags.reload
+    @tool_tags = @tool.top_tags(limit: 10)
+    @all_tool_tags = @tool.tags.includes(:parent)
+    @available_tags = Tag.includes(:parent).order(tag_type_id: :asc, tag_type: :asc, tag_name: :asc)
+    
+    respond_to do |format|
+      format.html { redirect_to tool_path(@tool) }
+      format.turbo_stream { render :remove_tag }
+    end
   rescue ActiveRecord::RecordNotFound
-    redirect_to tool_path(@tool), alert: t("tools.flash.tag_not_found")
+    respond_to do |format|
+      format.html { redirect_to tool_path(@tool), alert: t("tools.flash.tag_not_found") }
+      format.turbo_stream { render :remove_tag_error, status: :unprocessable_entity }
+    end
   end
 
   # POST /tools/:id/upvote
@@ -191,7 +229,7 @@ class ToolsController < ApplicationController
   # end
 
   def tool_params
-    params.require(:tool).permit(:tool_url, :author_note)
+    params.require(:tool).permit(:tool_name, :tool_description, :tool_url, :author_note, :picture)
   end
 
   def apply_sort(collection, sort_by)

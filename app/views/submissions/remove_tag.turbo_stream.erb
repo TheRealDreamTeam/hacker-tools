@@ -1,30 +1,19 @@
 <%= turbo_stream.replace "submission-tags" do %>
-  <% if @submission.tags.any? %>
-    <div class="d-flex flex-wrap gap-2">
-      <% @submission.tags.each do |tag| %>
-        <% 
-          badge_style = ""
-          if tag.color.present?
-            color_hex = color_name_to_hex(tag.color)
-            badge_style = "background-color: #{color_hex};"
-            if ["black", "navy", "purple", "indigo", "blue"].include?(tag.color.downcase)
-              badge_style += " color: #ffffff;"
-            else
-              badge_style += " color: #000000;"
-            end
-          end
-        %>
-        <span class="badge <%= tag_badge_class(tag) %> d-flex align-items-center gap-1" style="<%= badge_style %>">
-          <%= tag.display_name %>
+  <% if @submission_tags.any? %>
+    <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
+      <% @submission_tags.each do |tag| %>
+        <div class="d-inline-flex align-items-center gap-1">
+          <%= render_tag_link(tag) %>
           <% if @submission.user == current_user %>
             <%= button_to "×",
-                          remove_tag_submission_path(@submission, tag_id: tag.id),
-                          method: :delete,
-                          class: "btn btn-sm p-0 border-0 bg-transparent text-white",
-                          style: "font-size: 1.2em; line-height: 1;",
-                          title: t("submissions.actions.remove_tag") %>
+                        remove_tag_submission_path(@submission, tag_id: tag.id),
+                        method: :delete,
+                        class: "btn btn-sm btn-outline-danger p-0",
+                        style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
+                        title: t("submissions.actions.remove_tag"),
+                        form: { data: { turbo: true } } %>
           <% end %>
-        </span>
+        </div>
       <% end %>
     </div>
   <% else %>
