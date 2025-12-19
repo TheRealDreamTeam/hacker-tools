@@ -2,7 +2,7 @@
 <% state_favorite = interaction_button_state(tool, current_user, :favorite) %>
 <% state_follow   = interaction_button_state(tool, current_user, :follow) %>
 
-<div id="<%= dom_id(tool, 'interactions') %>" class="interaction-buttons d-flex align-items-start gap-3 flex-wrap">
+<div id="<%= dom_id(tool, 'interactions') %>" class="interaction-buttons d-flex align-items-start gap-2 flex-wrap">
   <div class="interaction-item d-flex flex-column align-items-center gap-1">
     <%= button_to upvote_tool_path(tool),
                   method: :post,

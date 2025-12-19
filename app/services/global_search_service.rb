@@ -10,24 +10,26 @@ class GlobalSearchService
     end
   end
 
-  def self.search(query:, categories:, page_params:, per_page: DEFAULT_PER_PAGE, use_semantic: true, use_fulltext: true)
+  def self.search(query:, categories:, page_params:, per_page: DEFAULT_PER_PAGE, use_semantic: true, use_fulltext: true, current_user: nil)
     new(
       query: query,
       categories: categories,
       page_params: page_params,
       per_page: per_page,
       use_semantic: use_semantic,
-      use_fulltext: use_fulltext
+      use_fulltext: use_fulltext,
+      current_user: current_user
     ).search
   end
 
-  def initialize(query:, categories:, page_params:, per_page:, use_semantic:, use_fulltext:)
+  def initialize(query:, categories:, page_params:, per_page:, use_semantic:, use_fulltext:, current_user: nil)
     @query = query.to_s.strip
     @selected_categories = (categories & CATEGORIES).presence || CATEGORIES
     @per_page = per_page.presence || DEFAULT_PER_PAGE
     @page_params = page_params || {}
     @use_semantic = use_semantic
     @use_fulltext = use_fulltext
+    @current_user = current_user
   end
 
   def search
@@ -69,13 +71,23 @@ class GlobalSearchService
       limit: buffer_limit,
       status: :completed,
       use_semantic: @use_semantic,
-      use_fulltext: @use_fulltext
+      use_fulltext: @use_fulltext,
+      current_user: @current_user
     )
 
-    ActiveRecord::Associations::Preloader.new.preload(combined_results, [:tags, :tools, :user])
+    # Eager load associations to avoid N+1 queries
+    # Rails 7.1+ requires keyword arguments for Preloader
+    if combined_results.any?
+      ActiveRecord::Associations::Preloader.new(
+        records: combined_results,
+        associations: [:tags, :tools, :user]
+      ).call
+    end
+
     paginate_array(combined_results, :submissions)
   rescue StandardError => e
     Rails.logger.error("Submission search error: #{e.message}")
+    Rails.logger.error(e.backtrace.first(5).join("\n"))
     Result.new(items: [], total_count: 0, page: current_page(:submissions), per_page: @per_page)
   end
 

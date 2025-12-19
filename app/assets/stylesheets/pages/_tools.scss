@@ -187,7 +187,7 @@
   }
   
   .btn-outline-danger {
-    border: 1px solid #000 !important;
+    border-color: #dc3545 !important; // Red border, not black
     background-color: transparent !important;
     padding: 0.25rem 0.75rem !important; // Match reply button padding exactly
     font-size: 0.875rem !important; // Match reply button font size
@@ -196,11 +196,11 @@
     min-height: 2.5rem !important; // Match btn-sm height
     display: inline-flex !important;
     align-items: center !important;
-    color: #dc3545;
+    color: #dc3545 !important;
     text-decoration: none;
     
     &:hover {
-      border: 1px solid #000 !important;
+      border-color: #dc3545 !important; // Red border on hover
       background-color: #dc3545 !important; // Red background on hover
       color: #ffffff !important; // White text on hover
       text-decoration: none;
@@ -208,9 +208,9 @@
     }
     
     &:focus {
-      border: 1px solid #000 !important;
+      border-color: #dc3545 !important; // Red border on focus
       background-color: transparent !important;
-      box-shadow: none !important;
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important; // Red focus ring
     }
   }
   

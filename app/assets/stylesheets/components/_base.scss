@@ -121,6 +121,34 @@ h6,
     padding-top: 0.75rem !important; // Ensure consistent top padding
     line-height: 1.5 !important; // Ensure proper line height for text centering
   }
+
+  // Square plus button - perfectly square with only icon
+  &.square-plus-btn {
+    width: 2.75rem !important; // Match height for square
+    height: 2.75rem !important;
+    min-width: 2.75rem !important;
+    padding: 0 !important; // Remove all padding for perfect square
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0;
+    
+    i {
+      line-height: 1;
+      margin: 0;
+    }
+  }
+  
+  // Square plus button for large size
+  &.btn-lg.square-plus-btn {
+    width: 3rem !important; // Match btn-lg height for square
+    height: 3rem !important;
+    min-width: 3rem !important;
+  }
   
   // Input buttons (type="submit", type="button") need special handling for text centering
   &[type="submit"],
@@ -170,10 +198,24 @@ input.btn[type="button"] {
   }
 }
 
-// Override btn-outline-danger hover text color to white
+// Danger button styling - red text, no black border
 .btn-outline-danger {
+  color: #dc3545 !important; // Red text color
+  border-color: #dc3545 !important; // Red border, not black
+  background-color: transparent !important;
+  
   &:hover {
-    color: white;
+    color: white !important; // White text on hover
+    background-color: #dc3545 !important; // Red background on hover
+    border-color: #dc3545 !important; // Red border on hover
+  }
+  
+  &:active,
+  &:focus {
+    color: white !important;
+    background-color: #dc3545 !important;
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important; // Red focus ring
   }
 }
 
@@ -192,8 +234,9 @@ input.btn[type="button"] {
   }
 }
 
-// Interaction buttons (upvote/favorite/follow) - allow compact sizing and icon alignment
-.interaction-buttons .btn {
+// Interaction buttons (upvote/favorite/follow/add-to-list) - allow compact sizing and icon alignment
+.interaction-buttons .btn,
+.interaction-item .btn {
   width: 64px;
   height: 64px;
   padding: 0.4rem !important;
@@ -204,11 +247,13 @@ input.btn[type="button"] {
   justify-content: center;
   gap: 0.25rem;
   text-align: center;
+  transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, color 0.4s ease; // Slower, smoother transitions
 
   i {
     line-height: 1;
     font-size: 2rem;
     margin: 0 auto;
+    transition: opacity 0.4s ease, color 0.4s ease; // Slower icon transitions
   }
 
   .badge {
@@ -220,11 +265,57 @@ input.btn[type="button"] {
     margin: 0 auto;
   }
 
-  // Keep icons visible on hover by using a light background and stable icon color
+  // Very subtle hover effect - minimal background change
   &:hover {
-    background-color: #f8f9fa !important;
-    border-color: #d8dde4 !important;
-    box-shadow: none !important;
+    background-color: rgba(248, 249, 250, 0.3) !important; // Very subtle, almost transparent
+    border-color: #e9ecef !important; // Lighter border for subtlety
+    box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.03) !important; // Extremely subtle shadow
+    transform: none !important; // Prevent any transform that might affect readability
+    color: inherit !important; // Preserve text color for readability
+  }
+  
+  // Ensure icons and text remain readable on hover
+  &:hover i {
+    opacity: 1 !important; // Keep icons fully visible
+  }
+  
+  // Ensure interaction count remains readable
+  &:hover + .interaction-count,
+  .interaction-count {
+    color: #6c757d !important; // Keep count readable
+  }
+  
+  // Active state - slightly more visible but still subtle
+  &:active {
+    background-color: rgba(248, 249, 250, 0.5) !important;
+    border-color: #e9ecef !important;
+    box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  // Keep btn-outline-secondary (add-to-list button) grey on hover
+  // Override Bootstrap's default hover styles that change color
+  &.btn-outline-secondary {
+    &:hover {
+      background-color: rgba(248, 249, 250, 0.3) !important;
+      border-color: #e9ecef !important;
+      color: #6c757d !important; // Keep grey text color, override Bootstrap default
+      
+      i {
+        color: #6c757d !important; // Keep icon grey
+      }
+    }
+    
+    &:active,
+    &:focus {
+      background-color: rgba(248, 249, 250, 0.5) !important;
+      border-color: #e9ecef !important;
+      color: #6c757d !important; // Keep grey text color
+      box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.05) !important;
+      
+      i {
+        color: #6c757d !important; // Keep icon grey
+      }
+    }
   }
 }
 
@@ -234,6 +325,14 @@ input.btn[type="button"] {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
+  
+  // Ensure all buttons inside interaction items have consistent sizing
+  .btn {
+    width: 64px !important;
+    height: 64px !important;
+    min-width: 64px !important;
+    min-height: 64px !important;
+  }
 }
 
 .interaction-buttons .interaction-count {
@@ -409,6 +508,36 @@ textarea {
   }
 }
 
+// Toggle switch styling for form-switch
+.form-switch {
+  .form-check-input {
+    width: 2.5em !important;
+    height: 1.25em !important;
+    cursor: pointer;
+    border-radius: 2em !important;
+    background-color: #dee2e6 !important;
+    border: 1px solid #adb5bd !important;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    margin-top: 0 !important;
+    
+    &:checked {
+      background-color: $primary !important;
+      border-color: $primary !important;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e") !important;
+    }
+    
+    &:hover:not(:disabled) {
+      transform: none !important; // Remove scale transform for toggle switches
+    }
+    
+    &:focus {
+      border-color: $primary !important;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba($primary, 0.25) !important;
+    }
+  }
+}
+
 // Content boxes - cards, containers with content should have rounded corners
 .card,
 .content-box,
@@ -549,10 +678,94 @@ div.card > .card-body,
   }
 }
 
-// Badges
+// Enhanced 3D shadow for all cards with shadow-sm
+.card.shadow-sm {
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08), 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.06) !important;
+}
+
+// Only add transition to cards with card-hover (clickable/interactive cards)
+.card.shadow-sm.card-hover,
+.card-hover,
+.article-card.card-hover {
+  transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out;
+}
+
+// Ensure article cards have the 3D shadow
+.article-card.shadow-sm {
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08), 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.06) !important;
+}
+
+// Hover translate up for cards in grid layouts
+// Only apply to cards with card-hover class (indicates clickable/interactive cards)
+// Exclude category panel containers (they contain cards, not cards themselves)
+// Exclude main show page cards, related section containers, and comments (not clickable)
+.card-hover:hover:not([data-category-panel]) {
+  transform: translateY(-3px);
+  box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.12), 0 0.1875rem 0.375rem rgba(0, 0, 0, 0.08) !important;
+}
+
+// Also apply to shadow-sm cards that have card-hover (for backwards compatibility)
+.card.shadow-sm.card-hover:hover:not([data-category-panel]),
+.article-card.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.375rem 0.75rem rgba(0, 0, 0, 0.12), 0 0.1875rem 0.375rem rgba(0, 0, 0, 0.08) !important;
+}
+
+// Disable hover translate on read-only pages (newest_articles, user_guide, about_us)
+// These pages are informational only, so cards shouldn't indicate clickability
+body.read-only-page {
+  .card.shadow-sm:hover,
+  .card-hover:hover {
+    transform: none !important;
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08), 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.06) !important;
+  }
+}
+
+// Badges - ensure good contrast and readability
 .badge {
   border-radius: 0.5rem; // Slightly less rounded for badges
   padding: 0.375rem 0.75rem;
+  font-weight: 400; // Normal weight (not bold)
+  font-size: 0.875rem; // Consistent font size
+  line-height: 1.2;
+  
+  // Ensure all badges have explicit text colors for good contrast
+  // Bootstrap classes that need white text
+  &.bg-primary,
+  &.bg-dark,
+  &.bg-success,
+  &.bg-danger,
+  &.bg-info {
+    color: #ffffff !important;
+  }
+  
+  // Bootstrap classes that need dark text
+  &.bg-warning,
+  &.bg-light {
+    color: #212529 !important; // Dark text for light backgrounds
+  }
+  
+  // bg-secondary uses white text for consistency
+  &.bg-secondary {
+    color: #ffffff !important; // White text for consistency
+  }
+  
+  // Ensure tag links are readable
+  &.tag-link {
+    // If no explicit text color is set, ensure contrast
+    &:not(.text-white):not(.text-dark) {
+      color: #212529 !important; // Default to dark text
+    }
+    
+    // Override for dark backgrounds
+    &.bg-primary,
+    &.bg-dark,
+    &.bg-success,
+    &.bg-danger,
+    &.bg-info {
+      color: #ffffff !important;
+    }
+  }
 }
 
 // Pagination
@@ -612,6 +825,55 @@ div.card > .card-body,
   padding-bottom: 0;
   margin-top: 0;
   margin-bottom: 0;
+}
+
+// Profile tabs - remove border-bottom and connect to content
+#profileTabs.nav-tabs {
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+  
+  .nav-link {
+    border-radius: 0.75rem 0.75rem 0 0; // Rounded top corners
+    margin-bottom: -1px; // Connect to content border
+    border: 1px solid transparent;
+    border-bottom: none !important; // Remove bottom border
+    
+    &.active {
+      border: 1px solid #dee2e6;
+      border-bottom: none !important; // Remove bottom border
+      background-color: white !important; // Match content background
+      color: $primary !important; // Primary color for active tab
+      font-weight: 600;
+      position: relative;
+      z-index: 2; // Above content border
+    }
+    
+    &:not(.active) {
+      &:hover {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        border-bottom: none !important; // Remove bottom border on hover
+      }
+    }
+  }
+}
+
+// Profile tab content - add border and padding to match page style
+#profileTabContent {
+  border: 1px solid #dee2e6;
+  border-radius: 0 0.75rem 0.75rem 0.75rem; // Rounded bottom and right corners
+  padding: 1.5rem;
+  background-color: white;
+  margin-top: -1px; // Connect to active tab
+  
+  .tab-pane {
+    min-height: 200px; // Ensure content area has minimum height
+  }
+  
+  // Enhanced 3D look for compact cards in profile tabs
+  .card.shadow-sm.card-hover {
+    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08), 0 0.0625rem 0.25rem rgba(0, 0, 0, 0.06) !important; // More pronounced 3D shadow
+  }
 }
 
 // CRITICAL: Final override for card-body border-radius - must be at the end

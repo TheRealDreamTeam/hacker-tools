@@ -15,7 +15,8 @@ class SearchController < ApplicationController
                    page_params: @page_params,
                    per_page: @per_page,
                    use_semantic: true,
-                   use_fulltext: true
+                   use_fulltext: true,
+                   current_user: current_user
                  )
                else
                  GlobalSearchService::CATEGORIES.index_with do |category|
@@ -34,18 +35,26 @@ class SearchController < ApplicationController
         GlobalSearchService::Result.new(items: [], total_count: 0, page: 1, per_page: 5)
       end
     else
+      # Use full-text search only for suggestions (faster, better UX)
+      # Semantic search is disabled for suggestions to improve responsiveness
+      # Main search results still use semantic search for better accuracy
       @results = GlobalSearchService.search(
         query: @query,
         categories: @selected_categories,
         page_params: {},
         per_page: 5,
-        use_semantic: false,
-        use_fulltext: true
+        use_semantic: false, # Disabled for suggestions - use full-text only for speed
+        use_fulltext: true,
+        current_user: current_user
       )
     end
 
+    # Check if this is for navbar (navbar or mobile search suggestions) or homepage (both get sticky footer)
+    is_navbar = params[:navbar] == "true"
+    is_homepage = params[:homepage] == "true"
+
     render partial: "search/suggestions_panel",
-           locals: { query: @query, results: @results, selected_categories: @selected_categories }
+           locals: { query: @query, results: @results, selected_categories: @selected_categories, is_navbar: is_navbar, is_homepage: is_homepage }
   end
 
   private

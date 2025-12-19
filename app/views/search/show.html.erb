@@ -1,77 +1,69 @@
-<!-- Full-width layout with side banners -->
-<div class="container-fluid px-0">
-  <div class="row g-0">
-    <!-- Left Ad Banner (columns 1-2) -->
-    <div class="col-lg-2 d-none d-lg-block side-banner ps-5 pe-5">
-      <div class="card h-100 rounded-0 border-0 border-end position-relative overflow-hidden" style="border-radius: 0 !important; background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=300&h=800&fit=crop'); background-size: cover; background-position: center;">
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);"></div>
-        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center p-3 position-relative z-1">
-          <p class="fw-semibold mb-1 text-white">Sponsors</p>
-          <p class="text-white-50 small mb-0"><%= t("pages.home.ads.supporting_text") %></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Content (columns 3-10) -->
-    <div class="col-lg-8 py-4">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-12 col-lg-10">
+<!-- Full-width layout -->
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10">
             <div class="d-flex flex-column gap-3">
-          <div class="card shadow-sm">
-            <div class="card-body">
+          <div class="card shadow-sm" style="overflow: visible;">
+            <div class="card-body" style="overflow: visible;">
               <%= form_with url: search_path,
                             method: :get,
                             local: true,
                             data: { controller: "search-filters search-suggestions",
                                     "search-suggestions-url-value": search_suggestions_path },
                             role: "search" do |form| %>
-                <div class="row g-3 align-items-end">
-                  <div class="col-12 col-lg-9">
-                    <div class="position-relative">
-                      <%= form.label :query, t("search.form.label"), class: "form-label fw-semibold" %>
-                      <%= form.search_field :query,
-                                            value: @query,
-                                            class: "form-control form-control-lg",
-                                            placeholder: t("search.form.placeholder"),
-                                            aria: { label: t("search.form.placeholder") },
-                                            data: { "search-suggestions-target": "input", action: "input->search-suggestions#onInput" } %>
-                      <div id="search-suggestions" data-search-suggestions-target="panel"></div>
+                <div class="row g-3">
+                  <div class="col-12">
+                    <div class="position-relative" style="overflow: visible; z-index: 1;">
+                      <%= form.label :query, t("search.form.label"), class: "form-label fw-semibold mb-2" %>
+                      <div class="d-flex gap-2 align-items-center">
+                        <div class="flex-grow-1 position-relative">
+                          <%= form.search_field :query,
+                                                value: @query,
+                                                class: "form-control form-control-lg",
+                                                placeholder: t("search.form.placeholder"),
+                                                aria: { label: t("search.form.placeholder") },
+                                                autocomplete: "off",
+                                                data: { "search-suggestions-target": "input", action: "input->search-suggestions#onInput" } %>
+                          <div id="search-suggestions" data-search-suggestions-target="panel"></div>
+                        </div>
+                        <%= form.submit t("actions.search"), class: "btn btn-primary btn-lg flex-shrink-0 search-submit-btn" %>
+                        <%= link_to t("search.form.reset"), search_path, class: "btn btn-outline-primary btn-lg flex-shrink-0" %>
+                      </div>
                     </div>
-                  </div>
-                  <div class="col-12 col-lg-3 d-grid gap-2">
-                    <%= form.submit t("actions.search"), class: "btn btn-primary btn-lg" %>
-                    <%= link_to t("search.form.reset"), search_path, class: "btn btn-outline-secondary btn-sm" %>
                   </div>
                 </div>
 
-                <div class="border-top mt-3 pt-3">
-                  <p class="fw-semibold mb-2"><%= t("search.filters.title") %></p>
-                  <div class="d-flex flex-wrap gap-3 align-items-center">
-                    <% all_selected = (@selected_categories.sort == @all_categories.sort) %>
-                    <div class="form-check form-check-inline">
-                      <%= check_box_tag "categories_all",
-                                        "all",
-                                        all_selected,
-                                        id: "search-category-all",
-                                        class: "form-check-input",
-                                        data: { action: "change->search-filters#toggleAll" } %>
-                      <%= label_tag "search-category-all", t("search.filters.select_all"), class: "form-check-label" %>
-                    </div>
-                    <% @all_categories.each do |category| %>
-                      <% id = "search-category-#{category}" %>
-                      <div class="form-check form-check-inline">
-                        <%= check_box_tag "categories[]",
-                                          category,
-                                          @selected_categories.include?(category),
-                                          id: id,
-                                          class: "form-check-input" %>
-                        <%= label_tag id, t("search.categories.#{category}"), class: "form-check-label" %>
+                <div class="border-top mt-4 pt-4">
+                  <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center justify-content-between">
+                    <div class="d-flex flex-column flex-md-row gap-3 align-items-md-center flex-wrap">
+                      <p class="fw-semibold mb-0"><%= t("search.filters.title") %></p>
+                      <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <% all_selected = (@selected_categories.sort == @all_categories.sort) %>
+                        <div class="form-check form-check-inline mb-0">
+                          <%= check_box_tag "categories_all",
+                                            "all",
+                                            all_selected,
+                                            id: "search-category-all",
+                                            class: "form-check-input",
+                                            data: { action: "change->search-filters#toggleAll" } %>
+                          <%= label_tag "search-category-all", t("search.filters.select_all"), class: "form-check-label mb-0" %>
+                        </div>
+                        <% @all_categories.each do |category| %>
+                          <% id = "search-category-#{category}" %>
+                          <div class="form-check form-check-inline mb-0">
+                            <%= check_box_tag "categories[]",
+                                              category,
+                                              @selected_categories.include?(category),
+                                              id: id,
+                                              class: "form-check-input" %>
+                            <%= label_tag id, t("search.categories.#{category}"), class: "form-check-label mb-0" %>
+                          </div>
+                        <% end %>
                       </div>
-                    <% end %>
-                    <div class="ms-auto">
+                    </div>
+                    <div class="flex-shrink-0">
                       <button type="button"
-                              class="btn btn-outline-primary btn-sm"
+                              class="btn btn-outline-primary btn-lg"
                               data-action="click->search-filters#submit">
                         <%= t("search.filters.apply") %>
                       </button>
@@ -144,17 +136,6 @@
           <% end %>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right Ad Banner (columns 11-12) -->
-    <div class="col-lg-2 d-none d-lg-block side-banner ps-5 pe-5">
-      <div class="card h-100 rounded-0 border-0 border-start position-relative overflow-hidden" style="border-radius: 0 !important; background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&h=800&fit=crop'); background-size: cover; background-position: center;">
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);"></div>
-        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center p-3 position-relative z-1">
-          <p class="fw-semibold mb-1 text-white">Sponsors</p>
-          <p class="text-white-50 small mb-0"><%= t("pages.home.ads.supporting_text") %></p>
         </div>
       </div>
     </div>

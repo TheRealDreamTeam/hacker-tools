@@ -14,6 +14,11 @@ en:
         most_followed: "Most Followed"
     new:
       title: "Create Submission"
+      description_title: "Share Your Discoveries! 🚀"
+      description_text: "Found something amazing? Share it with the community! Just paste a URL to any article, guide, documentation, or helpful resource. Our system automatically extracts the title and description, then processes it for everyone to discover. Help others learn and grow by sharing what you've found!"
+      step_1: "Enter the URL of the content you want to share"
+      step_2: "We'll automatically extract the title and description from the page"
+      step_3: "Your submission will be processed and made available to the community"
     edit:
       title: "Edit Submission"
     show:
@@ -28,6 +33,7 @@ en:
       flags_title: "Flags"
       bugs_title: "Bugs"
       related_tools_title: "Related Tools"
+      not_found: "Submission not found or you don't have permission to view it."
     by_user: "by %{user}"
     about_tool: "About %{tool}"
     about_tools: "About %{tools}"
@@ -68,6 +74,9 @@ en:
       submission_description_hint: "Description of the submission (optional, will be auto-filled from URL)"
       author_note: "Author Note"
       author_note_hint: "Optional description or notes about this submission"
+      author_note_placeholder: "Add any additional context or notes about this submission..."
+      optional: "optional"
+      submit: "Submit"
       tools: "Related Tools"
       tools_hint: "Select one or more tools this submission is about"
       tool: "Related Tool"

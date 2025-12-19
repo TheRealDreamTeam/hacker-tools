@@ -69,7 +69,9 @@ Rails.application.configure do
   # CRITICAL: Always compile assets on-the-fly in development
   # Never use precompiled assets - always compile fresh from source
   config.assets.compile = true
-  config.assets.digest = false
+  # Enable digest in development to match production behavior for importmap fallback
+  # This ensures assets with hyphens (like stimulus-loading.js) are processed correctly
+  config.assets.digest = true
   # Ensure Rails doesn't use precompiled assets even if they exist
   config.public_file_server.enabled = true
 

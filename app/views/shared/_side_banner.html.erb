@@ -1,0 +1,52 @@
+<%# 
+  Side banner partial for sponsor/advertising banners
+  Usage: render "shared/side_banner", position: "left", used_images: []
+  
+  Parameters:
+  - position: "left" or "right" (determines which image to use)
+  - used_images: array of already used image names (to prevent duplicates)
+  - Available images: eventease-banner.png, pato-gym.png, doglog-banner.png, storypile-banner.png
+%>
+<% 
+  # All available banner images
+  all_images = ["eventease-banner.png", "pato-gym.png", "doglog-banner.png", "storypile-banner.png"]
+  
+  # Get already used images from local variable (should always be passed from parent view)
+  # Arrays are passed by reference, so modifications to this array will persist
+  used_images = local_assigns[:used_images] || []
+  
+  # Filter out already used images to ensure left and right banners are different
+  available_images = all_images - used_images
+  
+  # If no available images (shouldn't happen with 4 images and 2 banners), fallback to all images
+  available_images = all_images if available_images.empty?
+  
+  # Randomly select an image from available ones
+  image_name = available_images.sample
+  
+  # Add selected image to used_images array (this modifies the original array passed from parent)
+  used_images << image_name
+  
+  # Use image_path for images in app/assets/images
+  # image_path automatically handles URL encoding for spaces and special characters
+  # It's the Rails helper specifically designed for image assets
+  begin
+    # Try to get the image path - this will raise an error in development if not found
+    image_path_value = image_path("banners/#{image_name}")
+  rescue => e
+    # Log error if image not found, but continue with fallback
+    Rails.logger.error "Banner image not found: banners/#{image_name} - #{e.class}: #{e.message}"
+    image_path_value = nil
+  end
+  
+%>
+<div class="col-lg-2 d-none d-lg-block side-banner">
+  <% if image_path_value %>
+    <%= image_tag image_path_value, 
+        alt: "Banner advertisement", 
+        class: "side-banner-image" %>
+  <% else %>
+    <div class="side-banner-fallback" style="width: 100%; min-height: 80vh; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.5rem;"></div>
+  <% end %>
+</div>
+

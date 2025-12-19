@@ -82,9 +82,14 @@
       }
       
       /* Add padding-top to content to account for fixed navbar */
-      /* Navbar has min-height: 60px + padding: 1rem 0 (16px top + 16px bottom) = ~92px total */
+      /* Navbar height: 68.57px on mobile, 72.57px on desktop */
       .page-transition-content {
-        padding-top: 92px; /* Account for navbar full height including padding */
+        padding-top: 68.57px; /* Mobile navbar height */
+      }
+      @media (min-width: 992px) {
+        .page-transition-content {
+          padding-top: 72.57px; /* Desktop navbar height */
+        }
       }
       
       /* Fallback: Show content if JavaScript fails to load (after 1 second) */
@@ -106,7 +111,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body data-controller="page-transition" style="visibility: hidden; opacity: 0;" class="d-flex flex-column min-vh-100">
+  <body data-controller="page-transition" style="visibility: hidden; opacity: 0;" class="d-flex flex-column min-vh-100 <%= 'read-only-page' if controller_name == 'pages' && ['newest_articles', 'user_guide', 'about_us'].include?(action_name) %>">
     <%= render "shared/navbar" %>
     <div id="main-content" class="page-transition-content flex-grow-1">
       <div id="flash-messages">

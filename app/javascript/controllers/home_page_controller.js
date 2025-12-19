@@ -60,7 +60,7 @@ export default class extends Controller {
 
       panels.forEach((panel) => {
         const isTarget = panel.dataset.categoryPanel === category
-        panel.classList.toggle("d-none", !isTarget)
+        panel.classList.toggle("category-panel-hidden", !isTarget)
       })
     }
 

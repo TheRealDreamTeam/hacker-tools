@@ -295,7 +295,7 @@ en:
     form:
       label: "Search"
       placeholder: "Search tools, submissions, tags, users, or lists"
-      reset: "Clear search"
+      reset: "Clear"
     filters:
       title: "Filter categories"
       select_all: "Select all"
@@ -346,6 +346,7 @@ en:
     too_short: "is too short"
     too_long: "is too long"
     taken: "has already been taken"
+    unauthorized: "You are not authorized to perform this action."
     pages:
       not_found_title: "Page not found"
       internal_server_error_title: "Something went wrong"
@@ -366,6 +367,9 @@ en:
       followers: "Followers"
       following: "Following"
       user_not_found: "User not found"
+      info:
+        title: "Share Your Journey! 🌟"
+        description: "Your profile is your public presence on HackerTools! People can follow you to discover your submissions, upvoted tools, and curated lists. Build your reputation, connect with the community, and showcase your expertise. Every submission, comment, and upvote helps others learn from your discoveries."
       tabs:
         posts: "Posts"
         submissions: "Submissions"
@@ -389,6 +393,9 @@ en:
   dashboard:
     title: "Dashboard"
     subtitle: "Your private view of activity across tools, lists, and discussions."
+    onboarding:
+      title: "Welcome to Your Dashboard! 🚀"
+      description: "This is your personal command center! Start by sharing a submission, creating a list, or exploring tools. Your activity, favorites, and follows will appear here. The more you engage, the more useful your dashboard becomes!"
     metrics:
       tools: "Tools"
       submissions: "Submissions"
@@ -561,11 +568,60 @@ en:
       submit_button: "Update lists"
       no_lists_message: "You don't have any lists yet. Create your first list to get started!"
       create_list_button: "Create new list"
+    new:
+      title: "Create New List"
+      info:
+        title: "Organize Your Favorites! 🎯"
+        description: "Lists are your personal collections of tools and submissions. Create lists for projects, topics, or anything that sparks your interest. Build your knowledge base, share with others, or keep it private—it's all up to you!"
+      form:
+        list_name: "List Name"
+        list_name_placeholder: "e.g., My Favorite Tools, React Resources, Learning Path"
+        list_name_hint: "Choose a descriptive name that helps you organize your collection"
+        visibility: "Visibility"
+        public: "Public"
+        public_hint: "Anyone can see and follow your list"
+        private: "Private"
+        private_hint: "Only you can see this list"
+        submit: "Create List"
+    index:
+      title: "Your Lists"
+      create_new: "Create new list"
+      private: "Private"
+      public: "Public"
+      item_count:
+        one: "1 item"
+        other: "%{count} items"
+      confirm_delete: "Are you sure you want to delete this list?"
+      empty_state: "You have no lists yet. Create your first list to get started!"
+      description_title: "Organize Your Favorites! 🎯"
+      description_text: "Lists are your personal collections of tools and submissions. Create lists for projects, topics, or anything that sparks your interest. Build your knowledge base, share with others, or keep it private—it's all up to you!"
+      info:
+        title: "What are Lists?"
+        description: "Lists help you organize and save your favorite tools and submissions. Create collections for different projects, topics, or purposes."
+        step_1: "Create a list and give it a name"
+        step_2: "Add tools and submissions to your list from their pages"
+        step_3: "Share your public lists with the community or keep them private"
     show:
       not_found: "List not found"
       access_denied: "You don't have permission to view this list"
       by_user: "by %{username}"
       add_item: "Add item"
+      private: "Private"
+      public: "Public"
+      visibility_label: "List visibility"
+      items_title: "Items in this list"
+      item_type:
+        tool: "Tool"
+        submission: "Submission"
+      remove_item: "Remove"
+      confirm_remove: "Are you sure you want to remove this item from the list?"
+      empty_state: "No items in this list yet. Add tools or submissions to get started!"
+      info:
+        title: "How Lists Work"
+        description: "Lists are collections of tools and submissions that you can organize and share. Add items from their pages to build your collection."
+        step_1: "Browse tools and submissions on the site"
+        step_2: "Click 'Add to lists' on any tool or submission page"
+        step_3: "Select this list to add the item, or create a new list"
     follow:
       follow: "Follow"
       unfollow: "Unfollow"
@@ -589,6 +645,9 @@ en:
     all_marked_as_read: "All notifications marked as read"
     mark_all_as_read: "Mark all as read"
     view_all: "View all notifications"
+    info:
+      title: "Stay in the Loop! 🔔"
+      description: "Get notified when people comment on your submissions, reply to your comments, or when followed users share new content. Notifications update in real-time, so you'll never miss important updates!"
     new_submission_from_followed_user:
       message: "%{username} created a new submission: %{submission_name}"
     new_submission_on_followed_tool:

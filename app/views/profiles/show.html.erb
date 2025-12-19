@@ -1,27 +1,26 @@
-<!-- Full-width layout with side banners -->
-<div class="container-fluid px-0">
-  <div class="row g-0">
-    <!-- Left Ad Banner (columns 1-2) - extended inward toward main content -->
-    <div class="col-lg-2 d-none d-lg-block side-banner ps-5 pe-5">
-      <div class="card h-100 rounded-0 border-0 border-end position-relative overflow-hidden" style="border-radius: 0 !important; background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=300&h=800&fit=crop'); background-size: cover; background-position: center;">
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);"></div>
-        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center p-3 position-relative z-1">
-          <p class="fw-semibold mb-1 text-white">Sponsors</p>
-          <p class="text-white-50 small mb-0"><%= t("pages.home.ads.supporting_text") %></p>
+<!-- Full-width layout -->
+<div class="container py-4">
+<div class="container mt-4">
+  <!-- Information panel for profile owner -->
+  <% if @is_own_profile %>
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card shadow-sm mb-4" style="border-radius: 0.75rem;">
+          <div class="card-body">
+            <h5 class="card-title mb-2"><%= t("profiles.show.info.title") %></h5>
+            <p class="card-text text-muted mb-0"><%= t("profiles.show.info.description") %></p>
+          </div>
         </div>
       </div>
     </div>
+  <% end %>
 
-    <!-- Main Content (columns 3-10) - adjusted for wider banners -->
-    <div class="col-12 col-lg-8">
-      <div class="container py-4">
-<div class="container mt-4">
   <!-- Profile Header -->
   <div class="row mb-4">
     <div class="col-12">
       <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-start gap-4 mb-3">
+        <div class="card-body pb-3">
+          <div class="d-flex align-items-start gap-4">
             <!-- Avatar -->
             <div>
               <% if @user.avatar.attached? %>
@@ -79,13 +78,12 @@
     </div>
   </div>
 
-  <!-- Horizontal Spacer -->
-  <hr class="my-4">
-
   <!-- Activity Tabs -->
   <div class="row">
     <div class="col-12">
-      <ul class="nav nav-tabs mb-4" id="profileTabs" role="tablist">
+      <div class="card">
+        <div class="card-body">
+          <ul class="nav nav-tabs" id="profileTabs" role="tablist">
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab">
             <%= t("profiles.show.tabs.submissions") %> (<%= @public_submissions.count %>)
@@ -112,35 +110,10 @@
         <!-- Submissions Tab -->
         <div class="tab-pane fade show active" id="posts" role="tabpanel">
           <% if @public_submissions.any? %>
-            <div class="list-group">
+            <div class="row row-cols-1 row-cols-md-3 g-3">
               <% @public_submissions.each do |submission| %>
-                <div class="list-group-item">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                      <h5 class="mb-1">
-                        <%= link_to submission.submission_name.presence || submission.submission_url, submission_path(submission), class: "text-decoration-none" %>
-                      </h5>
-                      <div class="d-flex align-items-center gap-2 mb-1">
-                        <span class="badge bg-primary" style="font-size: 0.75rem;">
-                          <%= t("submissions.types.#{submission.submission_type}") %>
-                        </span>
-                        <% if submission.tools.any? %>
-                          <span class="text-muted small">
-                            <%= raw t("submissions.about_tools", tools: submission.tools.map { |t| link_to(t.tool_name, tool_path(t), class: "text-decoration-none") }.join(", ").html_safe) %>
-                          </span>
-                        <% end %>
-                      </div>
-                      <% if submission.submission_description.presence || submission.author_note.present? %>
-                        <p class="mb-1 text-muted"><%= truncate(submission.submission_description.presence || submission.author_note, length: 150) %></p>
-                      <% end %>
-                      <small class="text-muted">
-                        <%= l(submission.created_at, format: :short) %>
-                        <% if submission.tags.any? %>
-                          • <%= submission.tags.limit(3).pluck(:tag_name).join(", ") %>
-                        <% end %>
-                      </small>
-                    </div>
-                  </div>
+                <div class="col">
+                  <%= render "submissions/submission_card_compact", submission: submission %>
                 </div>
               <% end %>
             </div>
@@ -152,25 +125,27 @@
         <!-- Comments Tab -->
         <div class="tab-pane fade" id="comments" role="tabpanel">
           <% if @public_comments.any? %>
-            <div class="list-group">
+            <div class="row row-cols-1 row-cols-md-3 g-3">
               <% @public_comments.each do |comment| %>
-                <div class="list-group-item">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                      <h6 class="mb-1">
+                <div class="col">
+                  <div class="card shadow-sm h-100 card-hover">
+                    <div class="card-body">
+                      <h6 class="card-title mb-2">
                         <% if comment.commentable_type == "Tool" %>
                           <%= link_to comment.commentable.tool_name, tool_path(comment.commentable), class: "text-decoration-none" %>
                         <% elsif comment.commentable_type == "Submission" %>
                           <%= link_to comment.commentable.submission_name.presence || comment.commentable.submission_url, submission_path(comment.commentable), class: "text-decoration-none" %>
                         <% end %>
                       </h6>
-                      <p class="mb-1"><%= truncate(comment.comment, length: 200) %></p>
-                      <small class="text-muted">
-                        <%= l(comment.created_at, format: :short) %>
+                      <p class="card-text text-muted mb-2"><%= truncate(comment.comment, length: 150) %></p>
+                      <div class="d-flex align-items-center gap-2">
+                        <small class="text-muted">
+                          <%= l(comment.created_at, format: :short) %>
+                        </small>
                         <% if comment.comment_type != "comment" %>
-                          • <span class="badge bg-secondary"><%= comment.comment_type.humanize %></span>
+                          <span class="badge bg-secondary text-white"><%= comment.comment_type.humanize %></span>
                         <% end %>
-                      </small>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -184,25 +159,10 @@
         <!-- Upvotes Tab -->
         <div class="tab-pane fade" id="upvotes" role="tabpanel">
           <% if @public_upvoted_tools.any? %>
-            <div class="list-group">
+            <div class="row row-cols-1 row-cols-md-3 g-3">
               <% @public_upvoted_tools.each do |tool| %>
-                <div class="list-group-item">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div class="flex-grow-1">
-                      <h5 class="mb-1">
-                        <%= link_to tool.tool_name, tool_path(tool), class: "text-decoration-none" %>
-                      </h5>
-                      <% if tool.tool_description.present? %>
-                        <p class="mb-1 text-muted"><%= truncate(tool.tool_description, length: 150) %></p>
-                      <% end %>
-                      <small class="text-muted">
-                        <%# Tools are community-owned, no owner to display %>
-                        <% if tool.tags.any? %>
-                          <%= tool.tags.limit(3).pluck(:tag_name).join(", ") %>
-                        <% end %>
-                      </small>
-                    </div>
-                  </div>
+                <div class="col">
+                  <%= render "pages/tool_card_compact", tool: tool %>
                 </div>
               <% end %>
             </div>
@@ -214,9 +174,48 @@
         <!-- Lists Tab -->
         <div class="tab-pane fade" id="lists" role="tabpanel">
           <% if @public_lists.any? %>
-            <div class="list-group">
+            <div class="row row-cols-1 row-cols-md-3 g-3">
               <% @public_lists.each do |list| %>
-                <%= render "profiles/list_card", list: list %>
+                <div class="col">
+                  <div class="card shadow-sm h-100 card-hover">
+                    <div class="card-body">
+                      <h5 class="card-title mb-2">
+                        <%= link_to list.list_name, list_path(list), class: "text-decoration-none" %>
+                      </h5>
+                      <p class="card-text text-muted small mb-2">
+                        <%= l(list.created_at, format: :short) %>
+                        • <%= t("profiles.show.tabs.tools_count", count: list.tools.count) %>
+                        <% unless user_signed_in? && list.user == current_user && @user == current_user %>
+                          • <%= t("profiles.show.tabs.by_user", username: link_to(list.user.username, profile_path(list.user.username), class: "text-decoration-none")).html_safe %>
+                        <% end %>
+                        <span id="<%= dom_id(list, 'follow') %>-count">
+                          <% if list.follower_count > 0 %>
+                            • <%= t("profiles.show.followers") %>: <%= list.follower_count %>
+                          <% end %>
+                        </span>
+                      </p>
+                      <% if user_signed_in? && current_user != list.user %>
+                        <div id="<%= dom_id(list, 'follow') %>" class="follow-button-container">
+                          <% if @followed_list_ids.include?(list.id) %>
+                            <%= button_to unfollow_list_path(list),
+                                method: :delete,
+                                class: "btn btn-outline-secondary btn-sm",
+                                data: { turbo: true } do %>
+                              <%= t("lists.follow.unfollow") %>
+                            <% end %>
+                          <% else %>
+                            <%= button_to follow_list_path(list),
+                                method: :post,
+                                class: "btn btn-primary btn-sm",
+                                data: { turbo: true } do %>
+                              <%= t("lists.follow.follow") %>
+                            <% end %>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
               <% end %>
             </div>
           <% else %>
@@ -224,20 +223,9 @@
           <% end %>
         </div>
       </div>
-    </div>
-  </div>
-</div>
+        </div>
       </div>
     </div>
-
-    <!-- Right Ad Banner (columns 11-12) - extended inward toward main content -->
-    <div class="col-lg-2 d-none d-lg-block side-banner ps-5 pe-5">
-      <div class="card h-100 rounded-0 border-0 border-start position-relative overflow-hidden" style="border-radius: 0 !important; background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&h=800&fit=crop'); background-size: cover; background-position: center;">
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);"></div>
-        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center p-3 position-relative z-1">
-          <p class="fw-semibold mb-1 text-white">Sponsors</p>
-          <p class="text-white-50 small mb-0"><%= t("pages.home.ads.supporting_text") %></p>
-        </div>
       </div>
     </div>
   </div>

@@ -13,11 +13,29 @@ export default class extends Controller {
   connect() {
     this.timeout = null
     this.lastRequestedQuery = ""
+    
+    // Bind event handlers so we can remove them later
+    this.boundClickOutside = this.handleClickOutside.bind(this)
+    this.boundKeyDown = this.handleKeyDown.bind(this)
+    
+    // Listen for clicks outside the input and panel to dismiss suggestions
+    document.addEventListener("click", this.boundClickOutside, true)
+    
+    // Listen for ESC key to dismiss suggestions
+    if (this.hasInputTarget) {
+      this.inputTarget.addEventListener("keydown", this.boundKeyDown)
+    }
   }
 
   disconnect() {
     if (this.timeout) {
       clearTimeout(this.timeout)
+    }
+    
+    // Remove event listeners
+    document.removeEventListener("click", this.boundClickOutside, true)
+    if (this.hasInputTarget) {
+      this.inputTarget.removeEventListener("keydown", this.boundKeyDown)
     }
   }
 
@@ -57,6 +75,22 @@ export default class extends Controller {
       })
     }
 
+    // Check if this is the navbar panel or homepage panel (both should have sticky footer)
+    const isNavbar = this.panelTarget.id === "navbar-search-suggestions" || 
+                     this.panelTarget.id === "mobile-search-suggestions" ||
+                     this.panelTarget.hasAttribute("data-is-navbar")
+    const isHomepage = this.panelTarget.id === "home-search-suggestions"
+    
+    // Add navbar flag to URL if it's the navbar or homepage (both get sticky footer)
+    if (isNavbar || isHomepage) {
+      url.searchParams.set("navbar", "true")
+    }
+    
+    // Add homepage flag to URL if it's the homepage (for positioning above input)
+    if (isHomepage) {
+      url.searchParams.set("homepage", "true")
+    }
+
     fetch(url.toString(), {
       headers: {
         Accept: "text/html"
@@ -78,14 +112,50 @@ export default class extends Controller {
   }
 
   // Hide on blur from the input
+  // Use a longer delay to ensure click events on suggestions can fire before panel is cleared
   hide() {
     if (!this.hasPanelTarget) return
 
-    // Defer clearing so click events on suggestions can still fire
+    // Defer clearing with longer delay so click events on suggestions can fire
+    // This allows users to click on suggestion links before the panel disappears
     setTimeout(() => {
-      this.panelTarget.innerHTML = ""
-      this.lastRequestedQuery = ""
-    }, 0)
+      // Only hide if the panel still exists and user hasn't focused back on input
+      if (this.hasPanelTarget && (!this.hasInputTarget || document.activeElement !== this.inputTarget)) {
+        this.dismiss()
+      }
+    }, 200) // Increased from 0ms to 200ms to allow click events to complete
+  }
+
+  // Handle clicks outside the input and panel to dismiss suggestions
+  handleClickOutside(event) {
+    if (!this.hasPanelTarget || !this.panelTarget.innerHTML) return
+
+    // Check if click is outside both the input and the panel
+    const clickedInput = this.hasInputTarget && (this.inputTarget === event.target || this.inputTarget.contains(event.target))
+    const clickedPanel = this.panelTarget === event.target || this.panelTarget.contains(event.target)
+    
+    // If click is outside both, dismiss the suggestions
+    if (!clickedInput && !clickedPanel) {
+      this.dismiss()
+    }
+  }
+
+  // Handle ESC key to dismiss suggestions
+  handleKeyDown(event) {
+    if (event.key === "Escape" || event.keyCode === 27) {
+      this.dismiss()
+      // Optionally blur the input to remove focus
+      if (this.hasInputTarget) {
+        this.inputTarget.blur()
+      }
+    }
+  }
+
+  // Dismiss suggestions panel
+  dismiss() {
+    if (!this.hasPanelTarget) return
+    this.panelTarget.innerHTML = ""
+    this.lastRequestedQuery = ""
   }
 }
 

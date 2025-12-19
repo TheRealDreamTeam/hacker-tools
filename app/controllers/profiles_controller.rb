@@ -9,8 +9,10 @@ class ProfilesController < ApplicationController
   def show
     # Load public data for the profile
     # Show user's submissions (completed ones are public by default)
+    # Exclude rejected submissions unless viewing own profile
     @public_submissions = @user.submissions
       .completed
+      .public_or_owned_by(current_user)
       .includes(:tools, :tags, :user)
       .order(created_at: :desc)
       .limit(20)

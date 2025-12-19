@@ -7,12 +7,10 @@
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= link_to t("navigation.profile"), profile_path(current_user.username),
-        class: "nav-link",
-        data: { turbo_prefetch: false } %>
+    <hr class="my-2">
   </li>
   <li class="nav-item">
-    <%= link_to t("navigation.dashboard"), dashboard_path,
+    <%= link_to t("navigation.tools"), tools_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
@@ -22,7 +20,15 @@
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= link_to t("navigation.tools"), tools_path,
+    <%= link_to t("navigation.tags"), tags_path,
+        class: "nav-link",
+        data: { turbo_prefetch: false } %>
+  </li>
+  <li class="nav-item">
+    <hr class="my-2">
+  </li>
+  <li class="nav-item">
+    <%= link_to t("navigation.dashboard"), dashboard_path,
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
@@ -32,7 +38,7 @@
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= link_to t("navigation.tags"), tags_path,
+    <%= link_to t("navigation.profile"), profile_path(current_user.username),
         class: "nav-link",
         data: { turbo_prefetch: false } %>
   </li>
@@ -42,8 +48,11 @@
         data: { turbo_prefetch: false } %>
   </li>
   <li class="nav-item">
-    <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false }, local: true, class: "d-inline m-0" do |f| %>
-      <%= f.submit t("navigation.logout"), class: "btn btn-link nav-link text-decoration-none border-0 bg-transparent shadow-none" %>
+    <hr class="my-2">
+  </li>
+  <li class="nav-item">
+    <%= form_with url: destroy_user_session_path, method: :delete, data: { turbo: false }, local: true, class: "w-100 m-0" do |f| %>
+      <%= f.submit t("navigation.logout"), class: "btn btn-link nav-link text-decoration-none border-0 bg-transparent shadow-none w-100 text-start" %>
     <% end %>
   </li>
   <% else %>

@@ -457,6 +457,50 @@ Before implementing any RubyLLM feature, you MUST:
 4. Test with the documented patterns
 5. Reference the documentation URL in code comments for future maintainers
 
+## Context7 Documentation Usage
+
+**CRITICAL**: Context7 is available as an MCP server for retrieving up-to-date library documentation and code examples. Use Context7 when you need documentation, setup instructions, or API references.
+
+### When to Use Context7
+- **Code generation**: When generating code that uses external libraries or frameworks
+- **Setup/configuration**: When setting up new libraries, tools, or frameworks
+- **Library/API documentation**: When you need current documentation for any library or API
+- **Best practices**: When looking for implementation patterns and best practices
+- **API references**: When you need to verify correct API usage, method signatures, or parameters
+
+### Context7 Usage Guidelines
+- **Automatic usage**: Use Context7 automatically when documentation is needed - don't wait for explicit user request
+- **Resolve library ID first**: Use `mcp_context7_resolve-library-id` to find the correct library identifier before fetching docs
+- **Use appropriate mode**: 
+  - Use `mode: "code"` (default) for API references, code examples, and implementation details
+  - Use `mode: "info"` for conceptual guides, architectural information, and narrative documentation
+- **Pagination**: If initial results are insufficient, use the `page` parameter to fetch additional documentation
+- **Topic focus**: Use the `topic` parameter to narrow documentation to specific areas (e.g., "hooks", "routing", "authentication")
+
+### Context7 Workflow
+1. **Identify the library**: Determine which library/framework you need documentation for
+2. **Resolve library ID**: Call `mcp_context7_resolve-library-id` with the library name
+3. **Select best match**: Choose the most relevant library from the results (consider name similarity, description, documentation coverage, reputation, benchmark score)
+4. **Fetch documentation**: Call `mcp_context7_get-library-docs` with the resolved library ID
+5. **Use appropriate mode**: Select `code` or `info` mode based on what you need
+6. **Iterate if needed**: Use `page` and `topic` parameters to get more specific documentation
+
+### Best Practices
+- **Always resolve first**: Don't assume library IDs - always use `resolve-library-id` unless the user provides an explicit library ID in `/org/project` format
+- **Choose quality matches**: Prioritize libraries with higher benchmark scores, better documentation coverage, and good reputation
+- **Use topic parameter**: When you know what you need (e.g., "authentication", "routing"), use the `topic` parameter to get focused results
+- **Reference in code**: When using Context7 documentation, consider adding a comment referencing the source for future maintainers
+- **Verify patterns**: Use Context7 to verify that implementation patterns match current best practices
+
+### Example Usage Pattern
+```ruby
+# When implementing a feature with a library:
+# 1. Resolve library ID
+# 2. Fetch documentation with appropriate mode and topic
+# 3. Follow the documented patterns exactly
+# 4. Reference the documentation in code comments if helpful
+```
+
 ## Project-Specific Patterns
 
 ### Rails MVC Patterns

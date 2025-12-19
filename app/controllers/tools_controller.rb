@@ -1,8 +1,8 @@
 class ToolsController < ApplicationController
   before_action :authenticate_user!, except: %i[index show]
   before_action :set_tool, only: %i[show edit update destroy add_tag remove_tag upvote favorite follow]
-  # TODO: Re-enable authorization when we decide on permissions (admin-only or open editing)
-  # before_action :authorize_owner!, only: %i[edit update destroy add_tag remove_tag]
+  # Admin-only actions: editing, deleting, and managing tags
+  before_action :require_admin!, only: %i[new create edit update destroy add_tag remove_tag]
 
   # GET /tools
   def index
@@ -67,7 +67,9 @@ class ToolsController < ApplicationController
 
     # Load related submissions for this tool, sorted by newest (most recent first)
     # Eager load associations to avoid N+1 queries when rendering submission cards
+    # Exclude rejected submissions for non-owners
     @related_submissions = @tool.submissions
+                                 .public_or_owned_by(current_user)
                                  .includes(:user, :tools, :tags, :user_submissions)
                                  .order(created_at: :desc)
   end
@@ -197,6 +199,9 @@ class ToolsController < ApplicationController
       end
     end
 
+    # Set flash message for both HTML and Turbo Stream responses
+    flash[:notice] = t("tools.flash.tool_follow")
+
     respond_to do |format|
       format.turbo_stream { render "tools/interaction_update" }
       format.html { redirect_back fallback_location: tool_path(@tool), notice: t("tools.flash.tool_follow") }
@@ -206,6 +211,7 @@ class ToolsController < ApplicationController
     # The follow now exists, so destroy it (toggle behavior)
     follow_record = current_user.follows.find_by(followable: @tool)
     follow_record&.destroy
+    flash[:notice] = t("tools.flash.tool_follow")
 
     respond_to do |format|
       format.turbo_stream { render "tools/interaction_update" }
@@ -272,6 +278,9 @@ class ToolsController < ApplicationController
     new_value = !user_tool.public_send(flag)
     user_tool.read_at ||= Time.current
     user_tool.update(flag => new_value, read_at: user_tool.read_at)
+
+    # Set flash message for both HTML and Turbo Stream responses
+    flash[:notice] = t("tools.flash.#{i18n_key}")
 
     respond_to do |format|
       format.turbo_stream { render "tools/interaction_update" }

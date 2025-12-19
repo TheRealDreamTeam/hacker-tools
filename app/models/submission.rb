@@ -92,6 +92,16 @@ class Submission < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :by_type, ->(type) { where(submission_type: submission_types[type]) }
   scope :for_tool, ->(tool) { joins(:submission_tools).where(submission_tools: { tool_id: tool.id }) }
+  
+  # Scope to exclude rejected submissions for non-owners
+  # Rejected submissions should only be visible to their owners
+  scope :public_or_owned_by, ->(user) {
+    if user
+      where("status != ? OR user_id = ?", statuses[:rejected], user.id)
+    else
+      where.not(status: statuses[:rejected])
+    end
+  }
 
   # Alphabetical sorting by submission name (case-insensitive)
   # Falls back to submission_url if submission_name is blank

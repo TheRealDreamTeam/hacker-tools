@@ -1,12 +1,15 @@
 <%# Suggestions dropdown shown under the search input on home and search pages %>
 <%# Uses keyword/full-text search only (no semantic) for fast typeahead %>
 <% any_items = results.values.any? { |res| res.items.present? } %>
+<% is_navbar = local_assigns[:is_navbar] || false %>
+<% is_homepage = local_assigns[:is_homepage] || false %>
 
 <% if query.blank? || !any_items %>
   <%# No suggestions to show - panel will be empty %>
 <% else %>
-  <div class="card shadow-sm position-absolute w-100 mt-1" style="z-index: 1050;">
-    <div class="card-body py-2">
+  <%# Position below input for all (homepage, navbar, search page) %>
+  <div class="card shadow-sm position-absolute w-100 mt-1" style="z-index: 1010; top: 100%; left: 0; max-height: 50vh; <%= is_navbar || is_homepage ? 'display: flex; flex-direction: column; overflow: hidden;' : 'overflow-y: auto;' %>">
+    <div class="card-body py-2" style="<%= 'overflow-y: auto; flex: 1; min-height: 0;' if (is_navbar || is_homepage) %>">
       <% selected_categories.each do |category| %>
         <% result = results[category] %>
         <% next if result.blank? || result.items.blank? %>
@@ -66,11 +69,13 @@
         </div>
       <% end %>
     </div>
-    <div class="card-footer py-1 text-end bg-light">
-      <%= link_to t("search.suggestions.view_all", query: query),
-                  search_path(query:, categories: selected_categories.map(&:to_s)),
-                  class: "small text-decoration-none" %>
-    </div>
+    <% if is_navbar || is_homepage %>
+      <div class="card-footer py-1 text-end bg-light" style="position: sticky; bottom: 0; z-index: 1; flex-shrink: 0;">
+        <%= link_to t("search.suggestions.view_all", query: query),
+                    search_path(query:, categories: selected_categories.map(&:to_s)),
+                    class: "small text-decoration-none" %>
+      </div>
+    <% end %>
   </div>
 <% end %>
 

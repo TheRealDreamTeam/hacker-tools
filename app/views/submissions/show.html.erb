@@ -5,15 +5,8 @@
 <div class="container-fluid px-0">
   <div class="row g-0">
     <!-- Left Ad Banner (columns 1-2) - extended inward toward main content -->
-    <div class="col-lg-2 d-none d-lg-block side-banner ps-5 pe-5">
-      <div class="card h-100 rounded-0 border-0 border-end position-relative overflow-hidden" style="border-radius: 0 !important; background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=300&h=800&fit=crop'); background-size: cover; background-position: center;">
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);"></div>
-        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center p-3 position-relative z-1">
-          <p class="fw-semibold mb-1 text-white">Sponsors</p>
-          <p class="text-white-50 small mb-0"><%= t("pages.home.ads.supporting_text") %></p>
-        </div>
-      </div>
-    </div>
+    <% used_images = [] %>
+    <%= render "shared/side_banner", position: "left", used_images: used_images %>
 
     <!-- Main Content (columns 3-10) - adjusted for wider banners -->
     <div class="col-12 col-lg-8">
@@ -27,9 +20,26 @@
             <div class="col-12">
               <div class="card shadow-sm d-flex flex-column position-relative" style="border: 4px solid #FFC65A !important;">
                 <div class="card-body d-flex flex-column position-relative" style="background-color: #fffbf0;">
-                  <!-- Submission Container with Title and Back Button on same height -->
-                  <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div>
+                  <!-- Edit/Delete Buttons (owner or admin) - Bottom Right Corner -->
+                  <% if @submission.user == current_user || admin_user? %>
+                    <div class="position-absolute bottom-0 end-0 mb-3 me-3 d-flex gap-2" style="z-index: 10;">
+                      <%= link_to t("actions.edit"), edit_submission_path(@submission), class: "btn btn-outline-primary btn-sm" %>
+                      <%= render "shared/confirmation_modal",
+                          id: "delete-submission-modal",
+                          title: t("submissions.confirmations.destroy_title"),
+                          message: t("submissions.confirmations.destroy_message"),
+                          confirm_text: t("actions.delete"),
+                          confirm_class: "btn-outline-danger",
+                          form_action: submission_path(@submission),
+                          form_method: :delete %>
+                      <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#delete-submission-modal">
+                        <%= t("actions.delete") %>
+                      </button>
+                    </div>
+                  <% end %>
+                  <!-- Submission Container with Title and Interaction Buttons -->
+                  <div class="row align-items-start mb-3">
+                    <div class="col-12 col-lg-9">
                       <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
                         <h1 class="h3 mb-0" id="submission-title">
                           <%= @submission.submission_name.presence || @submission.submission_url %>
@@ -51,11 +61,6 @@
                           </span>
                         <% end %>
                       </div>
-                      <p class="text-secondary mb-1 d-flex align-items-center gap-2">
-                        <span>
-                          <%= t("submissions.by_user", user: link_to(display_user_name(@submission.user), profile_path(@submission.user.username), class: "text-decoration-none")).html_safe %>
-                        </span>
-                      </p>
                       <div id="submission-tools-section">
                         <% if @submission.tools.any? %>
                           <p class="mb-0 text-secondary">
@@ -64,29 +69,12 @@
                         <% end %>
                       </div>
                     </div>
-                    <div class="d-flex gap-2 align-items-start">
-                      <!-- Back Button - same height as title -->
-                      <div>
-                        <% if @submission.user == current_user %>
-                          <%= link_to t("actions.edit"), edit_submission_path(@submission), class: "btn btn-outline-primary" %>
-                          <%= render "shared/confirmation_modal",
-                              id: "delete-submission-modal",
-                              title: t("submissions.confirmations.destroy_title"),
-                              message: t("submissions.confirmations.destroy_message"),
-                              confirm_text: t("actions.delete"),
-                              confirm_class: "btn-outline-danger",
-                              form_action: submission_path(@submission),
-                              form_method: :delete %>
-                          <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#delete-submission-modal">
-                            <%= t("actions.delete") %>
-                          </button>
-                        <% end %>
-                        <%= link_to t("actions.back"), submissions_path, class: "btn btn-secondary" %>
+                    <div class="col-12 col-lg-3">
+                      <div class="d-flex flex-column gap-2 align-items-lg-end align-items-start">
+                        <!-- Interaction Buttons -->
+                        <%= render "interaction_buttons", submission: @submission %>
                       </div>
                     </div>
-                  </div>
-                  <div class="mb-3">
-                    <%= render "interaction_buttons", submission: @submission %>
                   </div>
                   <div class="mb-4" id="submission-description-section">
                     <div class="row g-3 align-items-start">
@@ -123,12 +111,12 @@
                   <% end %>
                   
                   <!-- Tags -->
-                  <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div class="mb-2">
+                    <div class="d-flex align-items-center gap-2 mb-2">
                       <h2 class="h5 mb-0"><%= t("submissions.show.tags_title") %></h2>
-                      <% if @submission.user == current_user %>
-                        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#add-tag-form">
-                          <%= t("submissions.show.add_tag") %>
+                      <% if @submission.user == current_user || admin_user? %>
+                        <button class="btn btn-primary btn-sm square-plus-btn" type="button" data-bs-toggle="collapse" data-bs-target="#add-tag-form" aria-label="<%= t("submissions.show.add_tag") %>">
+                          <i class="bi bi-plus-lg"></i>
                         </button>
                       <% end %>
                     </div>
@@ -157,24 +145,54 @@
                       <% if @submission_tags.any? %>
                         <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
                           <% @submission_tags.each do |tag| %>
-                            <div class="d-inline-flex align-items-center gap-1">
-                              <%= render_tag_link(tag) %>
-                              <% if @submission.user == current_user %>
+                            <% 
+                              badge_class = tag_badge_class(tag)
+                              tooltip_title = tag.tag_description.presence || tag.display_name
+                              inline_styles = []
+                              if tag.respond_to?(:color) && tag.color.present?
+                                color_hex = color_name_to_hex(tag.color)
+                                inline_styles << "background-color: #{color_hex};"
+                                # Use white text for all badges (except yellow/light orange)
+                                if tag.color.downcase == "yellow" || tag.color.downcase == "light orange"
+                                  inline_styles << "color: #212529 !important;"
+                                else
+                                  inline_styles << "color: #ffffff !important;"
+                                end
+                              else
+                                # Ensure white text even when no color is set
+                                inline_styles << "color: #ffffff !important;"
+                              end
+                            %>
+                            <span class="badge <%= badge_class %> d-inline-flex align-items-center gap-2" 
+                                  style="<%= inline_styles.join(' ') %>"
+                                  data-bs-toggle="tooltip"
+                                  data-bs-title="<%= tooltip_title %>"
+                                  data-bs-placement="top"
+                                  title="<%= tooltip_title %>">
+                              <%= link_to tag.display_name, tag_path(tag), target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", style: "color: inherit;" %>
+                              <% if @submission.user == current_user || admin_user? %>
                                 <%= button_to "×",
                                             remove_tag_submission_path(@submission, tag_id: tag.id),
                                             method: :delete,
-                                            class: "btn btn-sm btn-outline-danger p-0",
-                                            style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
+                                            class: "btn btn-link p-0 border-0 bg-transparent shadow-none text-decoration-none",
+                                            style: "color: inherit; font-size: 1rem; line-height: 1; padding: 0 0 0 0.25rem !important; margin: 0; width: auto; height: auto; text-decoration: none !important;",
                                             title: t("submissions.actions.remove_tag"),
-                                            form: { data: { turbo: true } } %>
+                                            form: { data: { turbo: true }, style: "display: inline;" } %>
                               <% end %>
-                            </div>
+                            </span>
                           <% end %>
                         </div>
                       <% else %>
                         <p class="text-muted mb-0"><%= t("submissions.show.no_tags") %></p>
                       <% end %>
                     </div>
+                  </div>
+                  <div class="mt-1">
+                    <p class="text-secondary mb-0 d-flex align-items-center gap-2">
+                      <span>
+                        <%= t("submissions.by_user", user: link_to(display_user_name(@submission.user), profile_path(@submission.user.username), class: "text-decoration-none")).html_safe %>
+                      </span>
+                    </p>
                   </div>
                   <span class="position-absolute bottom-0 end-0 mb-1 me-1">
                     <%= render "submissions/read_state", submission: @submission %>
@@ -193,7 +211,7 @@
                   <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="discussion-tab" data-bs-toggle="tab" data-bs-target="#discussion" type="button" role="tab" aria-controls="discussion" aria-selected="true">
                       <%= t("submissions.show.comments_title") %>
-                      <span class="badge bg-secondary ms-2"><%= @comments.count.to_s %></span>
+                      <span class="badge bg-secondary text-white ms-2"><%= @comments.count.to_s %></span>
                     </button>
                   </li>
                   <li class="nav-item" role="presentation">
@@ -278,7 +296,7 @@
                               <% else %>
                                 <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
                               <% end %>
-                              <% if @submission.user == current_user %>
+                              <% if @submission.user == current_user || admin_user? %>
                                 <%= button_to t("comments.actions.toggle_resolve"),
                                             resolve_submission_comment_path(@submission, bug),
                                             method: :patch,
@@ -338,7 +356,7 @@
                               <% else %>
                                 <span class="badge bg-warning text-dark"><%= t("comments.labels.unresolved") %></span>
                               <% end %>
-                              <% if @submission.user == current_user %>
+                              <% if @submission.user == current_user || admin_user? %>
                                 <%= button_to t("comments.actions.toggle_resolve"),
                                             resolve_submission_comment_path(@submission, flag),
                                             method: :patch,
@@ -363,7 +381,7 @@
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                       <h2 class="h4 mb-0 fw-bold"><%= t("submissions.show.related_tools_title") %></h2>
-                      <span class="badge bg-secondary"><%= @submission.tools.size %></span>
+                      <span class="badge bg-secondary text-white"><%= @submission.tools.size %></span>
                     </div>
                     <div class="submission-show-related-tools row row-cols-1 g-3">
                       <% @submission.tools.each do |tool| %>
@@ -382,15 +400,7 @@
     </div>
 
     <!-- Right Ad Banner (columns 11-12) - extended inward toward main content -->
-    <div class="col-lg-2 d-none d-lg-block side-banner ps-5 pe-5">
-      <div class="card h-100 rounded-0 border-0 border-start position-relative overflow-hidden" style="border-radius: 0 !important; background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&h=800&fit=crop'); background-size: cover; background-position: center;">
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="background: linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.4) 100%);"></div>
-        <div class="card-body d-flex flex-column align-items-center justify-content-center text-center p-3 position-relative z-1">
-          <p class="fw-semibold mb-1 text-white">Sponsors</p>
-          <p class="text-white-50 small mb-0"><%= t("pages.home.ads.supporting_text") %></p>
-        </div>
-      </div>
-    </div>
+    <%= render "shared/side_banner", position: "right", used_images: used_images %>
   </div>
 </div>
 

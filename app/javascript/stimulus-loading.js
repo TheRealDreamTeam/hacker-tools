@@ -23,5 +23,18 @@ export function eagerLoadControllersFrom(controllersPath, application) {
   import("controllers/tag_form_controller").then(m => m.default && application.register("tag-form", m.default))
   import("controllers/tool_card_controller").then(m => m.default && application.register("tool-card", m.default))
   import("controllers/tooltip_controller").then(m => m.default && application.register("tooltip", m.default))
+  import("controllers/visibility_toggle_controller").then(m => {
+    console.log("Visibility toggle: Controller module loaded", m)
+    if (m.default) {
+      application.register("visibility-toggle", m.default)
+      console.log("Visibility toggle: Controller registered successfully")
+    } else {
+      console.error("Visibility toggle: Controller module has no default export", m)
+    }
+  }).catch(e => {
+    console.error("Failed to load visibility-toggle controller:", e)
+    console.error("Error stack:", e.stack)
+  })
+  import("controllers/inline_edit_controller").then(m => m.default && application.register("inline-edit", m.default)).catch(e => console.error("Failed to load inline-edit controller:", e))
   import("controllers/wave_text_controller").then(m => m.default && application.register("wave-text", m.default))
 }

@@ -2,18 +2,41 @@
   <% if @submission_tags.any? %>
     <div class="d-flex flex-wrap gap-2" data-controller="tooltip">
       <% @submission_tags.each do |tag| %>
-        <div class="d-inline-flex align-items-center gap-1">
-          <%= render_tag_link(tag) %>
-          <% if @submission.user == current_user %>
+        <% 
+          badge_class = tag_badge_class(tag)
+          tooltip_title = tag.tag_description.presence || tag.display_name
+          inline_styles = []
+          if tag.respond_to?(:color) && tag.color.present?
+            color_hex = color_name_to_hex(tag.color)
+            inline_styles << "background-color: #{color_hex};"
+            # Use white text for all badges (except yellow/light orange)
+            if tag.color.downcase == "yellow" || tag.color.downcase == "light orange"
+              inline_styles << "color: #212529 !important;"
+            else
+              inline_styles << "color: #ffffff !important;"
+            end
+          else
+            # Ensure white text even when no color is set
+            inline_styles << "color: #ffffff !important;"
+          end
+        %>
+        <span class="badge <%= badge_class %> d-inline-flex align-items-center gap-2" 
+              style="<%= inline_styles.join(' ') %>"
+              data-bs-toggle="tooltip"
+              data-bs-title="<%= tooltip_title %>"
+              data-bs-placement="top"
+              title="<%= tooltip_title %>">
+          <%= link_to tag.display_name, tag_path(tag), target: "_blank", rel: "noopener noreferrer", class: "text-decoration-none", style: "color: inherit;" %>
+          <% if @submission.user == current_user || admin_user? %>
             <%= button_to "×",
                         remove_tag_submission_path(@submission, tag_id: tag.id),
                         method: :delete,
-                        class: "btn btn-sm btn-outline-danger p-0",
-                        style: "width: 20px; height: 20px; line-height: 1; font-size: 14px;",
+                        class: "btn btn-link p-0 border-0 bg-transparent shadow-none text-decoration-none",
+                        style: "color: inherit; font-size: 1rem; line-height: 1; padding: 0 0 0 0.25rem !important; margin: 0; width: auto; height: auto; text-decoration: none !important;",
                         title: t("submissions.actions.remove_tag"),
-                        form: { data: { turbo: true } } %>
+                        form: { data: { turbo: true }, style: "display: inline;" } %>
           <% end %>
-        </div>
+        </span>
       <% end %>
     </div>
   <% else %>
