@@ -448,6 +448,7 @@ en:
   # Account Settings (custom, independent from Devise)
   account_settings:
     title: "Account Settings"
+    subtitle: "Manage your profile information and security settings."
     back: "Back to Profile"
     avatar:
       title: "Profile Picture"

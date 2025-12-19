@@ -56,6 +56,87 @@
       </div>
     </div>
 
+    <%# Show additional fields when editing (especially for admins) %>
+    <% if @submission.persisted? %>
+      <div class="col-12">
+        <label class="form-label fw-semibold mb-2">
+          <%= t("submissions.form.submission_name") %>
+          <span class="text-muted small fw-normal">(<%= t("submissions.form.optional") %>)</span>
+        </label>
+        <%= f.input :submission_name,
+            label: false,
+            input_html: { 
+              class: "form-control",
+              placeholder: t("submissions.form.submission_name_hint")
+            },
+            hint: t("submissions.form.submission_name_hint") %>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold mb-2">
+          <%= t("submissions.form.submission_description") %>
+          <span class="text-muted small fw-normal">(<%= t("submissions.form.optional") %>)</span>
+        </label>
+        <%= f.input :submission_description,
+            as: :text,
+            label: false,
+            input_html: { 
+              class: "form-control",
+              rows: 5,
+              placeholder: t("submissions.form.submission_description_hint")
+            },
+            hint: t("submissions.form.submission_description_hint") %>
+      </div>
+
+      <%# Tool selection (for admins) %>
+      <% if admin_user? && defined?(@available_tools) && @available_tools.present? %>
+        <div class="col-12">
+          <label class="form-label fw-semibold mb-2">
+            <%= t("submissions.form.tools") %>
+            <span class="text-muted small fw-normal">(<%= t("submissions.form.optional") %>)</span>
+          </label>
+          <div class="border rounded p-3" style="min-height: 150px; max-height: 300px; overflow-y: auto; background-color: #f8f9fa;">
+            <% @available_tools.each do |tool| %>
+              <div class="form-check">
+                <%= check_box_tag "submission[tool_ids][]", tool.id, @submission.tools.include?(tool), 
+                    id: "submission_tool_ids_#{tool.id}",
+                    class: "form-check-input" %>
+                <%= label_tag "submission_tool_ids_#{tool.id}", tool.tool_name, class: "form-check-label" %>
+              </div>
+            <% end %>
+          </div>
+          <small class="form-text text-muted"><%= t("submissions.form.tools_hint") %></small>
+        </div>
+      <% end %>
+
+      <%# Submission type and status (for admins only) %>
+      <% if admin_user? %>
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold mb-2">
+            <%= t("submissions.form.submission_type") %>
+          </label>
+          <%= f.input :submission_type,
+              as: :select,
+              collection: Submission.submission_types.keys.map { |type| [t("submissions.types.#{type}"), type] },
+              label: false,
+              input_html: { class: "form-select" },
+              hint: t("submissions.form.submission_type_hint") %>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold mb-2">
+            <%= t("submissions.form.status") %>
+          </label>
+          <%= f.input :status,
+              as: :select,
+              collection: Submission.statuses.keys.map { |status| [t("submissions.statuses.#{status}"), status] },
+              label: false,
+              input_html: { class: "form-select" },
+              hint: t("submissions.form.status_hint") %>
+        </div>
+      <% end %>
+    <% end %>
+
     <div class="col-12">
       <label class="form-label fw-semibold mb-2">
         <%= t("submissions.form.author_note") %>
@@ -77,12 +158,12 @@
   <div class="mt-4 pt-3 border-top d-flex gap-2">
     <%= f.button :submit, 
         class: "btn btn-primary btn-lg",
-        disabled: true,
+        disabled: @submission.new_record?,
         data: { submission_form_target: "submitButton" } do %>
       <i class="bi bi-send me-2"></i>
-      <%= t("submissions.form.submit") %>
+      <%= @submission.new_record? ? t("submissions.form.submit") : t("actions.update") %>
     <% end %>
-    <%= link_to t("actions.cancel"), submissions_path, class: "btn btn-outline-secondary btn-lg" %>
+    <%= link_to t("actions.cancel"), @submission.persisted? ? submission_path(@submission) : submissions_path, class: "btn btn-outline-secondary btn-lg" %>
   </div>
 <% end %>
 

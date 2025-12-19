@@ -82,6 +82,10 @@ en:
       tool: "Related Tool"
       tool_hint: "Optional - select a tool this submission is about"
       tool_prompt: "Select a tool (optional)"
+      submission_type: "Submission Type"
+      submission_type_hint: "Type of content (article, guide, documentation, etc.)"
+      status: "Status"
+      status_hint: "Processing status of the submission"
     confirmations:
       destroy_title: "Delete Submission"
       destroy_message: "Are you sure you want to delete this submission? This action cannot be undone."
