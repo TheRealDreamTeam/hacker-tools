@@ -119,6 +119,8 @@ class SubmissionsController < ApplicationController
 
   # GET /submissions/:id/edit
   def edit
+    # Load all public tools for selection (for admin editing)
+    @available_tools = Tool.public_tools.order(:tool_name) if admin_user?
   end
 
   # POST /submissions
@@ -173,10 +175,14 @@ class SubmissionsController < ApplicationController
   def destroy
     @submission.destroy
     
-    respond_to do |format|
-      format.html { redirect_to submissions_path, notice: t("submissions.destroy.success") }
-      format.turbo_stream { render :destroy }
-    end
+    # Force full page redirect by using Turbo-Location header
+    # This ensures Turbo performs a full page load instead of preserving format
+    # Set flash message before redirect
+    flash[:notice] = t("submissions.destroy.success")
+    # Set Turbo-Location header to force full page navigation
+    response.headers["Turbo-Location"] = root_url
+    # Direct redirect without respond_to to avoid format preservation
+    redirect_to root_path, status: :see_other
   end
 
   # POST /submissions/:id/add_tag
@@ -373,7 +379,10 @@ class SubmissionsController < ApplicationController
   end
 
   def submission_params
-    params.require(:submission).permit(:submission_url, :submission_name, :submission_description, :author_note, tool_ids: [])
+    permitted = [:submission_url, :submission_name, :submission_description, :author_note, tool_ids: []]
+    # Allow admins to edit submission_type and status
+    permitted += [:submission_type, :status] if admin_user?
+    params.require(:submission).permit(*permitted)
     # Note: tool_ids is an array for many-to-many association
   end
 

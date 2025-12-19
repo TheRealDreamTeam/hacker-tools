@@ -4,7 +4,9 @@
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h1 class="h3 mb-0"><%= t("tags.index.title") %></h1>
     <% if admin_user? %>
-      <%= link_to t("tags.actions.new"), new_tag_path, class: "btn btn-primary" %>
+      <%= link_to new_tag_path, class: "btn btn-primary btn-lg square-plus-btn", aria: { label: t("tags.actions.new") } do %>
+        <i class="bi bi-plus-lg"></i>
+      <% end %>
     <% end %>
   </div>
   <% if @tags_by_type.any? %>
@@ -45,7 +47,9 @@
     <div class="alert alert-light border">
       <p class="mb-0"><%= t("tags.index.empty") %></p>
       <% if admin_user? %>
-        <%= link_to t("tags.actions.new"), new_tag_path, class: "btn btn-primary mt-2" %>
+        <%= link_to new_tag_path, class: "btn btn-primary btn-lg square-plus-btn mt-2", aria: { label: t("tags.actions.new") } do %>
+          <i class="bi bi-plus-lg"></i>
+        <% end %>
       <% end %>
     </div>
   <% end %>

@@ -16,7 +16,9 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= t("actions.cancel") %></button>
         <% if defined?(form_action) && form_action.present? %>
-          <%= button_to confirm_text || t("actions.confirm"), form_action, method: form_method || :delete, class: "btn #{confirm_class || 'btn-primary'}", form: { id: "#{id}-form", data: { turbo: true } } %>
+          <%# Use turbo: false for delete actions that need full page redirects, turbo: true for Turbo Stream updates %>
+          <% turbo_enabled = defined?(turbo) ? turbo : true %>
+          <%= button_to confirm_text || t("actions.confirm"), form_action, method: form_method || :delete, class: "btn #{confirm_class || 'btn-primary'}", form: { id: "#{id}-form", data: { turbo: turbo_enabled } } %>
         <% else %>
           <button type="button" class="btn <%= confirm_class || 'btn-primary' %>" data-action="click->confirmation-modal#confirm"><%= confirm_text || t("actions.confirm") %></button>
         <% end %>

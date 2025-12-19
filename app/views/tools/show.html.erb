@@ -18,14 +18,6 @@
                   <% if admin_user? %>
                     <div class="position-absolute bottom-0 end-0 mb-3 me-3 d-flex gap-2" style="z-index: 10;">
                       <%= link_to t("actions.edit"), edit_tool_path(@tool), class: "btn btn-outline-primary btn-sm" %>
-                      <%= render "shared/confirmation_modal",
-                          id: "delete-tool-modal",
-                          title: t("tools.confirmations.destroy_title"),
-                          message: t("tools.confirmations.destroy_message"),
-                          confirm_text: t("actions.delete"),
-                          confirm_class: "btn-outline-danger",
-                          form_action: tool_path(@tool),
-                          form_method: :delete %>
                       <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#delete-tool-modal">
                         <%= t("actions.delete") %>
                       </button>
@@ -392,3 +384,16 @@
     <%= render "shared/side_banner", position: "right", used_images: used_images %>
   </div>
 </div>
+
+<%# Confirmation Modal for Tool Deletion - rendered outside positioned containers to avoid z-index issues %>
+<% if admin_user? %>
+  <%= render "shared/confirmation_modal",
+      id: "delete-tool-modal",
+      title: t("tools.confirmations.destroy_title"),
+      message: t("tools.confirmations.destroy_message"),
+      confirm_text: t("actions.delete"),
+      confirm_class: "btn-outline-danger",
+      form_action: tool_path(@tool),
+      form_method: :delete,
+      turbo: false %>
+<% end %>

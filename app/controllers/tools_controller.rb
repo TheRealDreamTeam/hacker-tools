@@ -108,7 +108,15 @@ class ToolsController < ApplicationController
   # DELETE /tools/:id
   def destroy
     @tool.destroy
-    redirect_to tools_path, notice: t("tools.flash.destroyed")
+    
+    # Force full page redirect by using Turbo-Location header
+    # This ensures Turbo performs a full page load instead of preserving format
+    # Set flash message before redirect
+    flash[:notice] = t("tools.flash.destroyed")
+    # Set Turbo-Location header to force full page navigation
+    response.headers["Turbo-Location"] = root_url
+    # Direct redirect without respond_to to avoid format preservation
+    redirect_to root_path, status: :see_other
   end
 
   # POST /tools/:id/add_tag
